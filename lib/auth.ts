@@ -50,7 +50,6 @@ async function checkRateLimit(ip: string): Promise<{
 }> {
   const windowMs = 15 * 60 * 1000; // 15 minutes
   const maxAttempts = 10;
-  const windowStart = new Date(Date.now() - windowMs);
 
   // Clean up expired entries
   await prisma.rateLimitEntry.deleteMany({

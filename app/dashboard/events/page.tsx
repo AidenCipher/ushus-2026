@@ -191,7 +191,7 @@ export default function EventsDetailsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Event Registry & Guidelines</h1>
         <p className="text-muted-foreground mt-1">
-          Explore all USHUS 2027 competitions, check your registered events, download rulebooks, and manage your team status.
+          Explore all USHUS 2026 competitions, check your registered events, download rulebooks, and manage your team status.
         </p>
       </div>
 

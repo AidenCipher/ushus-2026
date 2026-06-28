@@ -169,7 +169,7 @@ export default function GanttPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
 
   // Master Fest Start Date configuration
-  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2027-11-06"));
+  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-06"));
   const [ganttRows, setGanttRows] = React.useState<any[]>(GANTT_MASTER_DATA);
 
   // Expanded nodes map

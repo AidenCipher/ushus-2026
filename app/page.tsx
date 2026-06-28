@@ -90,7 +90,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Dates</h4>
-                    <p className="text-sm text-muted-foreground">November 6-7, 2027</p>
+                    <p className="text-sm text-muted-foreground">November 6-7, 2026</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -131,7 +131,7 @@ export default function LandingPage() {
                   USHUS is the flagship national-level management fest hosted by the School of Business and Management Studies at Christ University, Bangalore Central Campus.
                 </p>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  The theme for 2027, <strong>"Constellation"</strong>, represents the coming together of brilliant, diverse minds from across the nation to form something greater than themselves. Just as stars connect to form meaningful patterns, we challenge future leaders to connect ideas, strategies, and innovations.
+                  The theme for 2026, <strong>"Constellation"</strong>, represents the coming together of brilliant, diverse minds from across the nation to form something greater than themselves. Just as stars connect to form meaningful patterns, we challenge future leaders to connect ideas, strategies, and innovations.
                 </p>
                 <Link href="/story">
                   <Button variant="outline" className="group">

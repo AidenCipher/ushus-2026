@@ -44,19 +44,19 @@ export interface FAQ {
 }
 
 export const FEST_CONTENT = {
-  festName: "USHUS 2027",
+  festName: "USHUS 2026",
   theme: "Constellation",
   tagline: "Illuminate your potential",
-  dates: "November 6-7, 2027",
+  dates: "November 6-7, 2026",
   venue: "Christ University, Bangalore Central Campus",
   googleFormUrl: process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "",
-  registrationDeadline: "October 27, 2027",
+  registrationDeadline: "October 27, 2026",
 
   about: {
     description:
       "USHUS is the flagship annual MBA Management Fest of Christ University's School of Business and Management Studies, Bangalore Central Campus. Born from the Sanskrit word meaning 'dawn', USHUS represents the beginning of new ideas, fresh perspectives, and transformative leadership. For over a decade, USHUS has been the premier inter-collegiate platform where the brightest management minds converge to compete, collaborate, and create impact across core management disciplines.",
     themeDescription:
-      "The 2027 theme — Constellation — celebrates the power of individual brilliance coming together to form something greater. Just as stars form patterns that have guided explorers for millennia, USHUS 2027 invites participants to discover their unique light while connecting with others to illuminate the path forward in the world of business and management.",
+      "The 2026 theme — Constellation — celebrates the power of individual brilliance coming together to form something greater. Just as stars form patterns that have guided explorers for millennia, USHUS 2026 invites participants to discover their unique light while connecting with others to illuminate the path forward in the world of business and management.",
     themeInspirations: [
       {
         vertical: "Marketing",
@@ -86,14 +86,14 @@ export const FEST_CONTENT = {
     ],
   },
 
-  stats2027: {
+  stats2026: {
     colleges: 50,
     participants: 500,
     events: 9,
     prizePool: "₹3,00,000",
   },
 
-  stats2026: {
+  stats2025: {
     colleges: 40,
     participants: 1200,
     events: 8,
@@ -115,7 +115,7 @@ export const FEST_CONTENT = {
       name: "Best Manager",
       vertical: "Core Team",
       description: "The ultimate test of leadership, strategy, and business acumen. One individual will rise above the rest as the Best Manager.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹50,000",
       teamSize: "1 member",
       eligibility: "MBA / PGDM students",
@@ -124,7 +124,7 @@ export const FEST_CONTENT = {
       name: "Best Management Team",
       vertical: "Core Team",
       description: "A collaborative challenge testing team dynamics, synergy, and execution across all business disciplines.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹40,000",
       teamSize: "4 members",
       eligibility: "MBA / PGDM students",
@@ -133,7 +133,7 @@ export const FEST_CONTENT = {
       name: "B Quiz",
       vertical: "Marketing Team",
       description: "A battle of wits and intelligence covering business history, current affairs, and global industry trends.",
-      dateRange: "November 6, 2027",
+      dateRange: "November 6, 2026",
       prizePool: "₹20,000",
       teamSize: "2 members",
       eligibility: "Open to all B-schools",
@@ -142,7 +142,7 @@ export const FEST_CONTENT = {
       name: "Finance",
       vertical: "Sponsorship Team",
       description: "Test financial engineering, asset valuations, and portfolio defense under extreme volatility.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "2-3 members",
       eligibility: "MBA / PGDM students",
@@ -151,7 +151,7 @@ export const FEST_CONTENT = {
       name: "Marketing",
       vertical: "Marketing Team",
       description: "Design and present disruptive brand campaigns, product launches, and growth hacking strategies.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "3 members",
       eligibility: "MBA / PGDM students",
@@ -160,7 +160,7 @@ export const FEST_CONTENT = {
       name: "Operations",
       vertical: "Logistics & Operations Team",
       description: "Solve complex logistics bottlenecks, warehouse configurations, and lean process designs.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "2-3 members",
       eligibility: "MBA / PGDM students",
@@ -169,7 +169,7 @@ export const FEST_CONTENT = {
       name: "HR",
       vertical: "Hospitality Team",
       description: "Simulated boardroom scenarios focusing on negotiations, talent optimization, and organizational behavioral policy.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "2 members",
       eligibility: "MBA / PGDM students",
@@ -178,7 +178,7 @@ export const FEST_CONTENT = {
       name: "Business Analytics",
       vertical: "Registration Team",
       description: "Sift through big data to extract commercial insights, predict trends, and deliver predictive modeling.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "2 members",
       eligibility: "MBA / PGDM students",
@@ -187,7 +187,7 @@ export const FEST_CONTENT = {
       name: "Sustainability",
       vertical: "Creative Team",
       description: "Develop corporate action plans resolving carbon footprinting, greenwashing, and circular economy compliance.",
-      dateRange: "November 6-7, 2027",
+      dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
       teamSize: "2-3 members",
       eligibility: "MBA / PGDM students",
@@ -239,7 +239,7 @@ export const FEST_CONTENT = {
     },
     {
       quote:
-        "Bangalore + Christ University + USHUS = the perfect trifecta. The campus is beautiful, the events are world-class, and the hospitality is top-notch. Cannot wait for 2027!",
+        "Bangalore + Christ University + USHUS = the perfect trifecta. The campus is beautiful, the events are world-class, and the hospitality is top-notch. Cannot wait for 2026!",
       name: "Mohammed Faisal",
       college: "Great Lakes Institute of Management",
       event: "Sustainability",
@@ -314,9 +314,9 @@ export const FEST_CONTENT = {
 
   faqs: [
     {
-      question: "Who can participate in USHUS 2027?",
+      question: "Who can participate in USHUS 2026?",
       answer:
-        "USHUS 2027 is open to MBA and PGDM students from any AICTE/UGC recognised institution across India. Both first-year and second-year students are eligible to participate.",
+        "USHUS 2026 is open to MBA and PGDM students from any AICTE/UGC recognised institution across India. Both first-year and second-year students are eligible to participate.",
     },
     {
       question: "What is the registration fee?",
@@ -336,12 +336,12 @@ export const FEST_CONTENT = {
     {
       question: "How will I know if my registration is confirmed?",
       answer:
-        "After submitting the Google Form, our team will review your registration within 48 hours. You will receive a confirmation email with your unique USHUS-2027 confirmation code and login credentials to the participant dashboard.",
+        "After submitting the Google Form, our team will review your registration within 48 hours. You will receive a confirmation email with your unique USHUS-2026 confirmation code and login credentials to the participant dashboard.",
     },
     {
       question: "Is accommodation provided?",
       answer:
-        "USHUS 2027 does not provide official accommodation. However, we have curated a list of recommended hotels and PGs near the campus at various price points. Check the Accommodation section in your participant dashboard after registration.",
+        "USHUS 2026 does not provide official accommodation. However, we have curated a list of recommended hotels and PGs near the campus at various price points. Check the Accommodation section in your participant dashboard after registration.",
     },
     {
       question: "What is the cancellation policy?",

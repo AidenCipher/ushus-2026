@@ -335,16 +335,3 @@ model RateLimitEntry {
   @@index([key, expiresAt])
   @@map("rate_limit_entries")
 }
-
-model VerificationOtp {
-  id        String   @id @default(uuid())
-  type      String   // "EMAIL" or "PHONE"
-  target    String   // email address or phone number
-  code      String   // 6-digit OTP
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  @@unique([type, target])
-  @@map("verification_otps")
-}
-

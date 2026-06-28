@@ -40,7 +40,7 @@ export function useAuth() {
   const canApprove = isAdmin || isOrganiser;
 
   const logout = useCallback(async () => {
-    await signOut({ redirectTo: "/" });
+    await signOut({ redirectTo: "/login" });
   }, []);
 
   const goToDashboard = useCallback(() => {

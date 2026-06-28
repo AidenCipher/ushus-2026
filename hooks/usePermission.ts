@@ -22,7 +22,7 @@ export function usePermission() {
       if (!user?.role) return false;
       return hasPermission(user.role, action);
     },
-    [user?.role]
+    [user]
   );
 
   const canModifyTask = useCallback(
@@ -30,7 +30,7 @@ export function usePermission() {
       if (!user?.role) return false;
       return canModifyTaskInVertical(user.role, user.verticalId, taskVerticalId);
     },
-    [user?.role, user?.verticalId]
+    [user]
   );
 
   const canManageTeam = useCallback(
@@ -38,7 +38,7 @@ export function usePermission() {
       if (!user?.role) return false;
       return canManageTeamInEvent(user.role, user.eventId, eventId);
     },
-    [user?.role, user?.eventId]
+    [user]
   );
 
   return { can, canModifyTask, canManageTeam };

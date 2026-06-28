@@ -1,4 +1,4 @@
-import { UserCreateSchema, UserUpdateSchema } from "@/lib/validations/user.schema";
+import { UserCreateSchema } from "@/lib/validations/user.schema";
 import { Role } from "@prisma/client";
 
 describe("User Validation Schema", () => {

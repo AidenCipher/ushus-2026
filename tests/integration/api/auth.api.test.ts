@@ -1,8 +1,8 @@
 import { authConfig } from "@/lib/auth";
 import { POST as registerHandler } from "@/app/api/v1/auth/register/route";
 import { testPrisma } from "../../setup/test-db";
-import { hash } from "bcryptjs";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const credentialsProvider = authConfig.providers.find(p => p.name === "Credentials") as any;
 
 describe("Auth API Integration Tests", () => {

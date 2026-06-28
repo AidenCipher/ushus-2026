@@ -134,9 +134,6 @@ export async function seedTestEvent() {
   await truncateAllTables();
   await seedTestUsers();
 
-  // Create event details
-  const teamId = "test-team-uuid";
-  
   // Register Participant to Event
   await testPrisma.registration.create({
     data: {

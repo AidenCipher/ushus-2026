@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { getClientIP } from "@/lib/utils";
+import { Prisma } from "@prisma/client";
 
 interface AuditLogParams {
   userId: string;
@@ -22,7 +23,7 @@ export async function writeAuditLog(params: AuditLogParams): Promise<void> {
         action: params.action,
         entityType: params.entityType ?? null,
         entityId: params.entityId ?? null,
-        metadata: (params.metadata as any) ?? null,
+        metadata: (params.metadata as Prisma.InputJsonValue) ?? null,
         ipAddress: params.ipAddress ?? null,
       },
     });

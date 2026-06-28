@@ -1,4 +1,4 @@
-# USHUS 2027 — Christ University MBA Management Fest Platform
+# USHUS 2026 — Christ University MBA Management Fest Platform
 
 Enterprise-grade event management platform for Christ University's flagship MBA fest. Built with Next.js, TypeScript, Prisma, and Tailwind CSS.
 
@@ -79,9 +79,9 @@ Visit `http://localhost:3000` to see the application.
 
 ---
 
-## 📅 Fest Details (USHUS 2027)
+## 📅 Fest Details (USHUS 2026)
 
-- **Fest Dates**: November 6-7, 2027
+- **Fest Dates**: November 6-7, 2026
 - **Expected Participation**: 500+
 - **Core Verticals (7)**:
   1. Core Team (Coordinator, Organisers, Faculty)
