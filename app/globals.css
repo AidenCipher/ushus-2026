@@ -1,0 +1,204 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* ─── Brand Colours ─────────────────────────────────────────────────────── */
+  --color-primary: #003580;
+  --color-primary-light: #0047AB;
+  --color-primary-dark: #002460;
+  --color-accent: #F5A623;
+  --color-accent-dark: #D4881A;
+
+  /* ─── Surfaces ──────────────────────────────────────────────────────────── */
+  --color-background: #030014;
+  --color-surface: #05070c;
+  --color-surface-alt: #0b0f19;
+  --color-border: rgba(255, 255, 255, 0.1);
+
+  /* ─── Text ──────────────────────────────────────────────────────────────── */
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+
+  /* ─── Semantic ──────────────────────────────────────────────────────────── */
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
+  /* ─── Task Status Colours ───────────────────────────────────────────────── */
+  --color-status-not-started: #9CA3AF;
+  --color-status-in-progress: #3B82F6;
+  --color-status-completed: #22C55E;
+  --color-status-delayed: #EF4444;
+  --color-status-blocked: #F97316;
+
+  /* ─── Typography ────────────────────────────────────────────────────────── */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* ─── Radius ────────────────────────────────────────────────────────────── */
+  --radius: 0.625rem;
+
+  /* ─── Sidebar (shadcn) ──────────────────────────────────────────────────── */
+  --sidebar-background: #003580;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #F5A623;
+  --sidebar-primary-foreground: #1A1A2E;
+  --sidebar-accent: #0047AB;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.15);
+  --sidebar-ring: #F5A623;
+}
+
+/* ─── Base Styles ───────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Reduced Motion ────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Custom Scrollbar ──────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ─── Focus Visible ─────────────────────────────────────────────────────────── */
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Selection ─────────────────────────────────────────────────────────────── */
+
+::selection {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* ─── Confirmation Code Typography ──────────────────────────────────────────── */
+
+.font-code {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* ─── Glassmorphism utility ─────────────────────────────────────────────────── */
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-dark {
+  background: rgba(0, 53, 128, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Animated Gradient ─────────────────────────────────────────────────────── */
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* ─── Floating Orb Animation ────────────────────────────────────────────────── */
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 8s ease-in-out 2s infinite;
+}
+
+.animate-float-slow {
+  animation: float 10s ease-in-out 4s infinite;
+}
+
+/* ─── Scroll Chevron ────────────────────────────────────────────────────────── */
+
+@keyframes bounce-down {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 0.5;
+  }
+}
+
+.animate-bounce-down {
+  animation: bounce-down 2s ease-in-out infinite;
+}
+
+/* ─── Count-up number ───────────────────────────────────────────────────────── */
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
