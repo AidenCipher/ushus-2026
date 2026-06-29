@@ -3,11 +3,13 @@
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
 import { LoginSchema } from "@/lib/validations/auth.schema";
+import { getDashboardPath } from "@/lib/permissions";
+import type { Role } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +27,6 @@ import { AlertCircle, Loader2 } from "lucide-react";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   
   const [error, setError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -50,12 +51,31 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError("Invalid email or password");
+        // NextAuth surfaces the error message from the authorize() callback
+        if (res.error.includes("Too many login attempts")) {
+          setError(res.error);
+        } else if (res.error.includes("deactivated")) {
+          setError("Your account has been deactivated. Contact the organisers.");
+        } else {
+          setError("Invalid email or password");
+        }
       } else {
-        router.push(callbackUrl);
-        router.refresh(); // Force refresh to update server components with new session
+        // Fetch the fresh session to get the user's role
+        const session = await getSession();
+        const role = session?.user?.role as Role | undefined;
+        
+        // If there's a specific callbackUrl (not the default), use it
+        const explicitCallback = searchParams.get("callbackUrl");
+        if (explicitCallback) {
+          router.push(explicitCallback);
+        } else {
+          // Otherwise redirect to the role-appropriate dashboard
+          const dashboardPath = role ? getDashboardPath(role) : "/dashboard";
+          router.push(dashboardPath);
+        }
+        router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);

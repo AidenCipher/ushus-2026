@@ -19,7 +19,6 @@ export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
-  const [activeSection, setActiveSection] = React.useState("home");
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -28,55 +27,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  React.useEffect(() => {
-    if (pathname !== "/") return;
-
-    const sections = ["about", "events", "contact"];
-    const observerOptions = {
-      root: null,
-      rootMargin: "-30% 0px -40% 0px",
-      threshold: 0,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    }, observerOptions);
-
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    const handleScroll = () => {
-      if (window.scrollY < 100) {
-        setActiveSection("home");
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [pathname]);
-
-  const isLinkActive = (href: string) => {
-    if (pathname === "/") {
-      if (href === "/") return activeSection === "home";
-      if (href === "/#about") return activeSection === "about";
-      if (href === "/#events") return activeSection === "events";
-      if (href === "/#contact") return activeSection === "contact";
-    } else {
-      if (href === "/#events" && pathname.startsWith("/events")) return true;
-      return pathname === href;
-    }
-    return false;
-  };
 
   const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("/#") && pathname === "/") {
@@ -109,28 +59,25 @@ export function Navbar() {
  
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => {
-            const active = isLinkActive(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleScrollClick(e, link.href)}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary relative group",
-                  active ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                {link.label}
-                {active && (
-                  <motion.div
-                    layoutId="navbar-indicator"
-                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  />
-                )}
-              </Link>
-            );
-          })}
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={(e) => handleScrollClick(e, link.href)}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-primary relative group",
+                pathname === link.href ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              {link.label}
+              {pathname === link.href && (
+                <motion.div
+                  layoutId="navbar-indicator"
+                  className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full"
+                />
+              )}
+            </Link>
+          ))}
           <div className="flex items-center gap-4 ml-4 pl-4 border-l border-white/10">
             <Link href="/login">
               <Button variant="ghost" className="text-sm hover:bg-white/5">
@@ -163,25 +110,19 @@ export function Navbar() {
               transition={{ duration: 0.2 }}
               className="absolute top-full left-0 w-full bg-background/95 backdrop-blur-xl border-b border-white/10 shadow-2xl py-6 px-4 flex flex-col gap-4 md:hidden"
             >
-              {navLinks.map((link) => {
-                const active = isLinkActive(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={(e) => {
-                      setIsOpen(false);
-                      handleScrollClick(e, link.href);
-                    }}
-                    className={cn(
-                      "text-lg font-medium p-2 rounded-md transition-colors",
-                      active ? "text-primary bg-primary/10" : "text-foreground hover:bg-white/5"
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => {
+                    setIsOpen(false);
+                    handleScrollClick(e, link.href);
+                  }}
+                  className="text-lg font-medium p-2 rounded-md hover:bg-white/5 transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-white/10 mt-2">
                 <Link href="/login" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full justify-center">Sign In</Button>

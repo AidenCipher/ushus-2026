@@ -1,0 +1,313 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Trophy, Search, Plus, Loader2, Calendar, MapPin, DollarSign, Users } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import * as React from "react";
+import LoadingAnimation from "@/components/shared/LoadingAnimation";
+
+interface EventData {
+  id: string;
+  name: string;
+  description: string | null;
+  verticalId: string;
+  vertical: {
+    name: string;
+    colorCode: string;
+  };
+  eventHead: { name: string } | null;
+  dateStart: string | null;
+  dateEnd: string | null;
+  venue: string | null;
+  maxParticipants: number | null;
+  prizePool: string | null;
+  status: string;
+}
+
+export default function AdminEventsPage() {
+  const [events, setEvents] = React.useState<EventData[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  
+  // Dialog Form State
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [formName, setFormName] = React.useState("");
+  const [formDesc, setFormDesc] = React.useState("");
+  const [formVerticalId, setFormVerticalId] = React.useState("");
+  const [formVenue, setFormVenue] = React.useState("");
+  const [formPrize, setFormPrize] = React.useState("");
+  const [formMaxPart, setFormMaxPart] = React.useState("");
+  const [formStatus, setFormStatus] = React.useState("UPCOMING");
+  const [submitting, setSubmitting] = React.useState(false);
+
+  const fetchEvents = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/v1/events");
+      if (res.ok) {
+        const json = await res.json();
+        setEvents(json.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to load events matrix:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  // Extract unique verticals from events response for the dropdown select list
+  const verticalsList = React.useMemo(() => {
+    const map = new Map<string, { id: string; name: string }>();
+    events.forEach(e => {
+      if (e.verticalId && e.vertical) {
+        map.set(e.verticalId, { id: e.verticalId, name: e.vertical.name });
+      }
+    });
+    return Array.from(map.values());
+  }, [events]);
+
+  const handleCreateEvent = async () => {
+    if (!formName || !formVerticalId) return;
+    setSubmitting(true);
+    try {
+      const payload = {
+        name: formName,
+        description: formDesc || undefined,
+        verticalId: formVerticalId,
+        venue: formVenue || undefined,
+        prizePool: formPrize || undefined,
+        maxParticipants: formMaxPart ? parseInt(formMaxPart) : undefined,
+        status: formStatus,
+      };
+
+      const res = await fetch("/api/v1/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setFormName("");
+        setFormDesc("");
+        setFormVerticalId("");
+        setFormVenue("");
+        setFormPrize("");
+        setFormMaxPart("");
+        setFormStatus("UPCOMING");
+        setIsDialogOpen(false);
+        await fetchEvents();
+      }
+    } catch (err) {
+      console.error("Failed to create event:", err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const filteredEvents = searchQuery
+    ? events.filter(e => 
+        e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        e.vertical.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (e.venue && e.venue.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
+    : events;
+
+  function getStatusColor(status: string): string {
+    switch (status) {
+      case "REGISTRATION_OPEN": return "border-success/50 text-success bg-success/10";
+      case "REGISTRATION_CLOSED": return "border-danger/50 text-danger bg-danger/10";
+      case "ONGOING": return "border-blue-500/50 text-blue-400 bg-blue-500/10";
+      case "COMPLETED": return "border-purple-500/50 text-purple-400 bg-purple-500/10";
+      default: return "border-white/20 text-muted-foreground";
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-rose-50">Event Matrix</h1>
+          <p className="text-muted-foreground mt-1">Configure competition parameters, rulebooks, and head organisers.</p>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-rose-600 hover:bg-rose-700 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]">
+              <Plus className="w-4 h-4 mr-2" /> Add Event
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="glass border-white/15">
+            <DialogHeader>
+              <DialogTitle>Add New Event</DialogTitle>
+              <DialogDescription>Add a competition vertical to the USHUS 2026 Management Fest.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-2">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-muted-foreground">Event Name</label>
+                <Input 
+                  placeholder="e.g. Best Manager / Ad Blitz" 
+                  className="bg-background/50 border-white/10"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-muted-foreground">Description (optional)</label>
+                <Textarea 
+                  placeholder="Summarise event rules or criteria..." 
+                  className="bg-background/50 border-white/10 min-h-[80px]"
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Vertical</label>
+                  <Select value={formVerticalId} onValueChange={setFormVerticalId}>
+                    <SelectTrigger className="bg-background/50 border-white/10">
+                      <SelectValue placeholder="Select Vertical" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {verticalsList.map(v => (
+                        <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Status</label>
+                  <Select value={formStatus} onValueChange={setFormStatus}>
+                    <SelectTrigger className="bg-background/50 border-white/10">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                      <SelectItem value="REGISTRATION_OPEN">Registration Open</SelectItem>
+                      <SelectItem value="REGISTRATION_CLOSED">Registration Closed</SelectItem>
+                      <SelectItem value="ONGOING">Ongoing</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1 col-span-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Max Slots</label>
+                  <Input 
+                    type="number"
+                    placeholder="e.g. 50" 
+                    className="bg-background/50 border-white/10"
+                    value={formMaxPart}
+                    onChange={(e) => setFormMaxPart(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1 col-span-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Prize Pool</label>
+                  <Input 
+                    placeholder="e.g. ₹20,000" 
+                    className="bg-background/50 border-white/10"
+                    value={formPrize}
+                    onChange={(e) => setFormPrize(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1 col-span-1">
+                  <label className="text-xs font-semibold text-muted-foreground">Venue</label>
+                  <Input 
+                    placeholder="e.g. Audi A" 
+                    className="bg-background/50 border-white/10"
+                    value={formVenue}
+                    onChange={(e) => setFormVenue(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end pt-2">
+                <Button variant="outline" className="border-white/10" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                <Button className="bg-rose-600 hover:bg-rose-700 text-white" onClick={handleCreateEvent} disabled={submitting || !formName || !formVerticalId}>
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  Create Event
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input 
+          placeholder="Search events, verticals..." 
+          className="pl-9 bg-background/50 border-white/10" 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      {/* Grid of Events */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <LoadingAnimation message="Syncing event configurations..." />
+        </div>
+      ) : filteredEvents.length === 0 ? (
+        <Card className="glass border-white/10">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <Trophy className="w-12 h-12 text-rose-500 mb-4 opacity-50" />
+            <p className="font-semibold text-muted-foreground">No events found</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredEvents.map(event => (
+            <Card key={event.id} className="glass border-white/10 relative overflow-hidden flex flex-col justify-between hover:border-rose-500/20 transition-all duration-200">
+              <div 
+                className="absolute top-0 left-0 w-full h-1"
+                style={{ backgroundColor: event.vertical.colorCode }}
+              />
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start gap-2">
+                  <Badge variant="outline" style={{ borderColor: event.vertical.colorCode, color: event.vertical.colorCode }}>
+                    {event.vertical.name}
+                  </Badge>
+                  <Badge variant="outline" className={getStatusColor(event.status)}>
+                    {event.status.replace(/_/g, " ")}
+                  </Badge>
+                </div>
+                <CardTitle className="text-base font-bold mt-2 leading-tight">{event.name}</CardTitle>
+                {event.description && (
+                  <CardDescription className="text-xs line-clamp-2 mt-1">{event.description}</CardDescription>
+                )}
+              </CardHeader>
+              <CardContent className="pt-0 space-y-3">
+                <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground border-t border-white/5 pt-3">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-rose-400" /> {event.venue || "TBD"}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <DollarSign className="w-3.5 h-3.5 text-rose-400" /> {event.prizePool || "TBD"}
+                  </span>
+                  <span className="flex items-center gap-1 col-span-2 mt-1">
+                    <Users className="w-3.5 h-3.5 text-rose-400" /> Max Capacity: {event.maxParticipants || "Unlimited"}
+                  </span>
+                </div>
+                {event.eventHead && (
+                  <div className="bg-white/5 p-2 rounded text-[10px] flex justify-between items-center mt-2 border border-white/5">
+                    <span className="text-muted-foreground">Event Head:</span>
+                    <span className="font-semibold text-foreground">{event.eventHead.name}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

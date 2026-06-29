@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
+import NotificationBell from "@/components/shared/NotificationBell";
+import { StarryBackground } from "@/components/StarryBackground";
 
 const sidebarLinks = [
   { name: "Overview", href: "/organiser", icon: LayoutDashboard },
@@ -41,7 +43,8 @@ export default function OrganiserLayout({
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative overflow-hidden">
+      <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -133,6 +136,7 @@ export default function OrganiserLayout({
           </div>
 
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
               <p className="text-xs text-indigo-400 mt-1 capitalize font-medium">{session?.user?.role?.toLowerCase()}</p>

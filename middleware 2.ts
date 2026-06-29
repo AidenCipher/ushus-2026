@@ -65,20 +65,18 @@ export default auth((req) => {
 
   // ─── Protected API routes ───────────────────────────────────────────────
   if (pathname.startsWith("/api/v1")) {
-    const isPublicRoute = pathname === "/api/v1/auth/register";
-    if (!isPublicRoute) {
-      if (!session?.user) {
-        return NextResponse.json(
-          { success: false, error: "Unauthorized", code: 401 },
-          { status: 401 }
-        );
-      }
-      if (!session.user.isActive) {
-        return NextResponse.json(
-          { success: false, error: "Account deactivated", code: 403 },
-          { status: 403 }
-        );
-      }
+    if (!session?.user) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized", code: 401 },
+        { status: 401 }
+      );
+    }
+
+    if (!session.user.isActive) {
+      return NextResponse.json(
+        { success: false, error: "Account deactivated", code: 403 },
+        { status: 403 }
+      );
     }
   }
 

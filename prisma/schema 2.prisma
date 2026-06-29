@@ -1,0 +1,337 @@
+// ─── USHUS 2026 — Prisma Schema ───────────────────────────────────────────────
+// All 13 models + 10 enums for the USHUS 2026 Management Fest Platform
+// Database: PostgreSQL (Supabase)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  ORGANISER
+  VOLUNTEER
+  PARTICIPANT
+}
+
+enum TeamRole {
+  EVENT_HEAD
+  SUB_HEAD
+  CORE_VOLUNTEER
+  VOLUNTEER
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum UpdateType {
+  STATUS_CHANGE
+  PROGRESS_UPDATE
+  NOTE_ADDED
+  REASSIGNED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_UPDATED
+  UPDATE_APPROVED
+  UPDATE_REJECTED
+  REMINDER
+  ANNOUNCEMENT
+}
+
+enum EventStatus {
+  UPCOMING
+  REGISTRATION_OPEN
+  REGISTRATION_CLOSED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum RegistrationStatus {
+  PENDING
+  CONFIRMED
+  WAITLISTED
+  CANCELLED
+}
+
+enum CalendarEventStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  CANCELLED
+}
+
+// ─── MODELS ───────────────────────────────────────────────────────────────────
+
+model User {
+  id                String   @id @default(uuid())
+  email             String   @unique
+  passwordHash      String
+  name              String
+  phone             String?
+  college           String?
+  role              Role     @default(PARTICIPANT)
+  isActive          Boolean  @default(true)
+  profilePictureUrl String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Password reset
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+
+  // Relations
+  verticalId String?
+  vertical   Vertical? @relation("VerticalOrganiser", fields: [verticalId], references: [id])
+  eventId    String?
+  event      Event?    @relation("UserEvent", fields: [eventId], references: [id])
+  headedEvent Event?   @relation("EventHead")
+
+  registrations         Registration[]
+  assignedTasks         Task[]         @relation("TaskAssignee")
+  createdTasks          Task[]         @relation("TaskCreator")
+  taskUpdates           TaskUpdate[]
+  approvedUpdates       TaskUpdate[]   @relation("UpdateApprover")
+  teamMemberships       TeamMember[]
+  notificationsReceived Notification[] @relation("NotificationRecipient")
+  notificationsSent     Notification[] @relation("NotificationSender")
+  auditLogs             AuditLog[]
+  announcements         Announcement[]
+  calendarEvents        CalendarEvent[]
+
+  @@map("users")
+}
+
+model Vertical {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  colorCode   String   @default("#003580")
+  createdAt   DateTime @default(now())
+
+  organisers     User[]          @relation("VerticalOrganiser")
+  events         Event[]
+  tasks          Task[]
+  calendarEvents CalendarEvent[]
+
+  @@map("verticals")
+}
+
+model Event {
+  id                   String      @id @default(uuid())
+  name                 String
+  description          String?
+  verticalId           String
+  vertical             Vertical    @relation(fields: [verticalId], references: [id])
+  eventHeadId          String?     @unique
+  eventHead            User?       @relation("EventHead", fields: [eventHeadId], references: [id])
+  dateStart            DateTime?
+  dateEnd              DateTime?
+  venue                String?
+  maxParticipants      Int?
+  registrationDeadline DateTime?
+  rulesDocumentUrl     String?
+  prizePool            String?
+  status               EventStatus @default(UPCOMING)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  registrations  Registration[]
+  tasks          Task[]
+  teamMembers    TeamMember[]
+  calendarEvents CalendarEvent[]
+  organisers     User[]      @relation("UserEvent")
+
+  @@map("events")
+}
+
+model Registration {
+  id               String             @id @default(uuid())
+  userId           String
+  user             User               @relation(fields: [userId], references: [id])
+  eventId          String
+  event            Event              @relation(fields: [eventId], references: [id])
+  teamName         String?
+  teamMembers      Json?
+  registrationDate DateTime           @default(now())
+  status           RegistrationStatus @default(PENDING)
+  confirmationCode String             @unique @default(cuid())
+  externalFormRef  String?
+  notes            String?
+
+  @@unique([userId, eventId])
+  @@map("registrations")
+}
+
+model Task {
+  id              String       @id @default(uuid())
+  title           String
+  description     String?
+  eventId         String?
+  event           Event?       @relation(fields: [eventId], references: [id])
+  verticalId      String?
+  vertical        Vertical?    @relation(fields: [verticalId], references: [id])
+  assignedToId    String?
+  assignedTo      User?        @relation("TaskAssignee", fields: [assignedToId], references: [id])
+  assignedById    String?
+  assignedBy      User?        @relation("TaskCreator", fields: [assignedById], references: [id])
+  startDate       DateTime?
+  endDate         DateTime?
+  dueDate         DateTime?
+  status          TaskStatus   @default(NOT_STARTED)
+  priority        TaskPriority @default(MEDIUM)
+  progressPercent Int          @default(0)
+  parentTaskId    String?
+  parentTask      Task?        @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subTasks        Task[]       @relation("SubTasks")
+  dependsOnIds    String[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  updates       TaskUpdate[]
+  notifications Notification[]
+
+  @@map("tasks")
+}
+
+model TaskUpdate {
+  id               String         @id @default(uuid())
+  taskId           String
+  task             Task           @relation(fields: [taskId], references: [id])
+  updatedById      String
+  updatedBy        User           @relation(fields: [updatedById], references: [id])
+  updateType       UpdateType
+  previousStatus   TaskStatus?
+  newStatus        TaskStatus?
+  previousProgress Int?
+  newProgress      Int?
+  note             String
+  approvalStatus   ApprovalStatus @default(PENDING)
+  approvedById     String?
+  approvedBy       User?          @relation("UpdateApprover", fields: [approvedById], references: [id])
+  approvedAt       DateTime?
+  rejectionReason  String?
+  createdAt        DateTime       @default(now())
+
+  @@map("task_updates")
+}
+
+model TeamMember {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id])
+  roleInTeam TeamRole @default(VOLUNTEER)
+  addedAt    DateTime @default(now())
+  addedById  String?
+  isActive   Boolean  @default(true)
+
+  @@unique([userId, eventId])
+  @@map("team_members")
+}
+
+model Notification {
+  id             String           @id @default(uuid())
+  recipientId    String
+  recipient      User             @relation("NotificationRecipient", fields: [recipientId], references: [id])
+  senderId       String?
+  sender         User?            @relation("NotificationSender", fields: [senderId], references: [id])
+  type           NotificationType
+  title          String
+  body           String
+  isRead         Boolean          @default(false)
+  relatedTaskId  String?
+  relatedTask    Task?            @relation(fields: [relatedTaskId], references: [id])
+  relatedEventId String?
+  createdAt      DateTime         @default(now())
+
+  @@map("notifications")
+}
+
+model CalendarEvent {
+  id            String              @id @default(uuid())
+  title         String
+  description   String?
+  eventId       String?
+  event         Event?              @relation(fields: [eventId], references: [id])
+  verticalId    String?
+  vertical      Vertical?           @relation(fields: [verticalId], references: [id])
+  startDatetime DateTime
+  endDatetime   DateTime
+  status        CalendarEventStatus @default(PLANNED)
+  createdById   String
+  createdBy     User                @relation(fields: [createdById], references: [id])
+  colorCode     String?
+  createdAt     DateTime            @default(now())
+
+  @@map("calendar_events")
+}
+
+model Announcement {
+  id          String    @id @default(uuid())
+  title       String
+  body        String
+  targetRole  Role?
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id])
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+
+  @@map("announcements")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ─── RATE LIMITING ────────────────────────────────────────────────────────────
+
+model RateLimitEntry {
+  id        String   @id @default(uuid())
+  key       String
+  count     Int      @default(1)
+  expiresAt DateTime
+
+  @@index([key, expiresAt])
+  @@map("rate_limit_entries")
+}

@@ -65,6 +65,7 @@ const permissionMap: Record<Role, Set<Action>> = {
     Actions.VIEW_OWN_REGISTRATION,
     Actions.VIEW_PARTICIPANT_DASHBOARD,
     Actions.VIEW_ANNOUNCEMENTS,
+    Actions.VIEW_CALENDAR,
   ]),
 
   VOLUNTEER: new Set([

@@ -29,7 +29,7 @@ export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
 
 export const RegisterSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").regex(/^[A-Za-z\s.]+$/, "Name can only contain alphabetic characters, spaces, and dots"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
@@ -39,8 +39,8 @@ export const RegisterSchema = z.object({
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
   confirmPassword: z.string(),
-  phone: z.string().optional(),
-  college: z.string().optional(),
+  phone: z.string().min(10, "Phone number must be at least 10 digits").regex(/^\+?[1-9]\d{1,14}$|^[0-9]{10}$/, "Invalid phone number format"),
+  college: z.string().min(2, "College name must be at least 2 characters"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],

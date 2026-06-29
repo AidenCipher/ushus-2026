@@ -11,15 +11,18 @@ import {
   ShieldAlert,
   Menu,
   LogOut,
-  TerminalSquare
+  TerminalSquare,
+  BarChart
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
+import { StarryBackground } from "@/components/StarryBackground";
 
 const sidebarLinks = [
   { name: "System Config", href: "/admin", icon: Settings },
   { name: "User Management", href: "/admin/users", icon: Users },
   { name: "Event Matrix", href: "/admin/events", icon: Trophy },
+  { name: "Gantt Timeline", href: "/organiser/gantt", icon: BarChart },
   { name: "Security & Audit", href: "/admin/audit", icon: ShieldAlert },
 ];
 
@@ -37,7 +40,8 @@ export default function AdminLayout({
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative overflow-hidden">
+      <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 

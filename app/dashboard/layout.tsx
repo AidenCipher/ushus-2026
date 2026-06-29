@@ -9,25 +9,27 @@ import {
   Users, 
   CalendarDays, 
   Trophy, 
-  Bell, 
-  Award, 
   HelpCircle,
   Menu,
   X,
   LogOut,
-  Sparkles
+  Sparkles,
+  MapPin,
+  Hotel
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
+import NotificationBell from "@/components/shared/NotificationBell";
+import { StarryBackground } from "@/components/StarryBackground";
 
 const sidebarLinks = [
-  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "My Team", href: "/dashboard/team", icon: Users },
-  { name: "My Event", href: "/dashboard/event", icon: Trophy },
+  { name: "My Registration", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Event Details", href: "/dashboard/events", icon: Trophy },
   { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays },
-  { name: "Updates", href: "/dashboard/updates", icon: Bell },
-  { name: "Certificates", href: "/dashboard/certificates", icon: Award },
-  { name: "Support", href: "/dashboard/support", icon: HelpCircle },
+  { name: "Venue & Maps", href: "/dashboard/venue", icon: MapPin },
+  { name: "Accommodation", href: "/dashboard/accommodation", icon: Hotel },
+  { name: "Contacts", href: "/dashboard/contacts", icon: Users },
+  { name: "FAQ", href: "/dashboard/faq", icon: HelpCircle },
 ];
 
 export default function DashboardLayout({
@@ -45,7 +47,8 @@ export default function DashboardLayout({
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background relative overflow-hidden">
+      <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -131,6 +134,7 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <div className="hidden md:block text-right">
               <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
               <p className="text-xs text-muted-foreground mt-1 capitalize">{session?.user?.role?.toLowerCase()}</p>

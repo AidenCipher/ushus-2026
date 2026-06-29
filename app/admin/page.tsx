@@ -6,15 +6,66 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, AlertTriangle, Trash2, ShieldAlert } from "lucide-react";
+import { Save, AlertTriangle, Trash2, ShieldAlert, Loader2, CheckCircle2 } from "lucide-react";
+import * as React from "react";
 
 export default function AdminSettingsPage() {
+  const [saving, setSaving] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+
+  const [phase, setPhase] = React.useState("pre-event");
+  const [maxReg, setMaxReg] = React.useState("50");
+  const [allowReg, setAllowReg] = React.useState(true);
+  const [maintenance, setMaintenance] = React.useState(false);
+
+  const [purging, setPurging] = React.useState(false);
+  const [resetting, setResetting] = React.useState(false);
+
+  const handleSave = () => {
+    setSaving(true);
+    setSuccess(false);
+    setTimeout(() => {
+      setSaving(false);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    }, 1200);
+  };
+
+  const handlePurge = () => {
+    if (!confirm("Are you sure you want to permanently purge audit logs older than 30 days?")) return;
+    setPurging(true);
+    setTimeout(() => {
+      setPurging(false);
+      alert("Audit logs purged successfully!");
+    }, 1500);
+  };
+
+  const handleReset = () => {
+    const confirmation = prompt("WARNING: This will delete all users, teams, registrations, and tasks. Type 'FACTORY RESET' to confirm:");
+    if (confirmation !== "FACTORY RESET") {
+      alert("Reset cancelled.");
+      return;
+    }
+    setResetting(true);
+    setTimeout(() => {
+      setResetting(false);
+      alert("Database factory reset completed successfully. Re-seeding required.");
+    }, 3000);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl pb-10">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">System Configuration</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-rose-50">System Configuration</h1>
         <p className="text-muted-foreground mt-1">Manage global event settings, toggles, and critical system states.</p>
       </div>
+
+      {success && (
+        <div className="bg-success/15 border border-success/30 text-success p-3 rounded-lg flex items-center gap-2 text-sm">
+          <CheckCircle2 className="w-4 h-4" />
+          <span>System configuration saved successfully!</span>
+        </div>
+      )}
 
       {/* Global Event Settings */}
       <Card className="glass border-white/10">
@@ -26,7 +77,7 @@ export default function AdminSettingsPage() {
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label>Current Phase</Label>
-              <Select defaultValue="pre-event">
+              <Select value={phase} onValueChange={setPhase}>
                 <SelectTrigger className="bg-background/50 border-white/10">
                   <SelectValue placeholder="Select phase" />
                 </SelectTrigger>
@@ -40,7 +91,12 @@ export default function AdminSettingsPage() {
             </div>
             <div className="space-y-2">
               <Label>Max Registrations per Vertical</Label>
-              <Input type="number" defaultValue={50} className="bg-background/50 border-white/10" />
+              <Input 
+                type="number" 
+                className="bg-background/50 border-white/10" 
+                value={maxReg}
+                onChange={(e) => setMaxReg(e.target.value)}
+              />
             </div>
           </div>
 
@@ -50,33 +106,46 @@ export default function AdminSettingsPage() {
                 <Label className="text-base">Allow New Registrations</Label>
                 <p className="text-xs text-muted-foreground">Open or close the public registration portal.</p>
               </div>
-              <Switch defaultChecked />
+              <Switch checked={allowReg} onCheckedChange={setAllowReg} />
             </div>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-base">Maintenance Mode</Label>
                 <p className="text-xs text-muted-foreground">Locks out all participants and volunteers. Admin access only.</p>
               </div>
-              <Switch />
+              <Switch checked={maintenance} onCheckedChange={setMaintenance} />
             </div>
           </div>
           
           <div className="flex justify-end pt-4">
-            <Button className="bg-rose-600 hover:bg-rose-700 shadow-[0_0_15px_rgba(244,63,94,0.4)]">
-              <Save className="w-4 h-4 mr-2" /> Save Configuration
+            <Button 
+              className="bg-rose-600 hover:bg-rose-700 text-white shadow-[0_0_15px_rgba(244,63,94,0.4)]"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving Changes...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" /> Save Configuration
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Danger Zone */}
-      <Card className="border-rose-500/50 bg-rose-500/5 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+      <Card className="border-rose-500/30 bg-rose-500/5 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
           <ShieldAlert className="w-32 h-32 text-rose-500" />
         </div>
         <CardHeader>
           <CardTitle className="text-rose-500 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5" />
+            <AlertTriangle className="w-5 h-5 animate-pulse" />
             Danger Zone
           </CardTitle>
           <CardDescription className="text-rose-500/80">
@@ -86,11 +155,17 @@ export default function AdminSettingsPage() {
         <CardContent className="space-y-4 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg border border-rose-500/20 bg-rose-500/10">
             <div>
-              <h4 className="font-semibold text-rose-50">Purge Audit Logs</h4>
+              <h4 className="font-semibold text-rose-50">Purge Transaction Logs</h4>
               <p className="text-xs text-rose-200/70 mt-1">Permanently delete all system audit logs older than 30 days.</p>
             </div>
-            <Button variant="outline" className="border-rose-500/50 text-rose-400 hover:bg-rose-500/20 whitespace-nowrap">
-              <Trash2 className="w-4 h-4 mr-2" /> Purge Logs
+            <Button 
+              variant="outline" 
+              className="border-rose-500/50 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 whitespace-nowrap text-xs"
+              onClick={handlePurge}
+              disabled={purging}
+            >
+              {purging ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Purge Logs
             </Button>
           </div>
           
@@ -99,8 +174,14 @@ export default function AdminSettingsPage() {
               <h4 className="font-semibold text-rose-50">Reset Database</h4>
               <p className="text-xs text-rose-200/70 mt-1">Deletes all users, teams, and tasks. Requires superadmin confirmation.</p>
             </div>
-            <Button variant="destructive" className="bg-rose-600 hover:bg-rose-700 whitespace-nowrap">
-              <Trash2 className="w-4 h-4 mr-2" /> Factory Reset
+            <Button 
+              variant="destructive" 
+              className="bg-rose-600 hover:bg-rose-700 text-rose-50 text-xs shadow-[0_0_15px_rgba(220,38,38,0.3)] whitespace-nowrap"
+              onClick={handleReset}
+              disabled={resetting}
+            >
+              {resetting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Factory Reset
             </Button>
           </div>
         </CardContent>

@@ -128,15 +128,15 @@ async function main() {
   console.log("🎪 Creating events...");
   const eventData = [
     { name: "Marketing Maverick", vertical: marketing, head: organisers[0], desc: "High-octane marketing strategy competition with live case studies.", venue: "Auditorium A", prize: "₹30,000", max: 100 },
-    { name: "Ad Blitz", vertical: marketing, head: null, desc: "Full-scale advertising campaign creation and pitch.", venue: "Seminar Hall 1", prize: "₹25,000", max: 80 },
+    { name: "Ad Blitz", vertical: marketing, head: organisers[0], desc: "Full-scale advertising campaign creation and pitch.", venue: "Seminar Hall 1", prize: "₹25,000", max: 80 },
     { name: "Finvest League", vertical: finance, head: organisers[1], desc: "Simulated stock market trading and financial analysis.", venue: "Computer Lab 2", prize: "₹35,000", max: 120 },
-    { name: "Budget Battlefield", vertical: finance, head: null, desc: "Corporate budgeting under pressure with conflicting priorities.", venue: "Seminar Hall 2", prize: "₹25,000", max: 80 },
+    { name: "Budget Battlefield", vertical: finance, head: organisers[1], desc: "Corporate budgeting under pressure with conflicting priorities.", venue: "Seminar Hall 2", prize: "₹25,000", max: 80 },
     { name: "Talent Forge", vertical: hr, head: organisers[2], desc: "Immersive HR simulation with complex people management scenarios.", venue: "Conference Room A", prize: "₹30,000", max: 100 },
-    { name: "Boardroom Blitz", vertical: hr, head: null, desc: "Rapid-fire HR case study competition.", venue: "Conference Room B", prize: "₹20,000", max: 60 },
+    { name: "Boardroom Blitz", vertical: hr, head: organisers[2], desc: "Rapid-fire HR case study competition.", venue: "Conference Room B", prize: "₹20,000", max: 60 },
     { name: "Supply Chain Sprint", vertical: operations, head: organisers[3], desc: "End-to-end supply chain optimisation simulation.", venue: "Computer Lab 1", prize: "₹30,000", max: 100 },
-    { name: "Ops Matrix", vertical: operations, head: null, desc: "Process improvement and lean management challenge.", venue: "Seminar Hall 3", prize: "₹25,000", max: 80 },
+    { name: "Ops Matrix", vertical: operations, head: organisers[3], desc: "Process improvement and lean management challenge.", venue: "Seminar Hall 3", prize: "₹25,000", max: 80 },
     { name: "Startup Showdown", vertical: entrepreneurship, head: organisers[4], desc: "Pitch original business ideas to real VCs.", venue: "Main Auditorium", prize: "₹40,000", max: 150 },
-    { name: "Venture Vault", vertical: entrepreneurship, head: null, desc: "Business model pivot and innovation challenge.", venue: "Seminar Hall 4", prize: "₹30,000", max: 100 },
+    { name: "Venture Vault", vertical: entrepreneurship, head: organisers[4], desc: "Business model pivot and innovation challenge.", venue: "Seminar Hall 4", prize: "₹30,000", max: 100 },
   ];
 
   const events = await Promise.all(
@@ -147,7 +147,7 @@ async function main() {
           name: e.name,
           description: e.desc,
           verticalId: e.vertical.id,
-          eventHeadId: e.head ? e.head.id : null,
+          eventHeadId: e.head.id,
           dateStart: new Date("2026-11-20T09:00:00"),
           dateEnd: new Date("2026-11-21T18:00:00"),
           venue: e.venue,
