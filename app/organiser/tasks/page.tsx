@@ -59,7 +59,7 @@ const PRIORITY_OPTIONS = [
   { value: "LOW", label: "Low" },
 ];
 
-export default function TasksPage() {
+function TasksPageContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -612,5 +612,17 @@ export default function TasksPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function TasksPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingAnimation message="Loading tasks dashboard..." />
+      </div>
+    }>
+      <TasksPageContent />
+    </React.Suspense>
   );
 }

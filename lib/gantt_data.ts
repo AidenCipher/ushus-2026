@@ -2052,7 +2052,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11",
-    "name": "FEST DAYS — Nov 6 & 7, 2026",
+    "name": "FEST DAYS — Nov 6 & 7, 2027",
     "owner": "All Teams",
     "type": "milestone",
     "startOffset": null,
@@ -2064,7 +2064,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11.T1",
-    "name": "Day 1 — Nov 6, 2026",
+    "name": "Day 1 — Nov 6, 2027",
     "owner": "All Teams",
     "type": "task",
     "parentId": "M11",
@@ -2181,7 +2181,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11.T2",
-    "name": "Day 2 — Nov 7, 2026",
+    "name": "Day 2 — Nov 7, 2027",
     "owner": "All Teams",
     "type": "task",
     "parentId": "M11",
