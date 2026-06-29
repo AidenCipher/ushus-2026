@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Search, Plus, Loader2, Calendar, MapPin, DollarSign, Users } from "lucide-react";
+import { Trophy, Search, Plus, Loader2, Calendar, MapPin, DollarSign, Users, Pencil, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,10 +31,11 @@ interface EventData {
 
 export default function AdminEventsPage() {
   const [events, setEvents] = React.useState<EventData[]>([]);
+  const [verticals, setVerticals] = React.useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [searchQuery, setSearchQuery] = React.useState("");
   
-  // Dialog Form State
+  // Create Dialog Form State
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [formName, setFormName] = React.useState("");
   const [formDesc, setFormDesc] = React.useState("");
@@ -43,6 +44,18 @@ export default function AdminEventsPage() {
   const [formPrize, setFormPrize] = React.useState("");
   const [formMaxPart, setFormMaxPart] = React.useState("");
   const [formStatus, setFormStatus] = React.useState("UPCOMING");
+
+  // Edit Dialog Form State
+  const [isEditOpen, setIsEditOpen] = React.useState(false);
+  const [editingEventId, setEditingEventId] = React.useState<string | null>(null);
+  const [editName, setEditName] = React.useState("");
+  const [editDesc, setEditDesc] = React.useState("");
+  const [editVerticalId, setEditVerticalId] = React.useState("");
+  const [editVenue, setEditVenue] = React.useState("");
+  const [editPrize, setEditPrize] = React.useState("");
+  const [editMaxPart, setEditMaxPart] = React.useState("");
+  const [editStatus, setEditStatus] = React.useState("UPCOMING");
+
   const [submitting, setSubmitting] = React.useState(false);
 
   const fetchEvents = React.useCallback(async () => {
@@ -60,20 +73,22 @@ export default function AdminEventsPage() {
     }
   }, []);
 
+  const fetchVerticals = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/v1/verticals");
+      if (res.ok) {
+        const json = await res.json();
+        setVerticals(json.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to load verticals:", err);
+    }
+  }, []);
+
   React.useEffect(() => {
     fetchEvents();
-  }, [fetchEvents]);
-
-  // Extract unique verticals from events response for the dropdown select list
-  const verticalsList = React.useMemo(() => {
-    const map = new Map<string, { id: string; name: string }>();
-    events.forEach(e => {
-      if (e.verticalId && e.vertical) {
-        map.set(e.verticalId, { id: e.verticalId, name: e.vertical.name });
-      }
-    });
-    return Array.from(map.values());
-  }, [events]);
+    fetchVerticals();
+  }, [fetchEvents, fetchVerticals]);
 
   const handleCreateEvent = async () => {
     if (!formName || !formVerticalId) return;
@@ -113,6 +128,70 @@ export default function AdminEventsPage() {
     }
   };
 
+  const handleStartEdit = (event: EventData) => {
+    setEditingEventId(event.id);
+    setEditName(event.name);
+    setEditDesc(event.description || "");
+    setEditVerticalId(event.verticalId);
+    setEditVenue(event.venue || "");
+    setEditPrize(event.prizePool || "");
+    setEditMaxPart(event.maxParticipants ? String(event.maxParticipants) : "");
+    setEditStatus(event.status);
+    setIsEditOpen(true);
+  };
+
+  const handleUpdateEvent = async () => {
+    if (!editingEventId || !editName || !editVerticalId) return;
+    setSubmitting(true);
+    try {
+      const payload = {
+        name: editName,
+        description: editDesc || null,
+        verticalId: editVerticalId,
+        venue: editVenue || null,
+        prizePool: editPrize || null,
+        maxParticipants: editMaxPart ? parseInt(editMaxPart) : null,
+        status: editStatus,
+      };
+
+      const res = await fetch(`/api/v1/events/${editingEventId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        setIsEditOpen(false);
+        setEditingEventId(null);
+        await fetchEvents();
+      }
+    } catch (err) {
+      console.error("Failed to update event:", err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string, name: string) => {
+    if (!confirm(`Are you sure you want to permanently delete event "${name}"? This will delete all associated registrations, tasks, and calendar events.`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/v1/events/${eventId}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        await fetchEvents();
+      } else {
+        alert(json.error || "Failed to delete event.");
+      }
+    } catch (err) {
+      console.error("Failed to delete event:", err);
+      alert("Error deleting event.");
+    }
+  };
+
   const filteredEvents = searchQuery
     ? events.filter(e => 
         e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -136,7 +215,7 @@ export default function AdminEventsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-rose-50">Event Matrix</h1>
-          <p className="text-muted-foreground mt-1">Configure competition parameters, rulebooks, and head organisers.</p>
+          <p className="text-muted-foreground mt-1">Configure competition parameters, rules, allocations, and edit event properties.</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -144,16 +223,16 @@ export default function AdminEventsPage() {
               <Plus className="w-4 h-4 mr-2" /> Add Event
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass border-white/15">
+          <DialogContent className="glass border-white/15 max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Event</DialogTitle>
-              <DialogDescription>Add a competition vertical to the USHUS 2026 Management Fest.</DialogDescription>
+              <DialogDescription>Add a competition vertical to the USHUS Management Fest.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 pt-2">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground">Event Name</label>
                 <Input 
-                  placeholder="e.g. Best Manager / Ad Blitz" 
+                  placeholder="e.g. Best Manager" 
                   className="bg-background/50 border-white/10"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
@@ -176,7 +255,7 @@ export default function AdminEventsPage() {
                       <SelectValue placeholder="Select Vertical" />
                     </SelectTrigger>
                     <SelectContent>
-                      {verticalsList.map(v => (
+                      {verticals.map(v => (
                         <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
                       ))}
                     </SelectContent>
@@ -240,6 +319,98 @@ export default function AdminEventsPage() {
         </Dialog>
       </div>
 
+      {/* Edit Event Dialog */}
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="glass border-white/15 max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Event configuration</DialogTitle>
+            <DialogDescription>Modify status, allocations, prize pool, and venue properties.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-muted-foreground">Event Name</label>
+              <Input 
+                className="bg-background/50 border-white/10"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-muted-foreground">Description (optional)</label>
+              <Textarea 
+                className="bg-background/50 border-white/10 min-h-[80px]"
+                value={editDesc}
+                onChange={(e) => setEditDesc(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-muted-foreground">Vertical</label>
+                <Select value={editVerticalId} onValueChange={setEditVerticalId}>
+                  <SelectTrigger className="bg-background/50 border-white/10">
+                    <SelectValue placeholder="Select Vertical" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {verticals.map(v => (
+                      <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-muted-foreground">Status</label>
+                <Select value={editStatus} onValueChange={setEditStatus}>
+                  <SelectTrigger className="bg-background/50 border-white/10">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="UPCOMING">Upcoming</SelectItem>
+                    <SelectItem value="REGISTRATION_OPEN">Registration Open</SelectItem>
+                    <SelectItem value="REGISTRATION_CLOSED">Registration Closed</SelectItem>
+                    <SelectItem value="ONGOING">Ongoing</SelectItem>
+                    <SelectItem value="COMPLETED">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1 col-span-1">
+                <label className="text-xs font-semibold text-muted-foreground">Max Slots</label>
+                <Input 
+                  type="number"
+                  className="bg-background/50 border-white/10"
+                  value={editMaxPart}
+                  onChange={(e) => setEditMaxPart(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1 col-span-1">
+                <label className="text-xs font-semibold text-muted-foreground">Prize Pool</label>
+                <Input 
+                  className="bg-background/50 border-white/10"
+                  value={editPrize}
+                  onChange={(e) => setEditPrize(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1 col-span-1">
+                <label className="text-xs font-semibold text-muted-foreground">Venue</label>
+                <Input 
+                  className="bg-background/50 border-white/10"
+                  value={editVenue}
+                  onChange={(e) => setEditVenue(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end pt-2">
+              <Button variant="outline" className="border-white/10" onClick={() => setIsEditOpen(false)}>Cancel</Button>
+              <Button className="bg-rose-600 hover:bg-rose-700 text-white" onClick={handleUpdateEvent} disabled={submitting || !editName || !editVerticalId}>
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Search Input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -276,9 +447,23 @@ export default function AdminEventsPage() {
                   <Badge variant="outline" style={{ borderColor: event.vertical.colorCode, color: event.vertical.colorCode }}>
                     {event.vertical.name}
                   </Badge>
-                  <Badge variant="outline" className={getStatusColor(event.status)}>
-                    {event.status.replace(/_/g, " ")}
-                  </Badge>
+                  <div className="flex items-center gap-1">
+                    <Badge variant="outline" className={getStatusColor(event.status)}>
+                      {event.status.replace(/_/g, " ")}
+                    </Badge>
+                    <button
+                      onClick={() => handleStartEdit(event)}
+                      className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteEvent(event.id, event.name)}
+                      className="p-1 rounded hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
                 <CardTitle className="text-base font-bold mt-2 leading-tight">{event.name}</CardTitle>
                 {event.description && (

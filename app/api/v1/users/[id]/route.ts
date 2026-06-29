@@ -128,3 +128,57 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const userRole = session.user.role as Role;
+
+    if (!hasPermission(userRole, "MANAGE_USERS")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    if (session.user.id === id) {
+      return NextResponse.json({ success: false, error: "Cannot delete your own admin account" }, { status: 400 });
+    }
+
+    await prisma.$transaction([
+      prisma.teamMember.deleteMany({ where: { userId: id } }),
+      prisma.registration.deleteMany({ where: { userId: id } }),
+      prisma.taskUpdate.deleteMany({ where: { updatedById: id } }),
+      prisma.taskUpdate.deleteMany({ where: { approvedById: id } }),
+      prisma.notification.deleteMany({ where: { recipientId: id } }),
+      prisma.notification.deleteMany({ where: { senderId: id } }),
+      prisma.calendarEvent.deleteMany({ where: { createdById: id } }),
+      prisma.announcement.deleteMany({ where: { createdById: id } }),
+      prisma.auditLog.deleteMany({ where: { userId: id } }),
+      prisma.task.updateMany({
+        where: { assignedToId: id },
+        data: { assignedToId: null }
+      }),
+      prisma.task.updateMany({
+        where: { assignedById: id },
+        data: { assignedById: null }
+      }),
+      prisma.user.delete({
+        where: { id }
+      })
+    ]);
+
+    return NextResponse.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error("[User DELETE] Error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to delete user" },
+      { status: 500 }
+    );
+  }
+}

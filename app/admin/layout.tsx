@@ -22,7 +22,7 @@ const sidebarLinks = [
   { name: "System Config", href: "/admin", icon: Settings },
   { name: "User Management", href: "/admin/users", icon: Users },
   { name: "Event Matrix", href: "/admin/events", icon: Trophy },
-  { name: "Gantt Timeline", href: "/organiser/gantt", icon: BarChart },
+  { name: "Gantt Timeline", href: "/admin/gantt", icon: BarChart },
   { name: "Security & Audit", href: "/admin/audit", icon: ShieldAlert },
 ];
 
@@ -125,13 +125,15 @@ export default function AdminLayout({
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
-              <p className="text-xs text-rose-500 mt-1 capitalize font-medium">{session?.user?.role?.toLowerCase()}</p>
-            </div>
-            <div className="w-9 h-9 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-500 font-bold shadow-[0_0_10px_rgba(244,63,94,0.3)]">
-              {session?.user?.name?.charAt(0) || "A"}
-            </div>
+            <Link href="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="hidden md:block text-right">
+                <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                <p className="text-xs text-rose-500 mt-1 capitalize font-medium">{session?.user?.role?.toLowerCase()}</p>
+              </div>
+              <div className="w-9 h-9 rounded-full bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-500 font-bold shadow-[0_0_10px_rgba(244,63,94,0.3)]">
+                {session?.user?.name?.charAt(0) || "A"}
+              </div>
+            </Link>
           </div>
         </header>
 

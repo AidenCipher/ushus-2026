@@ -91,3 +91,68 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userRole = session.user.role as Role;
+    if (!hasPermission(userRole, "MANAGE_EVENTS")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    const existing = await prisma.event.findUnique({
+      where: { id }
+    });
+    if (!existing) {
+      return NextResponse.json({ success: false, error: "Event not found" }, { status: 404 });
+    }
+
+    await prisma.$transaction([
+      prisma.teamMember.deleteMany({ where: { eventId: id } }),
+      prisma.registration.deleteMany({ where: { eventId: id } }),
+      prisma.taskUpdate.deleteMany({
+        where: {
+          task: { eventId: id }
+        }
+      }),
+      prisma.task.deleteMany({ where: { eventId: id } }),
+      prisma.calendarEvent.deleteMany({ where: { eventId: id } }),
+      prisma.notification.deleteMany({ where: { relatedEventId: id } }),
+      prisma.user.updateMany({
+        where: { eventId: id },
+        data: { eventId: null }
+      }),
+      prisma.event.delete({
+        where: { id }
+      })
+    ]);
+
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: "DELETE_EVENT",
+        entityType: "EVENT",
+        entityId: id,
+        metadata: { name: existing.name },
+        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
+      },
+    });
+
+    return NextResponse.json({ success: true, message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("[Event DELETE] Error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to delete event" },
+      { status: 500 }
+    );
+  }
+}

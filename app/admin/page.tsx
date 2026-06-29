@@ -8,10 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, AlertTriangle, Trash2, ShieldAlert, Loader2, CheckCircle2 } from "lucide-react";
 import * as React from "react";
+import LoadingAnimation from "@/components/shared/LoadingAnimation";
 
 export default function AdminSettingsPage() {
+  const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const [phase, setPhase] = React.useState("pre-event");
   const [maxReg, setMaxReg] = React.useState("50");
@@ -21,37 +24,113 @@ export default function AdminSettingsPage() {
   const [purging, setPurging] = React.useState(false);
   const [resetting, setResetting] = React.useState(false);
 
-  const handleSave = () => {
+  // Load configuration on mount
+  React.useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const res = await fetch("/api/v1/admin/config");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            setPhase(json.data.phase);
+            setMaxReg(String(json.data.maxReg));
+            setAllowReg(json.data.allowReg);
+            setMaintenance(json.data.maintenance);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchConfig();
+  }, []);
+
+  const handleSave = async () => {
     setSaving(true);
     setSuccess(false);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await fetch("/api/v1/admin/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phase,
+          maxReg: Number(maxReg),
+          allowReg,
+          maintenance,
+        }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError(json.error || "Failed to save configuration");
+      }
+    } catch (err) {
+      setError("Failed to save settings");
+    } finally {
       setSaving(false);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
-    }, 1200);
+    }
   };
 
-  const handlePurge = () => {
+  const handlePurge = async () => {
     if (!confirm("Are you sure you want to permanently purge audit logs older than 30 days?")) return;
     setPurging(true);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await fetch("/api/v1/admin/config/purge", {
+        method: "POST",
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        alert(json.message || "Audit logs purged successfully!");
+      } else {
+        alert(json.error || "Failed to purge logs");
+      }
+    } catch (err) {
+      alert("Error purging transaction logs");
+    } finally {
       setPurging(false);
-      alert("Audit logs purged successfully!");
-    }, 1500);
+    }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     const confirmation = prompt("WARNING: This will delete all users, teams, registrations, and tasks. Type 'FACTORY RESET' to confirm:");
     if (confirmation !== "FACTORY RESET") {
       alert("Reset cancelled.");
       return;
     }
     setResetting(true);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const res = await fetch("/api/v1/admin/config/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmation }),
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        alert(json.message || "Database factory reset completed successfully. Re-seeding required.");
+      } else {
+        alert(json.error || "Failed to reset database");
+      }
+    } catch (err) {
+      alert("Error performing database reset");
+    } finally {
       setResetting(false);
-      alert("Database factory reset completed successfully. Re-seeding required.");
-    }, 3000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <LoadingAnimation message="Loading global settings..." />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl pb-10">
@@ -67,11 +146,18 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
+      {error && (
+        <div className="bg-danger/15 border border-danger/30 text-danger p-3 rounded-lg flex items-center gap-2 text-sm">
+          <ShieldAlert className="w-4 h-4" />
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* Global Event Settings */}
       <Card className="glass border-white/10">
         <CardHeader>
           <CardTitle>Event Lifecycle</CardTitle>
-          <CardDescription>Control the current state of the USHUS 2026 platform.</CardDescription>
+          <CardDescription>Control the current state of the USHUS platform.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid sm:grid-cols-2 gap-6">

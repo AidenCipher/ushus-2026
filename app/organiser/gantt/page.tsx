@@ -3,20 +3,21 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { useSession } from "next-auth/react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { motion, AnimatePresence } from "framer-motion";
+import LoadingAnimation from "@/components/shared/LoadingAnimation";
 import { addDays, format, differenceInDays, subDays, parseISO } from "date-fns";
 import { 
   Plus, Filter, Settings, Loader2, ChevronDown, ChevronRight, User, Circle,
   Calendar as CalendarIcon, ZoomIn, ZoomOut, Check, ArrowRight, RefreshCw,
-  Edit2, Trash2, CheckSquare, Clock, AlertTriangle, Play
+  Edit2, Trash2, CheckSquare, Clock, AlertTriangle, FileSpreadsheet, Lock
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useSession } from "next-auth/react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
-import LoadingAnimation from "@/components/shared/LoadingAnimation";
+import { GANTT_MASTER_DATA, RawGanttRow } from "@/lib/gantt_data";
 
 interface GanttTaskData {
   id: string;
@@ -31,6 +32,13 @@ interface GanttTaskData {
   dependsOnIds: string[];
   verticalId: string | null;
   eventId: string | null;
+  
+  // Custom metadata fields for dependency display
+  duration?: number;
+  predecessorId?: string | null;
+  lag?: number;
+  isFixedAnchor?: boolean;
+  startOffset?: number | null;
 }
 
 interface GanttNode {
@@ -44,20 +52,128 @@ interface GanttNode {
   taskData?: GanttTaskData;
 }
 
+// Memory calculation engine for predecessors
+function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGanttRow[] {
+  const computed: Record<string, RawGanttRow & { startDate?: Date; endDate?: Date }> = {};
+  rows.forEach(r => {
+    computed[r.id] = { ...r };
+  });
+
+  const resolving = new Set<string>();
+  const resolved = new Set<string>();
+
+  function resolveRow(id: string) {
+    if (resolved.has(id)) return;
+    if (resolving.has(id)) {
+      console.warn("Circular dependency detected at task ID:", id);
+      return;
+    }
+    resolving.add(id);
+
+    const row = computed[id];
+    if (!row) return;
+
+    if (row.type === "sub-task") {
+      let start: Date;
+      if (row.isFixedAnchor && row.startOffset !== null && row.startOffset !== undefined) {
+        start = addDays(festStartDate, row.startOffset);
+      } else if (row.predecessorId) {
+        resolveRow(row.predecessorId);
+        const pred = computed[row.predecessorId];
+        if (pred && pred.endDate) {
+          start = addDays(pred.endDate, row.lag || 0);
+        } else {
+          start = festStartDate;
+        }
+      } else {
+        start = festStartDate;
+      }
+      
+      const duration = row.duration || 1;
+      const end = addDays(start, Math.max(1, duration) - 1);
+      row.startDate = start;
+      row.endDate = end;
+    }
+
+    resolving.delete(id);
+    resolved.add(id);
+  }
+
+  // Resolve sub-tasks first
+  rows.forEach(r => {
+    if (r.type === "sub-task") {
+      resolveRow(r.id);
+    }
+  });
+
+  // Roll up Task ranges (Parents of Sub-tasks)
+  rows.forEach(r => {
+    if (r.type === "task") {
+      const children = Object.values(computed).filter(c => c.parentId === r.id);
+      if (children.length > 0) {
+        const starts = children.map(c => c.startDate).filter(Boolean) as Date[];
+        const ends = children.map(c => c.endDate).filter(Boolean) as Date[];
+        if (starts.length > 0 && ends.length > 0) {
+          r.startDate = new Date(Math.min(...starts.map(d => d.getTime())));
+          r.endDate = new Date(Math.max(...ends.map(d => d.getTime())));
+        } else {
+          r.startDate = festStartDate;
+          r.endDate = festStartDate;
+        }
+      } else {
+        r.startDate = festStartDate;
+        r.endDate = festStartDate;
+      }
+    }
+  });
+
+  // Roll up Milestone ranges (Parents of Tasks)
+  rows.forEach(r => {
+    if (r.type === "milestone") {
+      const children = Object.values(computed).filter(c => c.parentId === rowIdToParentId(c.id));
+      if (children.length > 0) {
+        const starts = children.map(c => c.startDate).filter(Boolean) as Date[];
+        const ends = children.map(c => c.endDate).filter(Boolean) as Date[];
+        if (starts.length > 0 && ends.length > 0) {
+          r.startDate = new Date(Math.min(...starts.map(d => d.getTime())));
+          r.endDate = new Date(Math.max(...ends.map(d => d.getTime())));
+        } else {
+          r.startDate = festStartDate;
+          r.endDate = festStartDate;
+        }
+      } else {
+        r.startDate = festStartDate;
+        r.endDate = festStartDate;
+      }
+    }
+  });
+
+  return Object.values(computed) as any;
+}
+
+function rowIdToParentId(id: string): string | null {
+  const parts = id.split(".");
+  if (parts.length <= 1) return null;
+  return parts.slice(0, -1).join(".");
+}
+
 export default function GanttPage() {
   const { data: session } = useSession();
   const userRole = session?.user?.role || "VOLUNTEER";
   const isOrganiserOrAdmin = ["ORGANISER", "ADMIN"].includes(userRole);
 
   const [loading, setLoading] = React.useState(true);
-  const [treeData, setTreeData] = React.useState<GanttNode[]>([]);
-  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
-  
-  // View options & zoom levels
   const [zoomLevel, setZoomLevel] = React.useState<"day" | "week" | "month">("week");
-  const [viewFilter, setViewFilter] = React.useState<"all" | "vertical" | "event" | "my">("all");
-  const [statusFilter, setStatusFilter] = React.useState<string>("all");
-  const [priorityFilter, setPriorityFilter] = React.useState<string>("all");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [priorityFilter, setPriorityFilter] = React.useState("all");
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Master Fest Start Date configuration
+  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2027-11-06"));
+  const [ganttRows, setGanttRows] = React.useState<any[]>(GANTT_MASTER_DATA);
+
+  // Expanded nodes map
+  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
 
   // Inline editing task title state
   const [editingNodeId, setEditingNodeId] = React.useState<string | null>(null);
@@ -66,22 +182,12 @@ export default function GanttPage() {
   // Modal State for adding task
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [newTaskTitle, setNewTaskTitle] = React.useState("");
-  const [newTaskDesc, setNewTaskDesc] = React.useState("");
-  const [newTaskVertical, setNewTaskVertical] = React.useState("");
-  const [newTaskEvent, setNewTaskEvent] = React.useState("");
-  const [newTaskAssignee, setNewTaskAssignee] = React.useState("");
-  const [newTaskStart, setNewTaskStart] = React.useState("");
-  const [newTaskEnd, setNewTaskEnd] = React.useState("");
-  const [newTaskPriority, setNewTaskPriority] = React.useState("MEDIUM");
-  const [newTaskStatus, setNewTaskStatus] = React.useState("NOT_STARTED");
-  const [newTaskDependsOn, setNewTaskDependsOn] = React.useState<string[]>([]);
-  const [modalError, setModalError] = React.useState<string | null>(null);
-
-  // Metadata catalogs
-  const [verticals, setVerticals] = React.useState<any[]>([]);
-  const [events, setEvents] = React.useState<any[]>([]);
-  const [users, setUsers] = React.useState<any[]>([]);
-  const [submittingTask, setSubmittingTask] = React.useState(false);
+  const [newTaskParent, setNewTaskParent] = React.useState("");
+  const [newTaskDuration, setNewTaskDuration] = React.useState("3");
+  const [newTaskPredecessor, setNewTaskPredecessor] = React.useState("");
+  const [newTaskLag, setNewTaskLag] = React.useState("1");
+  const [newTaskIsAnchor, setNewTaskIsAnchor] = React.useState(false);
+  const [newTaskOffset, setNewTaskOffset] = React.useState("-10");
 
   // Task details side sheet/overlay state
   const [selectedTask, setSelectedTask] = React.useState<GanttTaskData | null>(null);
@@ -99,90 +205,87 @@ export default function GanttPage() {
   const initialDragStartRef = React.useRef<Date | null>(null);
   const initialDragEndRef = React.useRef<Date | null>(null);
 
-  // Timeline start/end dates
-  const timelineStart = React.useMemo(() => subDays(new Date(), 15), []);
-  
-  const dayWidth = React.useMemo(() => {
-    switch (zoomLevel) {
-      case "day": return 90;
-      case "week": return 55;
-      case "month": return 18;
-    }
-  }, [zoomLevel]);
-
-  const totalTimelineDays = React.useMemo(() => {
-    switch (zoomLevel) {
-      case "day": return 45;
-      case "week": return 75;
-      case "month": return 120;
-    }
-  }, [zoomLevel]);
-
-  const timelineDays = React.useMemo(() => {
-    return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
-  }, [timelineStart, totalTimelineDays]);
-
   const leftScrollRef = React.useRef<HTMLDivElement>(null);
   const rightScrollRef = React.useRef<HTMLDivElement>(null);
 
-  // Fetch catalogs for task creator
-  const fetchCatalogs = React.useCallback(async () => {
-    try {
-      const [vRes, eRes, uRes] = await Promise.all([
-        fetch("/api/v1/verticals"),
-        fetch("/api/v1/events"),
-        fetch("/api/v1/users")
-      ]);
-      if (vRes.ok) {
-        const json = await vRes.json();
-        setVerticals(json.data || []);
-      }
-      if (eRes.ok) {
-        const json = await eRes.json();
-        setEvents(json.data || []);
-      }
-      if (uRes.ok) {
-        const json = await uRes.json();
-        setUsers(json.data || []);
-      }
-    } catch (err) {
-      console.error("Failed to load catalogs:", err);
-    }
-  }, []);
+  // Dynamic WBS data calculations
+  const computedRows = React.useMemo(() => {
+    return calculateGanttDates(ganttRows, festStartDate);
+  }, [ganttRows, festStartDate]);
 
-  const fetchGanttData = React.useCallback(async () => {
-    try {
-      const res = await fetch(`/api/v1/gantt?view=${viewFilter}`);
-      if (res.ok) {
-        const json = await res.json();
-        setTreeData(json.data || []);
-        
-        // Expand everything initially
-        const defaultExpanded = new Set<string>();
-        function getExpandedIds(nodes: GanttNode[]) {
-          nodes.forEach(n => {
-            if (n.type !== "task") {
-              defaultExpanded.add(n.id);
-            }
-            if (n.children) getExpandedIds(n.children);
-          });
-        }
-        getExpandedIds(json.data || []);
-        setExpandedIds(defaultExpanded);
-      }
-    } catch (err) {
-      console.error("Failed to load Gantt data:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [viewFilter]);
+  // Build the nested tree nodes
+  const treeData = React.useMemo(() => {
+    const milestones = computedRows.filter(r => r.type === "milestone");
+    const tasks = computedRows.filter(r => r.type === "task");
+    const subTasks = computedRows.filter(r => r.type === "sub-task");
+
+    const milestoneColorCodes: Record<string, string> = {
+      M1: "#E63946", M2: "#2A9D8F", M3: "#E9C46A", M4: "#264653",
+      M5: "#F4A261", M6: "#8338EC", M7: "#3A86FF", M8: "#FF006E",
+      M9: "#38B000", M10: "#7209B7", M11: "#FF70A6", M12: "#FF9F1C"
+    };
+
+    return milestones.map(m => {
+      const mTasks = tasks.filter(t => t.parentId === m.id);
+      
+      return {
+        id: m.id,
+        type: "vertical",
+        title: `${m.id}. ${m.name}`,
+        colorCode: milestoneColorCodes[m.id] || "#3b82f6",
+        depth: 0,
+        parentId: null,
+        children: mTasks.map(t => {
+          const tSubs = subTasks.filter(s => s.parentId === t.id);
+          
+          return {
+            id: t.id,
+            type: "event",
+            title: `${t.id} ${t.name}`,
+            depth: 1,
+            parentId: m.id,
+            children: tSubs.map(s => ({
+              id: s.id,
+              type: "task",
+              title: `${s.id} ${s.name}`,
+              depth: 2,
+              parentId: t.id,
+              children: [],
+              taskData: {
+                id: s.id,
+                assignedTo: s.owner ? { id: s.owner, name: s.owner } : null,
+                assignedToId: s.owner || null,
+                status: s.status || "NOT_STARTED",
+                priority: s.priority || "MEDIUM",
+                startDate: s.startDate ? s.startDate.toISOString() : null,
+                endDate: s.endDate ? s.endDate.toISOString() : null,
+                dueDate: s.endDate ? s.endDate.toISOString() : null,
+                progressPercent: s.progressPercent || 0,
+                dependsOnIds: s.predecessorId ? [s.predecessorId] : [],
+                duration: s.duration,
+                predecessorId: s.predecessorId,
+                lag: s.lag,
+                isFixedAnchor: s.isFixedAnchor,
+                startOffset: s.startOffset
+              }
+            }))
+          };
+        })
+      };
+    });
+  }, [computedRows]);
 
   React.useEffect(() => {
-    fetchGanttData();
-    fetchCatalogs();
-  }, [fetchGanttData, fetchCatalogs]);
+    // Simulate loading on mount
+    const timer = setTimeout(() => {
+      setLoading(false);
+      // Expand M1 and M2 by default
+      setExpandedIds(new Set(["M1", "M1.T1", "M1.T2", "M1.T3", "M2", "M2.T1", "M2.T2"]));
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // Synchronize WBS panel and timeline scrolling
+  // Sync scroll
   const handleLeftScroll = () => {
     if (leftScrollRef.current && rightScrollRef.current) {
       rightScrollRef.current.scrollTop = leftScrollRef.current.scrollTop;
@@ -204,19 +307,23 @@ export default function GanttPage() {
     });
   };
 
-  // Flatten tree structure based on expand/collapse and filters
-  const flattenTree = (nodes: GanttNode[]): GanttNode[] => {
-    const list: GanttNode[] = [];
+  const flattenTree = (nodes: any[]): any[] => {
+    const list: any[] = [];
     
-    function recurse(n: GanttNode) {
-      // Apply filters to tasks
+    function recurse(n: any) {
+      const matchesSearch = !searchQuery || n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.id.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      let satisfiesFilters = true;
       if (n.type === "task" && n.taskData) {
         const matchesStatus = statusFilter === "all" || n.taskData.status === statusFilter;
         const matchesPriority = priorityFilter === "all" || n.taskData.priority === priorityFilter;
-        if (!matchesStatus || !matchesPriority) return;
+        satisfiesFilters = matchesStatus && matchesPriority;
       }
 
-      list.push(n);
+      if (satisfiesFilters) {
+        list.push(n);
+      }
+
       const isExpanded = expandedIds.has(n.id);
       if (isExpanded && n.children && n.children.length > 0) {
         n.children.forEach(recurse);
@@ -233,12 +340,26 @@ export default function GanttPage() {
   const taskIdToIndexMap = React.useMemo(() => {
     const map = new Map<string, number>();
     flatNodes.forEach((node, index) => {
-      if (node.type === "task") {
-        map.set(node.id, index);
-      }
+      map.set(node.id, index);
     });
     return map;
   }, [flatNodes]);
+
+  // Constants for timeline
+  const timelineStart = React.useMemo(() => addDays(festStartDate, -160), [festStartDate]);
+  const totalTimelineDays = 210; // Spans from -160 to +50 days
+
+  const dayWidth = React.useMemo(() => {
+    switch (zoomLevel) {
+      case "day": return 60;
+      case "week": return 25;
+      case "month": return 8;
+    }
+  }, [zoomLevel]);
+
+  const timelineDays = React.useMemo(() => {
+    return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
+  }, [timelineStart]);
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -251,71 +372,24 @@ export default function GanttPage() {
   }
 
   // Inline edit task title
-  const handleDoubleClickTitle = (node: GanttNode) => {
-    if (!isOrganiserOrAdmin || node.type !== "task") return;
+  const handleDoubleClickTitle = (node: any) => {
+    if (!isOrganiserOrAdmin) return;
     setEditingNodeId(node.id);
-    let title = node.title;
-    if (title.startsWith("[Schedule] ")) {
-      title = title.substring("[Schedule] ".length);
-    }
-    setEditingTitleValue(title);
+    setEditingTitleValue(node.title.replace(/^[\w\.\d]+\s+/, ""));
   };
 
-  const handleSaveTitleInline = async (nodeId: string) => {
+  const handleSaveTitleInline = (nodeId: string) => {
     if (!editingTitleValue.trim()) return;
-    try {
-      const isCE = nodeId.startsWith("ce_");
-      const url = isCE
-        ? `/api/v1/calendar/${nodeId.substring(3)}`
-        : `/api/v1/tasks/${nodeId}`;
-      const payload = isCE
-        ? { title: editingTitleValue }
-        : { title: editingTitleValue };
-
-      const res = await fetch(url, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+    setGanttRows(prev => {
+      return prev.map(r => {
+        if (r.id === nodeId) {
+          return { ...r, name: editingTitleValue };
+        }
+        return r;
       });
-      if (res.ok) {
-        setEditingNodeId(null);
-        await fetchGanttData();
-      }
-    } catch (err) {
-      console.error("Inline save task title failed:", err);
-    }
+    });
+    setEditingNodeId(null);
   };
-
-  // Rescheduling handler called after drag/resize finishes
-  async function handleTaskDateChange(taskId: string, start: Date, end: Date) {
-    try {
-      const isCE = taskId.startsWith("ce_");
-      const url = isCE
-        ? `/api/v1/calendar/${taskId.substring(3)}`
-        : `/api/v1/tasks/${taskId}`;
-      const payload = isCE
-        ? {
-            startDatetime: start.toISOString(),
-            endDatetime: end.toISOString(),
-          }
-        : {
-            startDate: start.toISOString(),
-            endDate: end.toISOString(),
-            dueDate: end.toISOString(),
-          };
-
-      const res = await fetch(url, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        await fetchGanttData();
-      }
-    } catch (err) {
-      console.error("Rescheduling task failed:", err);
-    }
-  }
 
   // WBS Split Pane Resizer Handlers
   const handleMouseDownResizer = (e: React.MouseEvent) => {
@@ -366,22 +440,24 @@ export default function GanttPage() {
     setDragOffsetDays(deltaDays);
   };
 
-  const handleMouseUpBar = async () => {
-    if (draggedTaskId && initialDragStartRef.current && initialDragEndRef.current) {
-      let finalStart = initialDragStartRef.current;
-      let finalEnd = initialDragEndRef.current;
-
-      if (dragType === "move") {
-        finalStart = addDays(initialDragStartRef.current, dragOffsetDays);
-        finalEnd = addDays(initialDragEndRef.current, dragOffsetDays);
-      } else if (dragType === "resize-right") {
-        finalEnd = addDays(initialDragEndRef.current, dragOffsetDays);
-        if (finalEnd < finalStart) {
-          finalEnd = finalStart;
-        }
-      }
-
-      await handleTaskDateChange(draggedTaskId, finalStart, finalEnd);
+  const handleMouseUpBar = () => {
+    if (draggedTaskId) {
+      setGanttRows(prev => {
+        return prev.map(r => {
+          if (r.id !== draggedTaskId) return r;
+          
+          if (dragType === "resize-right") {
+            const newDur = Math.max(1, (r.duration || 1) + dragOffsetDays);
+            return { ...r, duration: newDur };
+          } else {
+            if (r.isFixedAnchor) {
+              return { ...r, startOffset: (r.startOffset || 0) + dragOffsetDays };
+            } else {
+              return { ...r, lag: (r.lag || 0) + dragOffsetDays };
+            }
+          }
+        });
+      });
     }
 
     setDraggedTaskId(null);
@@ -391,58 +467,48 @@ export default function GanttPage() {
     document.removeEventListener("mouseup", handleMouseUpBar);
   };
 
-  // Form task creation logic
-  const handleCreateTask = async (e: React.FormEvent) => {
+  // Add Task to Tree State
+  const handleCreateTask = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTaskTitle.trim() || !newTaskVertical || !newTaskEvent) {
-      setModalError("Title, Vertical, and Event are required");
-      return;
-    }
-    setSubmittingTask(true);
-    setModalError(null);
+    if (!newTaskTitle.trim() || !newTaskParent) return;
 
-    try {
-      const payload = {
-        title: newTaskTitle,
-        description: newTaskDesc || undefined,
-        verticalId: newTaskVertical,
-        eventId: newTaskEvent,
-        assignedToId: newTaskAssignee || undefined,
-        startDate: newTaskStart ? new Date(newTaskStart).toISOString() : undefined,
-        endDate: newTaskEnd ? new Date(newTaskEnd).toISOString() : undefined,
-        dueDate: newTaskEnd ? new Date(newTaskEnd).toISOString() : undefined,
-        priority: newTaskPriority,
-        status: newTaskStatus,
-        dependsOnIds: newTaskDependsOn,
-      };
+    const isAnchor = newTaskIsAnchor;
+    const offset = parseInt(newTaskOffset) || 0;
+    const duration = parseInt(newTaskDuration) || 1;
+    const lag = parseInt(newTaskLag) || 0;
+    
+    // Find next sub-task ID
+    const parentNode = computedRows.find(r => r.id === newTaskParent);
+    if (!parentNode) return;
 
-      const res = await fetch("/api/v1/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const existingSiblings = computedRows.filter(r => r.parentId === parentNode.id);
+    const subIdx = existingSiblings.length + 1;
+    const newId = `${parentNode.id}.S${subIdx}`;
 
-      const json = await res.json();
+    const newRow: RawGanttRow = {
+      id: newId,
+      name: newTaskTitle,
+      owner: "Custom",
+      type: "sub-task",
+      parentId: parentNode.id,
+      duration,
+      isFixedAnchor: isAnchor,
+      startOffset: isAnchor ? offset : null,
+      predecessorId: !isAnchor && newTaskPredecessor ? newTaskPredecessor : null,
+      lag: !isAnchor && newTaskPredecessor ? lag : null,
+    };
 
-      if (res.ok) {
-        setIsAddModalOpen(false);
-        setNewTaskTitle("");
-        setNewTaskDesc("");
-        setNewTaskVertical("");
-        setNewTaskEvent("");
-        setNewTaskAssignee("");
-        setNewTaskStart("");
-        setNewTaskEnd("");
-        setNewTaskDependsOn([]);
-        await fetchGanttData();
-      } else {
-        setModalError(json.error || "Failed to create task");
-      }
-    } catch (err) {
-      setModalError("Network connection error");
-    } finally {
-      setSubmittingTask(false);
-    }
+    setGanttRows(prev => [...prev, newRow]);
+
+    // Reset Form
+    setNewTaskTitle("");
+    setNewTaskParent("");
+    setNewTaskDuration("3");
+    setNewTaskPredecessor("");
+    setNewTaskLag("1");
+    setNewTaskIsAnchor(false);
+    setNewTaskOffset("-10");
+    setIsAddModalOpen(false);
   };
 
   const handleOpenDetails = (task: GanttTaskData) => {
@@ -452,15 +518,11 @@ export default function GanttPage() {
 
   const handleExpandAll = () => {
     const allExpanded = new Set<string>();
-    function getExpandedIds(nodes: GanttNode[]) {
-      nodes.forEach(n => {
-        if (n.type !== "task") {
-          allExpanded.add(n.id);
-        }
-        if (n.children) getExpandedIds(n.children);
-      });
-    }
-    getExpandedIds(treeData);
+    computedRows.forEach(r => {
+      if (r.type !== "sub-task") {
+        allExpanded.add(r.id);
+      }
+    });
     setExpandedIds(allExpanded);
   };
 
@@ -468,17 +530,139 @@ export default function GanttPage() {
     setExpandedIds(new Set());
   };
 
+  // HTML Styled Excel Document Exporter
+  const handleExportExcel = () => {
+    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style>
+  table { border-collapse: collapse; margin-top: 10px; }
+  th { background-color: #0b1329; color: #ffffff; font-weight: bold; border: 1px solid #cbd5e1; padding: 8px; font-family: 'Segoe UI', sans-serif; font-size: 10.5pt; }
+  td { border: 1px solid #cbd5e1; padding: 6px; font-family: 'Segoe UI', sans-serif; font-size: 9.5pt; }
+  tr.milestone { background-color: #0b1329; color: #ffffff; font-weight: bold; }
+  tr.task { background-color: #e0f2fe; color: #0369a1; font-weight: bold; }
+  tr.subtask { background-color: #ffffff; color: #334155; }
+  td.indent { text-indent: 15px; font-weight: bold; }
+  td.double-indent { text-indent: 30px; }
+  .title-cell { font-weight: bold; color: #b91c1c; font-size: 14pt; }
+</style>
+</head>
+<body>
+  <table>
+    <tr>
+      <td colspan="4" class="title-cell">USHUS Fest Master Gantt Chart</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td style="font-weight: bold;">Fest Start Date:</td>
+      <td style="vnd.ms-excel.numberformat:yyyy-mm-dd; font-weight: bold; color: #b91c1c;">${format(festStartDate, "yyyy-MM-dd")}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr><td colspan="7"></td></tr>
+    <tr>
+      <th>WBS ID</th>
+      <th>Task Name</th>
+      <th>Owner / Vertical</th>
+      <th>Duration (Days)</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Dependency Details</th>
+    </tr>`;
+
+    // Row mappings to write formulas in Excel
+    const startRowIdx = 5;
+    const rowMap: Record<string, number> = {};
+    computedRows.forEach((r, i) => {
+      rowMap[r.id] = startRowIdx + i;
+    });
+
+    computedRows.forEach((row, idx) => {
+      const excelRow = startRowIdx + idx;
+      let rowClass = "subtask";
+      let indentClass = "double-indent";
+      if (row.type === "milestone") {
+        rowClass = "milestone";
+        indentClass = "";
+      } else if (row.type === "task") {
+        rowClass = "task";
+        indentClass = "indent";
+      }
+
+      let startFormula = "";
+      let endFormula = "";
+
+      if (row.type === "milestone" || row.type === "task") {
+        const children = computedRows.filter(c => c.parentId === row.id || (row.type === "milestone" && rowIdToParentId(c.id) === row.id));
+        if (children.length > 0) {
+          const firstChildIdx = rowMap[children[0].id];
+          const lastChildIdx = rowMap[children[children.length - 1].id];
+          startFormula = `=MIN(E${firstChildIdx}:E${lastChildIdx})`;
+          endFormula = `=MAX(F${firstChildIdx}:F${lastChildIdx})`;
+        } else {
+          startFormula = "=$B$2";
+          endFormula = "=$B$2";
+        }
+      } else {
+        if (row.isFixedAnchor && row.startOffset !== null && row.startOffset !== undefined) {
+          const sign = row.startOffset >= 0 ? "+" : "";
+          startFormula = `=$B$2${sign}${row.startOffset}`;
+        } else if (row.predecessorId && rowMap[row.predecessorId]) {
+          const predExcelRow = rowMap[row.predecessorId];
+          startFormula = `=F${predExcelRow}+${row.lag || 0}`;
+        } else {
+          startFormula = "=$B$2";
+        }
+        endFormula = `=E${excelRow}+D${excelRow}-1`;
+      }
+
+      html += `
+    <tr class="${rowClass}">
+      <td>${row.id}</td>
+      <td class="${indentClass}">${row.name}</td>
+      <td>${row.owner || ""}</td>
+      <td x:num>${row.type === "sub-task" ? row.duration : ""}</td>
+      <td style="vnd.ms-excel.numberformat:yyyy-mm-dd">${startFormula}</td>
+      <td style="vnd.ms-excel.numberformat:yyyy-mm-dd">${endFormula}</td>
+      <td>${
+        row.isFixedAnchor 
+          ? `Fest${row.startOffset !== undefined && row.startOffset !== null && row.startOffset >= 0 ? "+" : ""}${row.startOffset ?? ""}d (fixed anchor)`
+          : row.predecessorId 
+            ? `after ${row.predecessorId}${row.lag && row.lag >= 0 ? "+" : ""}${row.lag}d` 
+            : ""
+      }</td>
+    </tr>`;
+    });
+
+    html += `
+  </table>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `USHUS_Gantt_Master_${format(festStartDate, "yyyy-MM-dd")}.xls`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const rowHeight = 44;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingAnimation message="Syncing timeline node map..." />
+        <LoadingAnimation message="Recalculating WBS constraints..." />
       </div>
     );
   }
-
-  // Helper values for drawing SVG lines
-  const rowHeight = 44;
-  const headerHeight = 48;
 
   return (
     <div className="space-y-6 flex flex-col h-[calc(100vh-8.5rem)] relative">
@@ -487,18 +671,51 @@ export default function GanttPage() {
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-indigo-50">Constellation Timeline</h1>
-          <p className="text-muted-foreground mt-1">Hierarchical project work breakdown structure & live interactive Gantt chart.</p>
+          <p className="text-muted-foreground mt-1">Hierarchical project WBS mapping & dynamic Excel-linked Gantt chart.</p>
         </div>
         
         {/* Upper Controls Bar */}
         <div className="flex flex-wrap items-center gap-3">
+          
+          {/* Master Fest Date setting */}
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5">
+            <label className="text-xs font-semibold text-indigo-300">Fest Start Date:</label>
+            <Input
+              type="date"
+              className="w-36 bg-[#0b0f19] border-white/10 text-xs h-7 py-0"
+              value={format(festStartDate, "yyyy-MM-dd")}
+              onChange={(e) => {
+                const newDate = parseISO(e.target.value);
+                if (!isNaN(newDate.getTime())) {
+                  setFestStartDate(newDate);
+                }
+              }}
+            />
+          </div>
+
+          {/* Legend */}
+          <div className="hidden lg:flex items-center gap-4 bg-white/5 border border-white/10 rounded-lg p-2 text-[10px]">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded bg-[#0b1329] border border-slate-700" />
+              <span className="text-muted-foreground font-semibold">Milestone</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded bg-[#0284c7]/20 border border-[#0284c7]/50" />
+              <span className="text-muted-foreground font-semibold">Task</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded bg-white border border-slate-300" />
+              <span className="text-muted-foreground font-semibold">Sub-task</span>
+            </span>
+          </div>
+
           {/* Zoom Selector */}
           <div className="flex bg-white/5 border border-white/10 rounded-lg p-1">
             {(["day", "week", "month"] as const).map(zoom => (
               <button
                 key={zoom}
                 onClick={() => setZoomLevel(zoom)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
+                className={`px-3 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                   zoomLevel === zoom 
                     ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" 
                     : "text-muted-foreground hover:text-foreground"
@@ -509,10 +726,10 @@ export default function GanttPage() {
             ))}
           </div>
 
-          {/* Scope Filters */}
+          {/* Filters */}
           <div className="flex gap-2">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-36 bg-[#0b0f19]/80 border-white/10 text-xs">
+              <SelectTrigger className="w-32 bg-[#0b0f19]/80 border-white/10 text-xs">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent className="bg-[#0b0f19] border-white/10">
@@ -525,8 +742,8 @@ export default function GanttPage() {
               </SelectContent>
             </Select>
 
-            <Select value={priorityFilter} onValueChange={priorityFilter => setPriorityFilter(priorityFilter)}>
-              <SelectTrigger className="w-36 bg-[#0b0f19]/80 border-white/10 text-xs">
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-32 bg-[#0b0f19]/80 border-white/10 text-xs">
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent className="bg-[#0b0f19] border-white/10">
@@ -535,17 +752,6 @@ export default function GanttPage() {
                 <SelectItem value="MEDIUM">Medium</SelectItem>
                 <SelectItem value="HIGH">High</SelectItem>
                 <SelectItem value="CRITICAL">Critical</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={viewFilter} onValueChange={v => setViewFilter(v as any)}>
-              <SelectTrigger className="w-36 bg-[#0b0f19]/80 border-white/10 text-xs">
-                <SelectValue placeholder="Scope" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#0b0f19] border-white/10">
-                <SelectItem value="all">All Verticals</SelectItem>
-                <SelectItem value="vertical">My Vertical</SelectItem>
-                <SelectItem value="event">My Event</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -557,6 +763,13 @@ export default function GanttPage() {
             <Button variant="outline" className="border-white/10 text-xs h-9 px-3" onClick={handleCollapseAll}>
               Collapse All
             </Button>
+
+            <Button 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)] text-xs h-9" 
+              onClick={handleExportExcel}
+            >
+              <FileSpreadsheet className="w-4 h-4 mr-1.5" /> Export Excel
+            </Button>
             
             {isOrganiserOrAdmin && (
               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -567,130 +780,113 @@ export default function GanttPage() {
                 </DialogTrigger>
                 <DialogContent className="glass border-white/15 max-w-lg bg-[#0b0f19]/95 text-foreground backdrop-blur-md">
                   <DialogHeader>
-                    <DialogTitle>Create Schedule Task</DialogTitle>
-                    <DialogDescription>Add a deliverables node to the Work Breakdown Structure.</DialogDescription>
+                    <DialogTitle>Create Schedule Sub-task</DialogTitle>
+                    <DialogDescription>Add a deliverables node to a parent Task WBS branch.</DialogDescription>
                   </DialogHeader>
-                  
-                  {modalError && (
-                    <div className="p-3 text-xs bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-md">
-                      {modalError}
-                    </div>
-                  )}
 
                   <form onSubmit={handleCreateTask} className="space-y-4 pt-2">
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-muted-foreground">Task Title</label>
+                      <label className="text-xs font-semibold text-muted-foreground">Sub-task Title</label>
                       <Input
                         required
                         value={newTaskTitle}
                         onChange={e => setNewTaskTitle(e.target.value)}
-                        placeholder="e.g. Draft Event Guidelines"
+                        placeholder="e.g. Onboard cafeteria vendors"
                         className="bg-background/50 border-white/10"
                       />
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs font-semibold text-muted-foreground">Description</label>
-                      <Textarea
-                        value={newTaskDesc}
-                        onChange={e => setNewTaskDesc(e.target.value)}
-                        placeholder="Provide details about expectations, deliverables, and outputs..."
-                        className="bg-background/50 border-white/10 h-16 min-h-[60px]"
-                      />
+                      <label className="text-xs font-semibold text-muted-foreground">Parent Task</label>
+                      <Select value={newTaskParent} onValueChange={setNewTaskParent}>
+                        <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
+                          <SelectValue placeholder="Select Parent Task" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-[#0b0f19] border-white/10">
+                          {computedRows
+                            .filter(r => r.type === "task")
+                            .map(t => (
+                              <SelectItem key={t.id} value={t.id}>{t.id} {t.name}</SelectItem>
+                            ))
+                          }
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Vertical</label>
-                        <Select value={newTaskVertical} onValueChange={setNewTaskVertical}>
-                          <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
-                            <SelectValue placeholder="Select vertical" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#0b0f19] border-white/10">
-                            {verticals.map(v => (
-                              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Event Category</label>
-                        <Select value={newTaskEvent} onValueChange={setNewTaskEvent}>
-                          <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
-                            <SelectValue placeholder="Select event" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#0b0f19] border-white/10">
-                            {events
-                              .filter(e => !newTaskVertical || e.verticalId === newTaskVertical)
-                              .map(e => (
-                                <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
-                              ))
-                            }
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Assignee</label>
-                        <Select value={newTaskAssignee} onValueChange={setNewTaskAssignee}>
-                          <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
-                            <SelectValue placeholder="Select team member" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#0b0f19] border-white/10">
-                            <SelectItem value="unassigned">Unassigned</SelectItem>
-                            {users.map(u => (
-                              <SelectItem key={u.id} value={u.id}>{u.name} ({u.role.toLowerCase()})</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Priority</label>
-                        <Select value={newTaskPriority} onValueChange={setNewTaskPriority}>
-                          <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
-                            <SelectValue placeholder="Select priority" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#0b0f19] border-white/10">
-                            <SelectItem value="LOW">Low</SelectItem>
-                            <SelectItem value="MEDIUM">Medium</SelectItem>
-                            <SelectItem value="HIGH">High</SelectItem>
-                            <SelectItem value="CRITICAL">Critical</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Start Date</label>
+                        <label className="text-xs font-semibold text-muted-foreground">Duration (Days)</label>
                         <Input
-                          type="date"
-                          value={newTaskStart}
-                          onChange={e => setNewTaskStart(e.target.value)}
+                          type="number"
+                          value={newTaskDuration}
+                          onChange={e => setNewTaskDuration(e.target.value)}
                           className="bg-background/50 border-white/10 text-xs"
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">End/Due Date</label>
+                        <label className="text-xs font-semibold text-muted-foreground">SLA Rule Anchor type</label>
+                        <Select 
+                          value={newTaskIsAnchor ? "anchor" : "predecessor"} 
+                          onValueChange={(val) => setNewTaskIsAnchor(val === "anchor")}
+                        >
+                          <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[#0b0f19] border-white/10">
+                            <SelectItem value="predecessor">Linked to Predecessor</SelectItem>
+                            <SelectItem value="anchor">Fixed Fest Date Offset</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {newTaskIsAnchor ? (
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-muted-foreground">Fixed Anchor Offset (Days relative to Fest Start)</label>
                         <Input
-                          type="date"
-                          value={newTaskEnd}
-                          onChange={e => setNewTaskEnd(e.target.value)}
+                          type="number"
+                          placeholder="e.g. -150 for 150 days before"
+                          value={newTaskOffset}
+                          onChange={e => setNewTaskOffset(e.target.value)}
                           className="bg-background/50 border-white/10 text-xs"
                         />
                       </div>
-                    </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-muted-foreground">Predecessor Sub-task</label>
+                          <Select value={newTaskPredecessor} onValueChange={setNewTaskPredecessor}>
+                            <SelectTrigger className="bg-[#0b0f19]/80 border-white/10 text-xs">
+                              <SelectValue placeholder="Select Predecessor" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#0b0f19] border-white/10">
+                              {computedRows
+                                .filter(r => r.type === "sub-task")
+                                .map(s => (
+                                  <SelectItem key={s.id} value={s.id}>{s.id} {s.name}</SelectItem>
+                                ))
+                              }
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-muted-foreground">Lag Days</label>
+                          <Input
+                            type="number"
+                            value={newTaskLag}
+                            onChange={e => setNewTaskLag(e.target.value)}
+                            className="bg-background/50 border-white/10 text-xs"
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex justify-end gap-3 pt-3 border-t border-white/5">
                       <Button type="button" variant="ghost" onClick={() => setIsAddModalOpen(false)}>
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={submittingTask} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-                        {submittingTask ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null} Create Task
+                      <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+                        Create Deliverable
                       </Button>
                     </div>
                   </form>
@@ -720,75 +916,68 @@ export default function GanttPage() {
               className="flex-1 overflow-y-auto overflow-x-hidden divide-y divide-white/5 custom-scrollbar"
             >
               {flatNodes.map((node) => {
-                const hasChildren = node.children && node.children.length > 0;
-                const isExpanded = expandedIds.has(node.id);
-                const isTask = node.type === "task";
+                const isMilestone = node.type === "vertical";
+                const isTask = node.type === "event";
+                const isSubtask = node.type === "task";
 
                 return (
                   <div 
-                    key={node.id} 
-                    className="h-[44px] flex items-center px-3 hover:bg-white/5 transition-colors group"
-                    style={{ paddingLeft: `${node.depth * 14 + 10}px` }}
+                    key={node.id}
+                    className={`h-[44px] flex items-center justify-between px-3 border-b border-white/5 transition-colors group relative ${
+                      isMilestone ? "bg-[#0b1329]/60 text-white font-bold" :
+                      isTask ? "bg-[#0284c7]/5 text-[#38bdf8] font-semibold" :
+                      "bg-transparent text-slate-300 hover:bg-white/[0.02]"
+                    }`}
                   >
-                    {!isTask && (
-                      <button 
-                        onClick={() => toggleExpand(node.id)}
-                        className="p-1 hover:bg-white/10 rounded mr-1.5 shrink-0 transition-colors"
-                      >
-                        {isExpanded ? (
-                          <ChevronDown className="w-3.5 h-3.5 text-indigo-400" />
-                        ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
-                        )}
-                      </button>
-                    )}
-                    
-                    {/* Color dot for visual hierarchy */}
-                    {node.type === "vertical" && (
-                      <Circle className="w-2.5 h-2.5 mr-2 shrink-0 fill-indigo-400 stroke-indigo-400" />
-                    )}
-                    {node.type === "event" && (
-                      <Circle className="w-2 h-2 mr-2 shrink-0 fill-amber-500 stroke-amber-500" />
-                    )}
-                    
-                    <div className="flex-1 min-w-0 pr-2">
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                      {/* Expand / Collapse arrows */}
+                      {!isSubtask ? (
+                        <button 
+                          onClick={() => toggleExpand(node.id)}
+                          className="p-0.5 rounded hover:bg-white/10 text-muted-foreground focus:outline-none"
+                        >
+                          {expandedIds.has(node.id) ? (
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          ) : (
+                            <ChevronRight className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      ) : (
+                        <div className="w-4.5" />
+                      )}
+
+                      {/* Tree hierarchy indentation prefix */}
+                      <span className="text-[11px] font-mono shrink-0 select-none opacity-60">
+                        {node.id}
+                      </span>
+
+                      {/* Editable Task Title */}
                       {editingNodeId === node.id ? (
-                        <input
+                        <Input
                           autoFocus
+                          className="h-6 py-0 px-1 text-[11px] bg-background/80 border-indigo-500/50 text-foreground w-full"
                           value={editingTitleValue}
                           onChange={e => setEditingTitleValue(e.target.value)}
                           onBlur={() => handleSaveTitleInline(node.id)}
-                          onKeyDown={e => {
-                            if (e.key === "Enter") handleSaveTitleInline(node.id);
-                            if (e.key === "Escape") setEditingNodeId(null);
-                          }}
-                          className="bg-[#05070c] text-sm font-medium border border-indigo-500/50 rounded px-1.5 py-0.5 w-full text-foreground focus:outline-none"
+                          onKeyDown={e => e.key === "Enter" && handleSaveTitleInline(node.id)}
                         />
                       ) : (
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span 
-                            onDoubleClick={() => handleDoubleClickTitle(node)}
-                            className={`text-sm truncate select-none ${
-                              node.type === "vertical" ? "font-bold text-indigo-100" :
-                              node.type === "event" ? "font-semibold text-amber-50" :
-                              "font-normal text-muted-foreground group-hover:text-foreground"
-                            }`}
-                            title={isOrganiserOrAdmin && isTask ? "Double-click to inline edit title" : undefined}
-                          >
-                            {node.title}
-                          </span>
-                          
-                          {/* Indicator that title is inline editable */}
-                          {isOrganiserOrAdmin && isTask && (
-                            <Edit2 className="w-3 h-3 text-muted-foreground/0 group-hover:text-indigo-400 transition-colors shrink-0" />
-                          )}
-                        </div>
+                        <span 
+                          onDoubleClick={() => handleDoubleClickTitle(node)}
+                          className={`text-[11px] truncate cursor-text ${
+                            isSubtask ? "hover:underline" : ""
+                          }`}
+                          title={isSubtask ? "Double click to edit title" : ""}
+                        >
+                          {node.title.replace(/^[\w\.\d]+\s+/, "")}
+                        </span>
                       )}
                     </div>
 
-                    {isTask && node.taskData?.assignedTo && (
-                      <Badge variant="outline" className="text-[10px] scale-90 border-white/20 text-muted-foreground shrink-0 max-w-[80px] truncate">
-                        {node.taskData.assignedTo.name.split(" ")[0]}
+                    {/* Owner / vertical indicator */}
+                    {isSubtask && node.taskData?.assignedTo && (
+                      <Badge variant="outline" className="text-[8px] py-0 border-white/10 text-muted-foreground bg-white/5">
+                        {node.taskData.assignedTo.name}
                       </Badge>
                     )}
                   </div>
@@ -848,43 +1037,21 @@ export default function GanttPage() {
                 style={{ width: timelineDays.length * dayWidth }}
               >
                 
-                {/* ─── Today vertical marker line ─── */}
-                {(() => {
-                  const todayIndex = timelineDays.findIndex(
-                    day => format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
-                  );
-                  if (todayIndex === -1) return null;
-                  
-                  return (
-                    <div 
-                      className="absolute top-0 bottom-0 border-l-2 border-dashed border-rose-500/70 z-20 pointer-events-none"
-                      style={{ left: todayIndex * dayWidth }}
-                    >
-                      <span className="absolute top-1 left-2 px-1.5 py-0.5 rounded bg-rose-500 text-white text-[8px] font-bold uppercase tracking-wider">
-                        Today
-                      </span>
-                    </div>
-                  );
-                })()}
-
-                {/* ─── SVG Dependency Line Connector Layer ─── */}
-                <svg 
-                  className="absolute inset-0 pointer-events-none z-10 w-full h-full"
-                >
+                {/* SVG Dependency Line Connector Layer */}
+                <svg className="absolute inset-0 pointer-events-none z-10 w-full h-full">
                   <defs>
                     <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="rgba(129, 140, 248, 0.45)" />
+                      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="rgba(129, 140, 248, 0.4)" />
                     </marker>
                   </defs>
 
                   {flatNodes.map((node, nodeIdx) => {
                     if (node.type !== "task" || !node.taskData?.dependsOnIds) return null;
                     
-                    return node.taskData.dependsOnIds.map((predId) => {
+                    return node.taskData.dependsOnIds.map((predId: string) => {
                       const predIdx = taskIdToIndexMap.get(predId);
                       if (predIdx === undefined) return null;
 
-                      // Predecessor position calculations
                       const predNode = flatNodes[predIdx];
                       if (!predNode.taskData?.startDate || !predNode.taskData?.endDate) return null;
                       const pStart = parseISO(predNode.taskData.startDate);
@@ -895,16 +1062,13 @@ export default function GanttPage() {
                       const x1 = pLeft + pWidth;
                       const y1 = predIdx * rowHeight + rowHeight / 2;
 
-                      // Successor (current node) position calculations
                       if (!node.taskData?.startDate || !node.taskData?.endDate) return null;
                       const sStart = parseISO(node.taskData.startDate);
-                      const sEnd = parseISO(node.taskData.endDate);
                       const sLeft = differenceInDays(sStart, timelineStart) * dayWidth;
 
                       const x2 = sLeft;
                       const y2 = nodeIdx * rowHeight + rowHeight / 2;
 
-                      // Draw cubic bezier curve from right side of predecessor to left side of successor
                       return (
                         <path
                           key={`${node.id}-${predId}`}
@@ -921,19 +1085,16 @@ export default function GanttPage() {
 
                 {/* Timeline Grid Rows */}
                 {flatNodes.map((node, idx) => {
-                  const isTask = node.type === "task";
-                  const taskStart = isTask && node.taskData?.startDate ? parseISO(node.taskData.startDate) : null;
-                  const taskEnd = isTask && node.taskData?.endDate ? parseISO(node.taskData.endDate) : null;
+                  const taskStart = node.taskData?.startDate ? parseISO(node.taskData.startDate) : null;
+                  const taskEnd = node.taskData?.endDate ? parseISO(node.taskData.endDate) : null;
 
-                  // Aligned position calculation
                   let left = 0;
                   let width = 0;
 
-                  if (isTask && taskStart && taskEnd) {
+                  if (taskStart && taskEnd) {
                     let calcStart = taskStart;
                     let calcEnd = taskEnd;
 
-                    // If currently dragging, update render positions dynamically
                     if (draggedTaskId === node.id && node.taskData) {
                       if (dragType === "move") {
                         calcStart = addDays(taskStart, dragOffsetDays);
@@ -955,44 +1116,56 @@ export default function GanttPage() {
                       key={node.id}
                       className={`h-[44px] relative flex items-center ${
                         node.type === "vertical" ? "bg-indigo-500/5" :
-                        node.type === "event" ? "bg-amber-500/5" : ""
+                        node.type === "event" ? "bg-[#0284c7]/5" : ""
                       }`}
                     >
-                      {/* Day Grid Lines vertical lines helper background */}
+                      {/* Day Grid Lines */}
                       <div className="absolute inset-0 flex pointer-events-none z-0">
                         {timelineDays.map((_, i) => (
                           <div key={i} className="h-full border-r border-white/5 shrink-0" style={{ width: dayWidth }} />
                         ))}
                       </div>
 
-                      {/* Timeline Task Bar */}
-                      {isTask && width > 0 && node.taskData && (
+                      {/* Timeline Task/Summary Bar */}
+                      {width > 0 && node.taskData && (
                         <div 
                           onClick={() => handleOpenDetails(node.taskData!)}
                           className={`absolute h-7 rounded-md border flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.4)] px-2.5 group cursor-pointer transition-all ${
-                            getStatusColor(node.taskData.status)
+                            node.type === "vertical" 
+                              ? "bg-slate-900 border-slate-700 text-white font-bold" 
+                              : node.type === "event" 
+                                ? "bg-sky-500/20 border-sky-500/40 text-sky-300 font-bold" 
+                                : getStatusColor(node.taskData.status)
                           }`}
                           style={{ left, width }}
-                          onMouseDown={(e) => handleMouseDownBar(e, node.taskData!, "move")}
-                          title="Click to view details. Drag to reschedule."
+                          onMouseDown={(e) => {
+                            if (node.type === "task") {
+                              handleMouseDownBar(e, node.taskData!, "move");
+                            }
+                          }}
+                          title={node.type === "task" ? "Click to view details. Drag to reschedule." : "Rollup summary bar."}
                         >
                           {/* Completion Progress Bar Overlay */}
-                          <div 
-                            className="absolute top-0 bottom-0 left-0 bg-black/25 pointer-events-none rounded-l-md"
-                            style={{ width: `${node.taskData.progressPercent}%` }}
-                          />
+                          {node.type === "task" && (
+                            <div 
+                              className="absolute top-0 bottom-0 left-0 bg-black/25 pointer-events-none rounded-l-md"
+                              style={{ width: `${node.taskData.progressPercent}%` }}
+                            />
+                          )}
 
                           <div className="relative z-10 flex items-center gap-1.5 min-w-0 select-none">
-                            <span className="text-[10px] text-white font-bold truncate">
+                            <span className={`text-[10px] truncate ${node.type === "vertical" ? "text-slate-200" : node.type === "event" ? "text-sky-200" : "text-white"}`}>
                               {node.title}
                             </span>
-                            <span className="text-[9px] text-white/70 font-semibold">
-                              ({node.taskData.progressPercent}%)
-                            </span>
+                            {node.type === "task" && (
+                              <span className="text-[9px] text-white/70 font-semibold">
+                                ({node.taskData.progressPercent}%)
+                              </span>
+                            )}
                           </div>
 
                           {/* Resize handle (right edge of bar) */}
-                          {isOrganiserOrAdmin && (
+                          {isOrganiserOrAdmin && node.type === "task" && (
                             <div 
                               className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize opacity-0 group-hover:opacity-100 bg-white/30 hover:bg-white/50 rounded-r-md transition-opacity"
                               onMouseDown={(e) => handleMouseDownBar(e, node.taskData!, "resize-right")}
@@ -1054,47 +1227,35 @@ export default function GanttPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Timeline</label>
-                  <p className="text-sm text-slate-200 mt-1">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Timeline Period</label>
+                  <p className="text-sm mt-1 text-foreground">
                     {selectedTask.startDate ? format(parseISO(selectedTask.startDate), "MMM dd, yyyy") : "TBD"} — {selectedTask.endDate ? format(parseISO(selectedTask.endDate), "MMM dd, yyyy") : "TBD"}
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assignee</label>
-                  <div className="mt-1.5 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-indigo-400">
-                      {selectedTask.assignedTo?.name?.charAt(0) || "?"}
-                    </div>
-                    <span className="text-sm text-slate-200 font-medium">
-                      {selectedTask.assignedTo?.name || "Unassigned"}
-                    </span>
-                  </div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Duration</label>
+                  <p className="text-sm mt-1 text-foreground font-mono">{selectedTask.duration} Days</p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Completion</label>
-                  <div className="mt-1.5 flex items-center gap-3">
-                    <div className="flex-1 h-2 rounded bg-white/5 overflow-hidden">
-                      <div className="h-full bg-indigo-500" style={{ width: `${selectedTask.progressPercent}%` }} />
-                    </div>
-                    <span className="text-xs font-mono">{selectedTask.progressPercent}%</span>
-                  </div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Predecessor Dependency</label>
+                  <p className="text-sm mt-1 text-foreground">
+                    {selectedTask.isFixedAnchor 
+                      ? "Locked to master Fest start date"
+                      : selectedTask.predecessorId 
+                        ? `Starts after ${selectedTask.predecessorId} (+ ${selectedTask.lag} days lag)`
+                        : "None"
+                    }
+                  </p>
                 </div>
-              </div>
 
-              <div className="pt-4 border-t border-white/10 flex justify-between">
-                <Button 
-                  variant="outline" 
-                  className="w-full border-white/10"
-                  onClick={() => {
-                    setIsTaskDetailsOpen(false);
-                    // Navigate to full details page
-                    window.location.href = `/organiser/tasks/${selectedTask.id}`;
-                  }}
-                >
-                  Edit Task Details
-                </Button>
+                {selectedTask.assignedTo && (
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Vertical / Owner</label>
+                    <p className="text-sm mt-1 text-foreground">{selectedTask.assignedTo.name}</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </>
