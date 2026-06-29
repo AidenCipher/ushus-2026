@@ -44,19 +44,19 @@ export interface FAQ {
 }
 
 export const FEST_CONTENT = {
-  festName: "USHUS 2026",
+  festName: "USHUS 2027",
   theme: "Constellation",
   tagline: "Illuminate your potential",
-  dates: "November 20-21, 2026",
+  dates: "November 6-7, 2027",
   venue: "Christ University, Bangalore Central Campus",
   googleFormUrl: process.env.NEXT_PUBLIC_GOOGLE_FORM_URL || "",
-  registrationDeadline: "November 10, 2026",
+  registrationDeadline: "October 27, 2027",
 
   about: {
     description:
-      "USHUS is the flagship annual MBA Management Fest of Christ University's School of Business and Management Studies, Bangalore Central Campus. Born from the Sanskrit word meaning 'dawn', USHUS represents the beginning of new ideas, fresh perspectives, and transformative leadership. For over a decade, USHUS has been the premier inter-collegiate platform where the brightest management minds converge to compete, collaborate, and create impact across marketing, finance, HR, operations, and entrepreneurship.",
+      "USHUS is the flagship annual MBA Management Fest of Christ University's School of Business and Management Studies, Bangalore Central Campus. Born from the Sanskrit word meaning 'dawn', USHUS represents the beginning of new ideas, fresh perspectives, and transformative leadership. For over a decade, USHUS has been the premier inter-collegiate platform where the brightest management minds converge to compete, collaborate, and create impact across core management disciplines.",
     themeDescription:
-      "The 2026 theme — Constellation — celebrates the power of individual brilliance coming together to form something greater. Just as stars form patterns that have guided explorers for millennia, USHUS 2026 invites participants to discover their unique light while connecting with others to illuminate the path forward in the world of business and management.",
+      "The 2027 theme — Constellation — celebrates the power of individual brilliance coming together to form something greater. Just as stars form patterns that have guided explorers for millennia, USHUS 2027 invites participants to discover their unique light while connecting with others to illuminate the path forward in the world of business and management.",
     themeInspirations: [
       {
         vertical: "Marketing",
@@ -86,14 +86,14 @@ export const FEST_CONTENT = {
     ],
   },
 
-  stats2026: {
+  stats2027: {
     colleges: 50,
-    participants: 1500,
-    events: 10,
+    participants: 500,
+    events: 9,
     prizePool: "₹3,00,000",
   },
 
-  stats2025: {
+  stats2026: {
     colleges: 40,
     participants: 1200,
     events: 8,
@@ -101,172 +101,155 @@ export const FEST_CONTENT = {
   },
 
   verticals: [
-    { name: "Marketing", colorCode: "#E63946" },
-    { name: "Finance", colorCode: "#2A9D8F" },
-    { name: "HR", colorCode: "#E9C46A" },
-    { name: "Operations", colorCode: "#264653" },
-    { name: "Entrepreneurship", colorCode: "#F4A261" },
+    { name: "Core Team", colorCode: "#E63946" },
+    { name: "Registration Team", colorCode: "#2A9D8F" },
+    { name: "Sponsorship Team", colorCode: "#E9C46A" },
+    { name: "Marketing Team", colorCode: "#264653" },
+    { name: "Logistics & Operations Team", colorCode: "#F4A261" },
+    { name: "Creative Team", colorCode: "#8338EC" },
+    { name: "Hospitality Team", colorCode: "#3A86FF" },
   ],
 
   events: [
     {
-      name: "Marketing Maverick",
-      vertical: "Marketing",
-      description:
-        "A high-octane marketing strategy competition where teams develop and pitch comprehensive go-to-market strategies for real-world brands. Participants tackle live case studies, present to industry judges, and compete for the title of Marketing Maverick.",
-      dateRange: "November 20, 2026",
-      prizePool: "₹30,000",
-      teamSize: "3-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
+      name: "Best Manager",
+      vertical: "Core Team",
+      description: "The ultimate test of leadership, strategy, and business acumen. One individual will rise above the rest as the Best Manager.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹50,000",
+      teamSize: "1 member",
+      eligibility: "MBA / PGDM students",
     },
     {
-      name: "Ad Blitz",
-      vertical: "Marketing",
-      description:
-        "Create a full-scale advertising campaign from scratch — including brand positioning, creative direction, media planning, and a live 90-second ad pitch. Teams are judged on creativity, strategic thinking, and presentation impact.",
-      dateRange: "November 21, 2026",
-      prizePool: "₹25,000",
-      teamSize: "2-3 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Finvest League",
-      vertical: "Finance",
-      description:
-        "A simulated stock market trading competition combined with a financial analysis challenge. Participants manage virtual portfolios, analyse market trends, and present investment strategies to a panel of finance professionals.",
-      dateRange: "November 20, 2026",
-      prizePool: "₹35,000",
-      teamSize: "2-4 members",
-      eligibility: "MBA / PGDM students with finance specialisation preferred",
-    },
-    {
-      name: "Budget Battlefield",
-      vertical: "Finance",
-      description:
-        "Teams receive a complex corporate scenario with conflicting financial priorities and must prepare a comprehensive budget proposal under time pressure. Judged on analytical rigour, risk assessment, and presentation clarity.",
-      dateRange: "November 21, 2026",
-      prizePool: "₹25,000",
-      teamSize: "3-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Talent Forge",
-      vertical: "HR",
-      description:
-        "An immersive HR simulation where teams navigate complex people management scenarios — from hiring decisions to conflict resolution, performance management, and organisational restructuring. Tests empathy, leadership, and strategic HR thinking.",
-      dateRange: "November 20, 2026",
-      prizePool: "₹30,000",
-      teamSize: "3-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Boardroom Blitz",
-      vertical: "HR",
-      description:
-        "A rapid-fire HR case study competition where teams face real-world workplace dilemmas and must present solutions within strict time limits. Tests quick thinking, ethical reasoning, and communication skills.",
-      dateRange: "November 21, 2026",
-      prizePool: "₹20,000",
-      teamSize: "2-3 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Supply Chain Sprint",
-      vertical: "Operations",
-      description:
-        "A supply chain management simulation where teams optimise end-to-end logistics, inventory, and distribution networks. Combines analytical problem-solving with strategic decision-making under uncertainty.",
-      dateRange: "November 20, 2026",
-      prizePool: "₹30,000",
-      teamSize: "3-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Ops Matrix",
-      vertical: "Operations",
-      description:
-        "A process improvement challenge where teams identify bottlenecks, apply lean management principles, and redesign operational workflows for maximum efficiency. Judged by industry operations leaders.",
-      dateRange: "November 21, 2026",
-      prizePool: "₹25,000",
-      teamSize: "2-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
-    },
-    {
-      name: "Startup Showdown",
-      vertical: "Entrepreneurship",
-      description:
-        "The flagship entrepreneurship event — teams pitch original business ideas to a panel of investors, VCs, and successful entrepreneurs. From ideation to revenue model, teams must demonstrate viability, scalability, and market fit.",
-      dateRange: "November 20, 2026",
+      name: "Best Management Team",
+      vertical: "Core Team",
+      description: "A collaborative challenge testing team dynamics, synergy, and execution across all business disciplines.",
+      dateRange: "November 6-7, 2027",
       prizePool: "₹40,000",
-      teamSize: "2-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
+      teamSize: "4 members",
+      eligibility: "MBA / PGDM students",
     },
     {
-      name: "Venture Vault",
-      vertical: "Entrepreneurship",
-      description:
-        "A business model innovation challenge where teams receive a struggling company scenario and must pivot the business — redesigning the value proposition, revenue streams, and growth strategy to turn the venture around.",
-      dateRange: "November 21, 2026",
+      name: "B Quiz",
+      vertical: "Marketing Team",
+      description: "A battle of wits and intelligence covering business history, current affairs, and global industry trends.",
+      dateRange: "November 6, 2027",
+      prizePool: "₹20,000",
+      teamSize: "2 members",
+      eligibility: "Open to all B-schools",
+    },
+    {
+      name: "Finance",
+      vertical: "Sponsorship Team",
+      description: "Test financial engineering, asset valuations, and portfolio defense under extreme volatility.",
+      dateRange: "November 6-7, 2027",
       prizePool: "₹30,000",
-      teamSize: "3-4 members",
-      eligibility: "MBA / PGDM students from any recognised institution",
+      teamSize: "2-3 members",
+      eligibility: "MBA / PGDM students",
+    },
+    {
+      name: "Marketing",
+      vertical: "Marketing Team",
+      description: "Design and present disruptive brand campaigns, product launches, and growth hacking strategies.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹30,000",
+      teamSize: "3 members",
+      eligibility: "MBA / PGDM students",
+    },
+    {
+      name: "Operations",
+      vertical: "Logistics & Operations Team",
+      description: "Solve complex logistics bottlenecks, warehouse configurations, and lean process designs.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹30,000",
+      teamSize: "2-3 members",
+      eligibility: "MBA / PGDM students",
+    },
+    {
+      name: "HR",
+      vertical: "Hospitality Team",
+      description: "Simulated boardroom scenarios focusing on negotiations, talent optimization, and organizational behavioral policy.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹30,000",
+      teamSize: "2 members",
+      eligibility: "MBA / PGDM students",
+    },
+    {
+      name: "Business Analytics",
+      vertical: "Registration Team",
+      description: "Sift through big data to extract commercial insights, predict trends, and deliver predictive modeling.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹30,000",
+      teamSize: "2 members",
+      eligibility: "MBA / PGDM students",
+    },
+    {
+      name: "Sustainability",
+      vertical: "Creative Team",
+      description: "Develop corporate action plans resolving carbon footprinting, greenwashing, and circular economy compliance.",
+      dateRange: "November 6-7, 2027",
+      prizePool: "₹30,000",
+      teamSize: "2-3 members",
+      eligibility: "MBA / PGDM students",
     },
   ] satisfies EventInfo[],
 
   testimonials: [
     {
       quote:
-        "USHUS was a game-changer for my MBA journey. The Marketing Maverick event pushed me to think beyond textbooks and apply real-world strategy under pressure. The energy was electric!",
+        "USHUS was a game-changer for my MBA journey. The Best Manager event pushed me to think beyond textbooks and apply real-world strategy under pressure. The energy was electric!",
       name: "Rahul Menon",
       college: "IIM Kozhikode",
-      event: "Marketing Maverick",
+      event: "Best Manager",
     },
     {
       quote:
-        "The level of competition at USHUS is unmatched. Competing against the best MBA minds in the country in the Finvest League was an incredible learning experience.",
+        "The level of competition at USHUS is unmatched. Competing against the best MBA minds in the country in the Finance event was an incredible learning experience.",
       name: "Priya Sharma",
       college: "XLRI Jamshedpur",
-      event: "Finvest League",
+      event: "Finance",
     },
     {
       quote:
         "What sets USHUS apart is the quality of organisation. Everything from registration to the event execution was seamless. Christ University really knows how to host a management fest.",
       name: "Aditya Kulkarni",
       college: "Symbiosis Institute of Business Management",
-      event: "Startup Showdown",
+      event: "Best Management Team",
     },
     {
       quote:
-        "The Talent Forge event was the closest thing to a real HR scenario I have experienced in my MBA. The judges' feedback was invaluable and helped me secure my summer internship.",
+        "The HR event was the closest thing to a real boardroom scenario I have experienced in my MBA. The judges' feedback was invaluable and helped me secure my summer internship.",
       name: "Sneha Reddy",
       college: "NMIMS Mumbai",
-      event: "Talent Forge",
+      event: "HR",
     },
     {
       quote:
-        "USHUS 2025 was my first inter-collegiate fest and it exceeded all expectations. The networking opportunities alone made the trip from Delhi worth it.",
+        "USHUS was my first inter-collegiate fest and it exceeded all expectations. The networking opportunities alone made the trip from Delhi worth it.",
       name: "Karan Joshi",
       college: "MDI Gurgaon",
-      event: "Supply Chain Sprint",
+      event: "Operations",
     },
     {
       quote:
-        "The Startup Showdown panel included actual VCs who gave us real feedback on our pitch. We ended up refining our idea based on their input and are now working on it full-time.",
+        "The B Quiz panel included actual corporate quizzers who gave us real feedback. We ended up refining our business knowledge database significantly.",
       name: "Ananya Iyer",
       college: "ISB Hyderabad",
-      event: "Startup Showdown",
+      event: "B Quiz",
     },
     {
       quote:
-        "Bangalore + Christ University + USHUS = the perfect trifecta. The campus is beautiful, the events are world-class, and the hospitality is top-notch. Cannot wait for 2026!",
+        "Bangalore + Christ University + USHUS = the perfect trifecta. The campus is beautiful, the events are world-class, and the hospitality is top-notch. Cannot wait for 2027!",
       name: "Mohammed Faisal",
       college: "Great Lakes Institute of Management",
-      event: "Budget Battlefield",
+      event: "Sustainability",
     },
     {
       quote:
         "As a participant from a smaller B-school, I was nervous about competing against tier-1 students. But USHUS creates a level playing field where ideas win, not brand names.",
       name: "Deepika Nair",
       college: "Christ University (Alumna)",
-      event: "Ad Blitz",
+      event: "Marketing",
     },
   ] satisfies Testimonial[],
 
@@ -331,9 +314,9 @@ export const FEST_CONTENT = {
 
   faqs: [
     {
-      question: "Who can participate in USHUS 2026?",
+      question: "Who can participate in USHUS 2027?",
       answer:
-        "USHUS 2026 is open to MBA and PGDM students from any AICTE/UGC recognised institution across India. Both first-year and second-year students are eligible to participate.",
+        "USHUS 2027 is open to MBA and PGDM students from any AICTE/UGC recognised institution across India. Both first-year and second-year students are eligible to participate.",
     },
     {
       question: "What is the registration fee?",
@@ -353,12 +336,12 @@ export const FEST_CONTENT = {
     {
       question: "How will I know if my registration is confirmed?",
       answer:
-        "After submitting the Google Form, our team will review your registration within 48 hours. You will receive a confirmation email with your unique USHUS-2026 confirmation code and login credentials to the participant dashboard.",
+        "After submitting the Google Form, our team will review your registration within 48 hours. You will receive a confirmation email with your unique USHUS-2027 confirmation code and login credentials to the participant dashboard.",
     },
     {
       question: "Is accommodation provided?",
       answer:
-        "USHUS 2026 does not provide official accommodation. However, we have curated a list of recommended hotels and PGs near the campus at various price points. Check the Accommodation section in your participant dashboard after registration.",
+        "USHUS 2027 does not provide official accommodation. However, we have curated a list of recommended hotels and PGs near the campus at various price points. Check the Accommodation section in your participant dashboard after registration.",
     },
     {
       question: "What is the cancellation policy?",
@@ -368,7 +351,7 @@ export const FEST_CONTENT = {
     {
       question: "Can I participate as an individual?",
       answer:
-        "Most events require teams. However, some events allow smaller team sizes (2 members). Individual participation is not available for team events. Check the specific event requirements for details.",
+        "Most events require teams. However, some events allow smaller team sizes (2 members) or individual registration (e.g. Best Manager). Check the specific event requirements for details.",
     },
   ] satisfies FAQ[],
 

@@ -90,7 +90,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Dates</h4>
-                    <p className="text-sm text-muted-foreground">January 20-21, 2026</p>
+                    <p className="text-sm text-muted-foreground">November 6-7, 2027</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -108,7 +108,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-foreground">Attendees</h4>
-                    <p className="text-sm text-muted-foreground">2000+ Participants</p>
+                    <p className="text-sm text-muted-foreground">500+ Expected</p>
                   </div>
                 </div>
               </motion.div>
@@ -131,12 +131,14 @@ export default function LandingPage() {
                   USHUS is the flagship national-level management fest hosted by the School of Business and Management Studies at Christ University, Bangalore Central Campus.
                 </p>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  The theme for 2026, <strong>"Constellation"</strong>, represents the coming together of brilliant, diverse minds from across the nation to form something greater than themselves. Just as stars connect to form meaningful patterns, we challenge future leaders to connect ideas, strategies, and innovations.
+                  The theme for 2027, <strong>"Constellation"</strong>, represents the coming together of brilliant, diverse minds from across the nation to form something greater than themselves. Just as stars connect to form meaningful patterns, we challenge future leaders to connect ideas, strategies, and innovations.
                 </p>
-                <Button variant="outline" className="group">
-                  Read our story 
-                  <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link href="/story">
+                  <Button variant="outline" className="group">
+                    Read our story 
+                    <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </motion.div>
               
               <motion.div
@@ -167,34 +169,14 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {FEST_CONTENT.verticals.map((vert, i) => {
-                const descriptions: { [key: string]: string } = {
-                  Marketing: "Design disruptive campaigns, brand positions, and creative go-to-market strategies.",
-                  Finance: "Test your financial acumen, asset valuation, and portfolio management skills.",
-                  HR: "Solve complex human resource dilemmas, leadership challenges, and people operations.",
-                  Operations: "Optimize logistics, solve supply chain bottlenecks, and design workflows.",
-                  Entrepreneurship: "Pitch scalable startup ideas and business model innovations to venture capitalists."
-                };
-                const colorGradients: { [key: string]: string } = {
-                  Marketing: "from-red-500/20 to-transparent",
-                  Finance: "from-teal-500/20 to-transparent",
-                  HR: "from-yellow-500/20 to-transparent",
-                  Operations: "from-slate-500/20 to-transparent",
-                  Entrepreneurship: "from-orange-500/20 to-transparent"
-                };
-                const borderColors: { [key: string]: string } = {
-                  Marketing: "border-red-500/30 hover:border-red-500/50",
-                  Finance: "border-teal-500/30 hover:border-teal-500/50",
-                  HR: "border-yellow-500/30 hover:border-yellow-500/50",
-                  Operations: "border-slate-500/30 hover:border-slate-500/50",
-                  Entrepreneurship: "border-orange-500/30 hover:border-orange-500/50"
-                };
-
-                const slugName = vert.name === "HR" ? "human-resources" : vert.name.toLowerCase();
-                const desc = descriptions[vert.name] || "Compete in the flagship USHUS events.";
-                const gradient = colorGradients[vert.name] || "from-primary/20 to-transparent";
-                const border = borderColors[vert.name] || "border-primary/30";
-
+              {[
+                { name: "Marketing", slug: "marketing", desc: "Design disruptive campaigns, brand positions, and creative go-to-market strategies.", color: "from-red-500/20 to-transparent", border: "border-red-500/30 hover:border-red-500/50" },
+                { name: "Finance", slug: "finance", desc: "Test your financial acumen, asset valuation, and portfolio management skills.", color: "from-teal-500/20 to-transparent", border: "border-teal-500/30 hover:border-teal-500/50" },
+                { name: "HR", slug: "hr", desc: "Solve complex human resource dilemmas, leadership challenges, and people operations.", color: "from-yellow-500/20 to-transparent", border: "border-yellow-500/30 hover:border-yellow-500/50" },
+                { name: "Operations", slug: "operations", desc: "Optimize logistics, solve supply chain bottlenecks, and design workflows.", color: "from-slate-500/20 to-transparent", border: "border-slate-500/30 hover:border-slate-500/50" },
+                { name: "Best Manager", slug: "best-manager", desc: "The ultimate flagship event designed to identify the most comprehensive business leader.", color: "from-purple-500/20 to-transparent", border: "border-purple-500/30 hover:border-purple-500/50" },
+                { name: "Sustainability", slug: "sustainability", desc: "Develop corporate action plans resolving carbon footprinting and greenwashing.", color: "from-emerald-500/20 to-transparent", border: "border-emerald-500/30 hover:border-emerald-500/50" }
+              ].map((vert, i) => {
                 return (
                   <motion.div
                     key={vert.name}
@@ -203,12 +185,12 @@ export default function LandingPage() {
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ duration: 0.4, delay: i * 0.1 }}
                   >
-                    <Card className={`h-full glass hover:bg-white/5 transition-all duration-300 group ${border} overflow-hidden relative`}>
-                      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    <Card className={`h-full glass hover:bg-white/5 transition-all duration-300 group ${vert.border} overflow-hidden relative`}>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${vert.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                       <CardContent className="p-8 relative z-10">
-                        <h3 className="text-2xl font-bold mb-3">{vert.name === "HR" ? "Human Resources" : vert.name}</h3>
-                        <p className="text-muted-foreground mb-6">{desc}</p>
-                        <Link href={`/events/${slugName}`} className="text-primary text-sm font-medium flex items-center group-hover:underline">
+                        <h3 className="text-2xl font-bold mb-3">{vert.name}</h3>
+                        <p className="text-muted-foreground mb-6">{vert.desc}</p>
+                        <Link href={`/events/${vert.slug}`} className="text-primary text-sm font-medium flex items-center group-hover:underline">
                           View Domain Events <ArrowRight className="ml-1 w-4 h-4" />
                         </Link>
                       </CardContent>

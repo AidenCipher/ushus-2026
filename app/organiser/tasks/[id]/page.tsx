@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   ArrowLeft, Loader2, Clock, User, Calendar,
   CheckCircle2, XCircle, AlertCircle, MessageSquare,
-  GitBranch, Pencil
+  GitBranch, Pencil, X
 } from "lucide-react";
 import {
   Select,
@@ -19,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 interface TaskUpdate {
@@ -68,6 +69,122 @@ export default function TaskDetailPage() {
   const [task, setTask] = React.useState<TaskDetail | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Edit Task states
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [editTitle, setEditTitle] = React.useState("");
+  const [editDescription, setEditDescription] = React.useState("");
+  const [editStatus, setEditStatus] = React.useState("");
+  const [editPriority, setEditPriority] = React.useState("");
+  const [editStartDate, setEditStartDate] = React.useState("");
+  const [editEndDate, setEditEndDate] = React.useState("");
+  const [editDueDate, setEditDueDate] = React.useState("");
+  const [editAssignedToId, setEditAssignedToId] = React.useState("");
+  const [editEventId, setEditEventId] = React.useState("");
+  
+  const [events, setEvents] = React.useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = React.useState<any[]>([]);
+  const [submittingEdit, setSubmittingEdit] = React.useState(false);
+  const [editError, setEditError] = React.useState<string | null>(null);
+
+  // Pre-populate fields on load
+  React.useEffect(() => {
+    if (task) {
+      setEditTitle(task.title);
+      setEditDescription(task.description || "");
+      setEditStatus(task.status);
+      setEditPriority(task.priority);
+      setEditStartDate(task.startDate ? task.startDate.split("T")[0] : "");
+      setEditEndDate(task.endDate ? task.endDate.split("T")[0] : "");
+      setEditDueDate(task.dueDate ? task.dueDate.split("T")[0] : "");
+      setEditAssignedToId(task.assignedTo?.id || "unassigned");
+      setEditEventId(task.event?.id || "");
+    }
+  }, [task]);
+
+  // Load events
+  React.useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await fetch("/api/v1/events");
+        if (res.ok) {
+          const json = await res.json();
+          const allEvts = json.data || [];
+          const matched = session?.user?.role === "ADMIN"
+            ? allEvts
+            : allEvts.filter((e: any) => e.verticalId === session?.user?.verticalId);
+          setEvents(matched);
+        }
+      } catch (err) {
+        console.error("Failed to load events:", err);
+      }
+    }
+    if (session) {
+      loadEvents();
+    }
+  }, [session, session?.user?.role]);
+
+  // Load team members
+  React.useEffect(() => {
+    async function loadTeam() {
+      const targetEventId = editEventId || task?.event?.id;
+      if (!targetEventId) return;
+      try {
+        const res = await fetch(`/api/v1/teams?eventId=${targetEventId}`);
+        if (res.ok) {
+          const json = await res.json();
+          setTeamMembers(json.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load team members:", err);
+      }
+    }
+    loadTeam();
+  }, [editEventId, task?.event?.id]);
+
+  const handleEditTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTitle.trim()) {
+      setEditError("Title is required");
+      return;
+    }
+    setSubmittingEdit(true);
+    setEditError(null);
+
+    try {
+      const eventObj = events.find(e => e.id === editEventId);
+      const verticalId = eventObj?.verticalId || task?.vertical?.id || session?.user?.verticalId;
+
+      const res = await fetch(`/api/v1/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: editTitle,
+          description: editDescription || null,
+          eventId: editEventId || null,
+          verticalId: verticalId || null,
+          assignedToId: editAssignedToId && editAssignedToId !== "unassigned" ? editAssignedToId : null,
+          startDate: editStartDate ? new Date(editStartDate).toISOString() : null,
+          endDate: editEndDate ? new Date(editEndDate).toISOString() : null,
+          dueDate: editDueDate ? new Date(editDueDate).toISOString() : null,
+          priority: editPriority,
+          status: editStatus,
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setIsEditModalOpen(false);
+        await fetchTask();
+      } else {
+        setEditError(json.error || "Failed to update task");
+      }
+    } catch (err) {
+      setEditError("Failed to communicate with server");
+    } finally {
+      setSubmittingEdit(false);
+    }
+  };
   
   // Update form state
   const [showUpdateForm, setShowUpdateForm] = React.useState(false);
@@ -329,12 +446,23 @@ export default function TaskDetailPage() {
 
               {/* Update Task Button */}
               {(isAssignee || canApprove) && (
-                <Button
-                  className="w-full bg-indigo-600 hover:bg-indigo-700"
-                  onClick={() => setShowUpdateForm(true)}
-                >
-                  <Pencil className="w-4 h-4 mr-2" /> Update Task
-                </Button>
+                <div className="space-y-2 pt-2">
+                  <Button
+                    className="w-full bg-indigo-600 hover:bg-indigo-700"
+                    onClick={() => setShowUpdateForm(true)}
+                  >
+                    <Pencil className="w-4 h-4 mr-2" /> Update Task
+                  </Button>
+                  {canApprove && (
+                    <Button
+                      variant="outline"
+                      className="w-full border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/10"
+                      onClick={() => setIsEditModalOpen(true)}
+                    >
+                      <Pencil className="w-4 h-4 mr-2" /> Edit Task Configuration
+                    </Button>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
@@ -535,6 +663,177 @@ export default function TaskDetailPage() {
           )}
         </div>
       </div>
+      {/* Edit Task Dialog */}
+      <AnimatePresence>
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEditModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold tracking-tight">Edit Task Configuration</h3>
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="p-1.5 rounded-full hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {editError && (
+                <div className="bg-danger/10 border border-danger/20 text-danger text-xs p-3 rounded-md flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{editError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleEditTask} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Task Title</label>
+                  <Input
+                    required
+                    placeholder="Enter task title"
+                    value={editTitle}
+                    onChange={e => setEditTitle(e.target.value)}
+                    className="bg-background/50 border-white/10"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Description</label>
+                  <textarea
+                    placeholder="Add task details..."
+                    value={editDescription}
+                    onChange={e => setEditDescription(e.target.value)}
+                    className="w-full min-h-[80px] rounded-md border border-white/10 bg-background/50 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Priority</label>
+                    <Select value={editPriority} onValueChange={setEditPriority}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                        <SelectItem value="CRITICAL">Critical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Status</label>
+                    <Select value={editStatus} onValueChange={setEditStatus}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NOT_STARTED">Not Started</SelectItem>
+                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
+                        <SelectItem value="DELAYED">Delayed</SelectItem>
+                        <SelectItem value="BLOCKED">Blocked</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Event</label>
+                    <Select value={editEventId} onValueChange={setEditEventId}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {events.map(ev => (
+                          <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Assignee</label>
+                    <Select value={editAssignedToId} onValueChange={setEditAssignedToId}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue placeholder="Unassigned" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {teamMembers.map(m => (
+                          <SelectItem key={m.user.id} value={m.user.id}>{m.user.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Start Date</label>
+                    <Input
+                      type="date"
+                      value={editStartDate}
+                      onChange={e => setEditStartDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">End Date</label>
+                    <Input
+                      type="date"
+                      value={editEndDate}
+                      onChange={e => setEditEndDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Due Date</label>
+                    <Input
+                      type="date"
+                      value={editDueDate}
+                      onChange={e => setEditDueDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    type="submit"
+                    disabled={submittingEdit}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    {submittingEdit ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Save Configuration
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-white/10"
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

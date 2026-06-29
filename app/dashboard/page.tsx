@@ -77,7 +77,8 @@ export default function DashboardOverview() {
   const [teamName, setTeamName] = React.useState("");
   const [newMemberName, setNewMemberName] = React.useState("");
   const [newMemberEmail, setNewMemberEmail] = React.useState("");
-  const [teamMembers, setTeamMembers] = React.useState<{ name: string; email: string }[]>([]);
+  const [newMemberPhone, setNewMemberPhone] = React.useState("");
+  const [teamMembers, setTeamMembers] = React.useState<{ name: string; email: string; phone: string }[]>([]);
   const [notes, setNotes] = React.useState("");
   const [formError, setFormError] = React.useState<string | null>(null);
   const [submittingReg, setSubmittingReg] = React.useState(false);
@@ -169,16 +170,22 @@ export default function DashboardOverview() {
   }
 
   const handleAddMember = () => {
-    if (!newMemberName.trim() || !newMemberEmail.trim()) {
+    if (!newMemberName.trim() || !newMemberEmail.trim() || !newMemberPhone.trim()) {
+      setFormError("All team member fields (Name, Email, Phone) are mandatory.");
       return;
     }
     if (!newMemberEmail.includes("@")) {
       setFormError("Please enter a valid email for the team member.");
       return;
     }
-    setTeamMembers(prev => [...prev, { name: newMemberName, email: newMemberEmail }]);
+    if (newMemberPhone.trim().length < 10) {
+      setFormError("Please enter a valid phone number (at least 10 digits).");
+      return;
+    }
+    setTeamMembers(prev => [...prev, { name: newMemberName, email: newMemberEmail, phone: newMemberPhone }]);
     setNewMemberName("");
     setNewMemberEmail("");
+    setNewMemberPhone("");
     setFormError(null);
   };
 
@@ -500,7 +507,7 @@ export default function DashboardOverview() {
                             {teamMembers.map((m, idx) => (
                               <div key={idx} className="flex items-center justify-between p-2 rounded bg-background/50 border border-white/5 text-xs">
                                 <div>
-                                  <span className="font-semibold">{m.name}</span> <span className="text-muted-foreground">({m.email})</span>
+                                  <span className="font-semibold">{m.name}</span> <span className="text-muted-foreground">({m.email} / {m.phone})</span>
                                 </div>
                                 <Button
                                   type="button"
@@ -516,18 +523,24 @@ export default function DashboardOverview() {
                         )}
 
                         {/* Roster Input row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                           <Input
                             placeholder="Member Name"
                             value={newMemberName}
                             onChange={(e) => setNewMemberName(e.target.value)}
                             className="bg-background/50 border-white/10 text-xs h-9"
                           />
+                          <Input
+                            placeholder="Member Email"
+                            value={newMemberEmail}
+                            onChange={(e) => setNewMemberEmail(e.target.value)}
+                            className="bg-background/50 border-white/10 text-xs h-9"
+                          />
                           <div className="flex gap-2">
                             <Input
-                              placeholder="Member Email"
-                              value={newMemberEmail}
-                              onChange={(e) => setNewMemberEmail(e.target.value)}
+                              placeholder="Member Phone"
+                              value={newMemberPhone}
+                              onChange={(e) => setNewMemberPhone(e.target.value)}
                               className="bg-background/50 border-white/10 text-xs h-9"
                             />
                             <Button

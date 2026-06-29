@@ -103,6 +103,86 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Already registered for this event" }, { status: 409 });
     }
 
+    const primaryUser = await prisma.user.findUnique({
+      where: { id: data.userId },
+    });
+    if (!primaryUser) {
+      return NextResponse.json({ success: false, error: "Primary user not found" }, { status: 404 });
+    }
+
+    // Build the list of contacts to check for conflict in other events
+    const checks = [
+      { name: primaryUser.name, email: primaryUser.email.toLowerCase(), phone: primaryUser.phone || "" }
+    ];
+
+    if (data.teamMembers && Array.isArray(data.teamMembers)) {
+      for (const member of data.teamMembers) {
+        checks.push({
+          name: member.name,
+          email: member.email.toLowerCase(),
+          phone: member.phone || ""
+        });
+      }
+    }
+
+    const cleanPhone = (p: string) => p.replace(/[\s\-()]/g, "");
+
+    // Fetch all registrations for other events
+    const otherRegistrations = await prisma.registration.findMany({
+      where: {
+        eventId: { not: data.eventId }
+      },
+      include: {
+        event: true,
+        user: true
+      }
+    });
+
+    for (const item of checks) {
+      const itemPhoneClean = cleanPhone(item.phone);
+
+      for (const reg of otherRegistrations) {
+        const regUserEmail = reg.user.email.toLowerCase();
+        const regUserPhone = reg.user.phone ? cleanPhone(reg.user.phone) : "";
+
+        if (regUserEmail === item.email) {
+          return NextResponse.json({
+            success: false,
+            error: `Registration blocked: "${item.name}" (email: ${item.email}) is already registered for another event: "${reg.event.name}".`
+          }, { status: 409 });
+        }
+
+        if (itemPhoneClean && regUserPhone && regUserPhone === itemPhoneClean) {
+          return NextResponse.json({
+            success: false,
+            error: `Registration blocked: "${item.name}" (phone: ${item.phone}) is already registered for another event: "${reg.event.name}".`
+          }, { status: 409 });
+        }
+
+        if (reg.teamMembers && Array.isArray(reg.teamMembers)) {
+          const membersList = reg.teamMembers as any[];
+          for (const m of membersList) {
+            const mEmail = m.email ? m.email.toLowerCase() : "";
+            const mPhone = m.phone ? cleanPhone(m.phone) : "";
+
+            if (mEmail && mEmail === item.email) {
+              return NextResponse.json({
+                success: false,
+                error: `Registration blocked: "${item.name}" (email: ${item.email}) is already registered for another event: "${reg.event.name}".`
+              }, { status: 409 });
+            }
+
+            if (itemPhoneClean && mPhone && mPhone === itemPhoneClean) {
+              return NextResponse.json({
+                success: false,
+                error: `Registration blocked: "${item.name}" (phone: ${item.phone}) is already registered for another event: "${reg.event.name}".`
+              }, { status: 409 });
+            }
+          }
+        }
+      }
+    }
+
     // Check max participants if applicable
     if (event.maxParticipants) {
       const currentCount = await prisma.registration.count({

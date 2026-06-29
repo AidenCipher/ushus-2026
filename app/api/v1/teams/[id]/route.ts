@@ -38,8 +38,14 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: "Team member not found" }, { status: 404 });
     }
 
-    if (!canManageTeamInEvent(userRole, session.user.eventId, existingMember.eventId)) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    if (userRole !== "ADMIN") {
+      const targetEvent = await prisma.event.findUnique({
+        where: { id: existingMember.eventId },
+        select: { verticalId: true }
+      });
+      if (!targetEvent || session.user.verticalId !== targetEvent.verticalId) {
+        return NextResponse.json({ success: false, error: "Forbidden: Event vertical mismatch" }, { status: 403 });
+      }
     }
 
     const updated = await prisma.teamMember.update({
@@ -98,8 +104,14 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Team member not found" }, { status: 404 });
     }
 
-    if (!canManageTeamInEvent(userRole, session.user.eventId, existingMember.eventId)) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    if (userRole !== "ADMIN") {
+      const targetEvent = await prisma.event.findUnique({
+        where: { id: existingMember.eventId },
+        select: { verticalId: true }
+      });
+      if (!targetEvent || session.user.verticalId !== targetEvent.verticalId) {
+        return NextResponse.json({ success: false, error: "Forbidden: Event vertical mismatch" }, { status: 403 });
+      }
     }
 
     // Instead of hard delete, we might just set isActive to false to preserve history

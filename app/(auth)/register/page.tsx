@@ -95,9 +95,18 @@ export default function RegisterPage() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="bg-danger/10 border border-danger/20 text-danger p-3 rounded-md flex items-center gap-2 mb-6 text-sm">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
+          <div className="bg-danger/10 border border-danger/20 text-danger p-3 rounded-md flex flex-col gap-2 mb-6 text-sm">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+            {error.includes("already exists") && (
+              <Link href={`/login?email=${encodeURIComponent(form.getValues("email"))}`} className="mt-1">
+                <Button variant="link" className="p-0 h-auto text-primary underline text-xs">
+                  Sign In instead &rarr;
+                </Button>
+              </Link>
+            )}
           </div>
         )}
         

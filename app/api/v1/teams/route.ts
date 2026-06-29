@@ -27,9 +27,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: true, data: [] });
     }
 
-    // Admins can view any team, Organisers/Volunteers can view their own event's team
-    if (userRole !== "ADMIN" && session.user.eventId !== targetEventId) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    // Admins can view any team, Organisers/Volunteers can view their own vertical events' teams
+    if (userRole !== "ADMIN") {
+      const targetEvent = await prisma.event.findUnique({
+        where: { id: targetEventId },
+        select: { verticalId: true }
+      });
+      if (!targetEvent || session.user.verticalId !== targetEvent.verticalId) {
+        return NextResponse.json({ success: false, error: "Forbidden: Event vertical mismatch" }, { status: 403 });
+      }
     }
 
     const team = await prisma.teamMember.findMany({
@@ -76,9 +82,15 @@ export async function POST(req: Request) {
 
     const data = parsed.data;
 
-    // Verify organiser can manage this team
-    if (!canManageTeamInEvent(userRole, session.user.eventId, data.eventId)) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    // Verify organiser can manage this vertical event team
+    if (userRole !== "ADMIN") {
+      const targetEvent = await prisma.event.findUnique({
+        where: { id: data.eventId },
+        select: { verticalId: true }
+      });
+      if (!targetEvent || session.user.verticalId !== targetEvent.verticalId) {
+        return NextResponse.json({ success: false, error: "Forbidden: Event vertical mismatch" }, { status: 403 });
+      }
     }
 
     // Check if user is already in the team

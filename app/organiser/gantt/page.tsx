@@ -254,16 +254,28 @@ export default function GanttPage() {
   const handleDoubleClickTitle = (node: GanttNode) => {
     if (!isOrganiserOrAdmin || node.type !== "task") return;
     setEditingNodeId(node.id);
-    setEditingTitleValue(node.title);
+    let title = node.title;
+    if (title.startsWith("[Schedule] ")) {
+      title = title.substring("[Schedule] ".length);
+    }
+    setEditingTitleValue(title);
   };
 
-  const handleSaveTitleInline = async (taskId: string) => {
+  const handleSaveTitleInline = async (nodeId: string) => {
     if (!editingTitleValue.trim()) return;
     try {
-      const res = await fetch(`/api/v1/tasks/${taskId}`, {
+      const isCE = nodeId.startsWith("ce_");
+      const url = isCE
+        ? `/api/v1/calendar/${nodeId.substring(3)}`
+        : `/api/v1/tasks/${nodeId}`;
+      const payload = isCE
+        ? { title: editingTitleValue }
+        : { title: editingTitleValue };
+
+      const res = await fetch(url, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: editingTitleValue }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         setEditingNodeId(null);
@@ -277,14 +289,25 @@ export default function GanttPage() {
   // Rescheduling handler called after drag/resize finishes
   async function handleTaskDateChange(taskId: string, start: Date, end: Date) {
     try {
-      const res = await fetch(`/api/v1/tasks/${taskId}`, {
+      const isCE = taskId.startsWith("ce_");
+      const url = isCE
+        ? `/api/v1/calendar/${taskId.substring(3)}`
+        : `/api/v1/tasks/${taskId}`;
+      const payload = isCE
+        ? {
+            startDatetime: start.toISOString(),
+            endDatetime: end.toISOString(),
+          }
+        : {
+            startDate: start.toISOString(),
+            endDate: end.toISOString(),
+            dueDate: end.toISOString(),
+          };
+
+      const res = await fetch(url, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startDate: start.toISOString(),
-          endDate: end.toISOString(),
-          dueDate: end.toISOString(),
-        }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         await fetchGanttData();

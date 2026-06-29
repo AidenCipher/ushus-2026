@@ -175,9 +175,16 @@ export default function OrganiserCalendarPage() {
   }
 
   async function handleDeleteEvent(id: string) {
-    if (!confirm("Are you sure you want to delete this schedule entry?")) return;
+    const isTask = id.startsWith("task_");
+    const confirmMessage = isTask
+      ? "Are you sure you want to delete this task? This will also remove it from the timeline."
+      : "Are you sure you want to delete this schedule entry?";
+    if (!confirm(confirmMessage)) return;
     try {
-      const res = await fetch(`/api/v1/calendar/${id}`, { method: "DELETE" });
+      const url = isTask
+        ? `/api/v1/tasks/${id.substring(5)}`
+        : `/api/v1/calendar/${id}`;
+      const res = await fetch(url, { method: "DELETE" });
       if (res.ok) {
         await fetchCalendarData();
       }

@@ -135,13 +135,15 @@ export default function DashboardLayout({
 
           <div className="flex items-center gap-4">
             <NotificationBell />
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
-              <p className="text-xs text-muted-foreground mt-1 capitalize">{session?.user?.role?.toLowerCase()}</p>
-            </div>
-            <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold">
-              {session?.user?.name?.charAt(0) || "U"}
-            </div>
+            <Link href="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="hidden md:block text-right">
+                <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                <p className="text-xs text-muted-foreground mt-1 capitalize">{session?.user?.role?.toLowerCase()}</p>
+              </div>
+              <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold">
+                {session?.user?.name?.charAt(0) || "U"}
+              </div>
+            </Link>
           </div>
         </header>
 

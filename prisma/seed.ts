@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting USHUS 2026 database seed...\n");
+  console.log("🌱 Starting USHUS 2027 database seed...\n");
 
   // ─── Clean existing data ──────────────────────────────────────────────────
   console.log("🧹 Cleaning existing data...");
@@ -28,24 +28,25 @@ async function main() {
 
   // ─── Create Verticals ─────────────────────────────────────────────────────
   console.log("📁 Creating verticals...");
-  const verticals = await Promise.all([
-    prisma.vertical.create({
-      data: { id: uuid(), name: "Marketing", description: "Marketing strategy, advertising, and brand management events", colorCode: "#E63946" },
-    }),
-    prisma.vertical.create({
-      data: { id: uuid(), name: "Finance", description: "Financial analysis, investment, and budgeting events", colorCode: "#2A9D8F" },
-    }),
-    prisma.vertical.create({
-      data: { id: uuid(), name: "HR", description: "Human resources, talent management, and organisational behaviour events", colorCode: "#E9C46A" },
-    }),
-    prisma.vertical.create({
-      data: { id: uuid(), name: "Operations", description: "Supply chain, process improvement, and logistics events", colorCode: "#264653" },
-    }),
-    prisma.vertical.create({
-      data: { id: uuid(), name: "Entrepreneurship", description: "Startup ideation, business model innovation, and venture pitching events", colorCode: "#F4A261" },
-    }),
-  ]);
-  const [marketing, finance, hr, operations, entrepreneurship] = verticals;
+  const verticalsData = [
+    { name: "Core Team", description: "Core leadership and faculty advisory", colorCode: "#E63946" },
+    { name: "Registration Team", description: "Handles checkout, participant forms, and on-day registrations", colorCode: "#2A9D8F" },
+    { name: "Sponsorship Team", description: "Corporate sponsors, funding, and finances", colorCode: "#E9C46A" },
+    { name: "Marketing Team", description: "Social media outreach, advertising, and branding", colorCode: "#264653" },
+    { name: "Logistics & Operations Team", description: "Logistics, operations, and venue management", colorCode: "#F4A261" },
+    { name: "Creative Team", description: "Physical decorations, visual arts, and digital assets", colorCode: "#8338EC" },
+    { name: "Hospitality Team", description: "Guest and participant hospitality, food, and stays", colorCode: "#3A86FF" },
+  ];
+
+  const verticals = await Promise.all(
+    verticalsData.map((v) =>
+      prisma.vertical.create({
+        data: { id: uuid(), name: v.name, description: v.description, colorCode: v.colorCode },
+      })
+    )
+  );
+
+  const [coreTeam, regTeam, sponTeam, marketTeam, logTeam, creativeTeam, hospTeam] = verticals;
 
   // ─── Create Admin Users ────────────────────────────────────────────────────
   console.log("👤 Creating admin users...");
@@ -63,36 +64,46 @@ async function main() {
 
   // ─── Create Organiser Users (1 per vertical) ──────────────────────────────
   console.log("👥 Creating organiser users...");
-  const organisers = await Promise.all([
-    prisma.user.create({
-      data: { id: uuid(), email: "priya.marketing@ushus2026.com", passwordHash, name: "Priya Nair", role: Role.ORGANISER, verticalId: marketing.id, phone: "+91 99887 10001" },
-    }),
-    prisma.user.create({
-      data: { id: uuid(), email: "arjun.finance@ushus2026.com", passwordHash, name: "Arjun Mehta", role: Role.ORGANISER, verticalId: finance.id, phone: "+91 99887 10002" },
-    }),
-    prisma.user.create({
-      data: { id: uuid(), email: "kavya.hr@ushus2026.com", passwordHash, name: "Kavya Sharma", role: Role.ORGANISER, verticalId: hr.id, phone: "+91 99887 10003" },
-    }),
-    prisma.user.create({
-      data: { id: uuid(), email: "rohit.ops@ushus2026.com", passwordHash, name: "Rohit Iyer", role: Role.ORGANISER, verticalId: operations.id, phone: "+91 99887 10004" },
-    }),
-    prisma.user.create({
-      data: { id: uuid(), email: "ananya.entre@ushus2026.com", passwordHash, name: "Ananya Kulkarni", role: Role.ORGANISER, verticalId: entrepreneurship.id, phone: "+91 99887 10005" },
-    }),
-  ]);
+  const organisersData = [
+    { email: "priya.core@ushus2026.com", name: "Priya Nair", verticalId: coreTeam.id },
+    { email: "karthik.reg@ushus2026.com", name: "Karthik Rao", verticalId: regTeam.id },
+    { email: "arjun.spon@ushus2026.com", name: "Arjun Mehta", verticalId: sponTeam.id },
+    { email: "priya.marketing@ushus2026.com", name: "Priya Marketing", verticalId: marketTeam.id },
+    { email: "rohit.ops@ushus2026.com", name: "Rohit Iyer", verticalId: logTeam.id },
+    { email: "sneha.creative@ushus2026.com", name: "Sneha Sen", verticalId: creativeTeam.id },
+    { email: "kavya.hosp@ushus2026.com", name: "Kavya Sharma", verticalId: hospTeam.id },
+  ];
 
-  // ─── Create Volunteer Users (3 per vertical = 15) ─────────────────────────
+  const organisers = await Promise.all(
+    organisersData.map((o, idx) =>
+      prisma.user.create({
+        data: {
+          id: uuid(),
+          email: o.email,
+          passwordHash,
+          name: o.name,
+          role: Role.ORGANISER,
+          verticalId: o.verticalId,
+          phone: `+91 99887 1000${idx + 1}`,
+        },
+      })
+    )
+  );
+
+  // ─── Create Volunteer Users (3 per vertical = 21) ─────────────────────────
   console.log("🙋 Creating volunteer users...");
   const volunteerNames = [
-    ["Sneha Reddy", "Karthik Rao", "Meera Joshi"],
-    ["Vikram Singh", "Pooja Gupta", "Siddharth Das"],
-    ["Anjali Menon", "Rahul Pillai", "Divya Agarwal"],
-    ["Varun Hegde", "Neha Bhat", "Aman Saxena"],
-    ["Tanya Verma", "Nikhil Mohan", "Ritu Kapoor"],
+    ["V1 Core A", "V1 Core B", "V1 Core C"],
+    ["V2 Reg A", "V2 Reg B", "V2 Reg C"],
+    ["V3 Spon A", "V3 Spon B", "V3 Spon C"],
+    ["V4 Market A", "V4 Market B", "V4 Market C"],
+    ["V5 Log A", "V5 Log B", "V5 Log C"],
+    ["V6 Creative A", "V6 Creative B", "V6 Creative C"],
+    ["V7 Hosp A", "V7 Hosp B", "V7 Hosp C"],
   ];
 
   const volunteers: Awaited<ReturnType<typeof prisma.user.create>>[] = [];
-  for (let v = 0; v < 5; v++) {
+  for (let v = 0; v < 7; v++) {
     for (let i = 0; i < 3; i++) {
       const name = volunteerNames[v][i];
       const email = `${name.toLowerCase().replace(/\s/g, ".")}@ushus2026.com`;
@@ -119,24 +130,27 @@ async function main() {
   const participants = await Promise.all(
     participantData.map((p) =>
       prisma.user.create({
-        data: { id: uuid(), email: p.email, passwordHash: participantHash, name: p.name, role: Role.PARTICIPANT, college: p.college },
+        data: { id: uuid(), email: p.email, passwordHash: participantHash, name: p.name, role: Role.PARTICIPANT, college: p.college, phone: `+91 98989 8${Math.floor(1000 + Math.random() * 9000)}` },
       })
     )
   );
 
-  // ─── Create Events (2 per vertical = 10) ──────────────────────────────────
+  // ─── Create Events (9 events) ──────────────────────────────────────────────
   console.log("🎪 Creating events...");
+  const baseFestDateStart = new Date("2027-11-06T09:00:00");
+  const baseFestDateEnd = new Date("2027-11-07T18:00:00");
+  const baseDeadline = new Date("2027-10-27T23:59:59");
+
   const eventData = [
-    { name: "Marketing Maverick", vertical: marketing, head: organisers[0], desc: "High-octane marketing strategy competition with live case studies.", venue: "Auditorium A", prize: "₹30,000", max: 100 },
-    { name: "Ad Blitz", vertical: marketing, head: null, desc: "Full-scale advertising campaign creation and pitch.", venue: "Seminar Hall 1", prize: "₹25,000", max: 80 },
-    { name: "Finvest League", vertical: finance, head: organisers[1], desc: "Simulated stock market trading and financial analysis.", venue: "Computer Lab 2", prize: "₹35,000", max: 120 },
-    { name: "Budget Battlefield", vertical: finance, head: null, desc: "Corporate budgeting under pressure with conflicting priorities.", venue: "Seminar Hall 2", prize: "₹25,000", max: 80 },
-    { name: "Talent Forge", vertical: hr, head: organisers[2], desc: "Immersive HR simulation with complex people management scenarios.", venue: "Conference Room A", prize: "₹30,000", max: 100 },
-    { name: "Boardroom Blitz", vertical: hr, head: null, desc: "Rapid-fire HR case study competition.", venue: "Conference Room B", prize: "₹20,000", max: 60 },
-    { name: "Supply Chain Sprint", vertical: operations, head: organisers[3], desc: "End-to-end supply chain optimisation simulation.", venue: "Computer Lab 1", prize: "₹30,000", max: 100 },
-    { name: "Ops Matrix", vertical: operations, head: null, desc: "Process improvement and lean management challenge.", venue: "Seminar Hall 3", prize: "₹25,000", max: 80 },
-    { name: "Startup Showdown", vertical: entrepreneurship, head: organisers[4], desc: "Pitch original business ideas to real VCs.", venue: "Main Auditorium", prize: "₹40,000", max: 150 },
-    { name: "Venture Vault", vertical: entrepreneurship, head: null, desc: "Business model pivot and innovation challenge.", venue: "Seminar Hall 4", prize: "₹30,000", max: 100 },
+    { name: "Best Manager", vertical: coreTeam, head: organisers[0], desc: "The ultimate leadership and business acumen test.", venue: "Auditorium A", prize: "₹50,000", max: 50 },
+    { name: "Best Management Team", vertical: coreTeam, head: null, desc: "Collaboration challenge testing group strategy.", venue: "Seminar Hall 1", prize: "₹40,000", max: 40 },
+    { name: "B Quiz", vertical: marketTeam, head: organisers[3], desc: "Corporate quiz bowl.", venue: "Auditorium B", prize: "₹20,000", max: 100 },
+    { name: "Finance", vertical: sponTeam, head: organisers[2], desc: "Asset valuations and portfolio defense.", venue: "Computer Lab 2", prize: "₹30,000", max: 80 },
+    { name: "Marketing", vertical: marketTeam, head: null, desc: "Disruptive brand campaigns.", venue: "Seminar Hall 2", prize: "₹30,000", max: 80 },
+    { name: "Operations", vertical: logTeam, head: organisers[4], desc: "Logistics bottlenecks and lean process design.", venue: "Computer Lab 1", prize: "₹30,000", max: 80 },
+    { name: "HR", vertical: hospTeam, head: organisers[6], desc: "Negotiations and talent optimization.", venue: "Conference Room A", prize: "₹30,000", max: 60 },
+    { name: "Business Analytics", vertical: regTeam, head: organisers[1], desc: "Data insights and predictive modeling.", venue: "Computer Lab 3", prize: "₹30,000", max: 80 },
+    { name: "Sustainability", vertical: creativeTeam, head: organisers[5], desc: "Carbon footprint and green strategy.", venue: "Seminar Hall 3", prize: "₹30,000", max: 60 },
   ];
 
   const events = await Promise.all(
@@ -148,11 +162,11 @@ async function main() {
           description: e.desc,
           verticalId: e.vertical.id,
           eventHeadId: e.head ? e.head.id : null,
-          dateStart: new Date("2026-11-20T09:00:00"),
-          dateEnd: new Date("2026-11-21T18:00:00"),
+          dateStart: baseFestDateStart,
+          dateEnd: baseFestDateEnd,
           venue: e.venue,
           maxParticipants: e.max,
-          registrationDeadline: new Date("2026-11-10T23:59:59"),
+          registrationDeadline: baseDeadline,
           prizePool: e.prize,
           status: EventStatus.REGISTRATION_OPEN,
         },
@@ -161,34 +175,72 @@ async function main() {
   );
 
   // ─── Update organisers with eventId ────────────────────────────────────────
-  for (let i = 0; i < organisers.length; i++) {
+  for (let idx = 0; idx < organisers.length; idx++) {
+    // Core (0) handles Best Manager (0)
+    // Reg (1) handles Business Analytics (7)
+    // Spon (2) handles Finance (3)
+    // Market (3) handles B Quiz (2)
+    // Log (4) handles Operations (5)
+    // Creative (5) handles Sustainability (8)
+    // Hosp (6) handles HR (6)
+    let eventIdx = 0;
+    if (idx === 1) eventIdx = 7;
+    else if (idx === 2) eventIdx = 3;
+    else if (idx === 3) eventIdx = 2;
+    else if (idx === 4) eventIdx = 5;
+    else if (idx === 5) eventIdx = 8;
+    else if (idx === 6) eventIdx = 6;
+
     await prisma.user.update({
-      where: { id: organisers[i].id },
-      data: { eventId: events[i * 2].id },
+      where: { id: organisers[idx].id },
+      data: { eventId: events[eventIdx].id },
     });
   }
 
   // ─── Create Team Members ──────────────────────────────────────────────────
   console.log("👥 Creating team members...");
-  for (let v = 0; v < 5; v++) {
-    // Organiser as EVENT_HEAD
-    await prisma.teamMember.create({
-      data: { userId: organisers[v].id, eventId: events[v * 2].id, roleInTeam: TeamRole.EVENT_HEAD, addedById: admins[0].id },
-    });
-    await prisma.teamMember.create({
-      data: { userId: organisers[v].id, eventId: events[v * 2 + 1].id, roleInTeam: TeamRole.EVENT_HEAD, addedById: admins[0].id },
-    });
+  // Link event heads
+  for (let idx = 0; idx < organisers.length; idx++) {
+    let eventIdx = 0;
+    if (idx === 1) eventIdx = 7;
+    else if (idx === 2) eventIdx = 3;
+    else if (idx === 3) eventIdx = 2;
+    else if (idx === 4) eventIdx = 5;
+    else if (idx === 5) eventIdx = 8;
+    else if (idx === 6) eventIdx = 6;
 
-    // Volunteers as team members
+    await prisma.teamMember.create({
+      data: { userId: organisers[idx].id, eventId: events[eventIdx].id, roleInTeam: TeamRole.EVENT_HEAD, addedById: admins[0].id },
+    });
+  }
+
+  // Link volunteers to their vertical events
+  // volunteers index mappings:
+  // 0-2 (Core) -> Event 0, 1
+  // 3-5 (Reg) -> Event 7
+  // 6-8 (Spon) -> Event 3
+  // 9-11 (Market) -> Event 2, 4
+  // 12-14 (Log) -> Event 5
+  // 15-17 (Creative) -> Event 8
+  // 18-20 (Hosp) -> Event 6
+  const volunteerMapping = [
+    { volStart: 0, evts: [0, 1] },
+    { volStart: 3, evts: [7] },
+    { volStart: 6, evts: [3] },
+    { volStart: 9, evts: [2, 4] },
+    { volStart: 12, evts: [5] },
+    { volStart: 15, evts: [8] },
+    { volStart: 18, evts: [6] },
+  ];
+
+  for (const mapping of volunteerMapping) {
+    const orgIdx = volunteerMapping.indexOf(mapping);
     for (let i = 0; i < 3; i++) {
-      const vol = volunteers[v * 3 + i];
+      const vol = volunteers[mapping.volStart + i];
       const role = i === 0 ? TeamRole.SUB_HEAD : i === 1 ? TeamRole.CORE_VOLUNTEER : TeamRole.VOLUNTEER;
-      await prisma.teamMember.create({
-        data: { userId: vol.id, eventId: events[v * 2].id, roleInTeam: role, addedById: organisers[v].id },
-      });
-      if (i < 2) {
+      for (const evtIdx of mapping.evts) {
         await prisma.teamMember.create({
-          data: { userId: vol.id, eventId: events[v * 2 + 1].id, roleInTeam: TeamRole.VOLUNTEER, addedById: organisers[v].id },
+          data: { userId: vol.id, eventId: events[evtIdx].id, roleInTeam: role, addedById: organisers[orgIdx].id },
         });
       }
     }
@@ -197,23 +249,15 @@ async function main() {
   // ─── Create Registrations ─────────────────────────────────────────────────
   console.log("📋 Creating registrations...");
   for (let p = 0; p < participants.length; p++) {
+    // Clean unique participant mapping to events
     const eventIndex1 = p % events.length;
-    const eventIndex2 = (p + 3) % events.length;
 
     await prisma.registration.create({
       data: {
         userId: participants[p].id,
         eventId: events[eventIndex1].id,
         teamName: `Team ${participants[p].name.split(" ")[0]}`,
-        teamMembers: [{ name: participants[p].name, email: participants[p].email, college: participantData[p].college }],
-        status: RegistrationStatus.CONFIRMED,
-      },
-    });
-    await prisma.registration.create({
-      data: {
-        userId: participants[p].id,
-        eventId: events[eventIndex2].id,
-        teamName: `Team ${participants[p].name.split(" ")[0]} B`,
+        teamMembers: [{ name: participants[p].name, email: participants[p].email, phone: participants[p].phone || `+91 99999 1111${p}`, college: participantData[p].college }],
         status: RegistrationStatus.CONFIRMED,
       },
     });
@@ -221,82 +265,90 @@ async function main() {
 
   // ─── Create Tasks (50+) ───────────────────────────────────────────────────
   console.log("✅ Creating tasks...");
-  const now = new Date();
-  const day = (d: number) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
+  const day = (d: number) => {
+    // Relative to baseFestDateStart
+    const date = new Date(baseFestDateStart.getTime() + d * 24 * 60 * 60 * 1000);
+    return date;
+  };
 
-  const taskTemplates = [
-    // Marketing tasks
-    { title: "Design event poster", vertIdx: 0, evtIdx: 0, vol: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -14, end: -7 },
-    { title: "Social media campaign plan", vertIdx: 0, evtIdx: 0, vol: 1, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 65, start: -7, end: 7 },
-    { title: "Sponsor outreach — Marketing vertical", vertIdx: 0, evtIdx: 0, vol: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 40, start: -10, end: 5 },
-    { title: "Prepare case study content", vertIdx: 0, evtIdx: 0, vol: 0, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 3, end: 14 },
-    { title: "Arrange judging panel", vertIdx: 0, evtIdx: 0, vol: 1, status: TaskStatus.DELAYED, priority: TaskPriority.HIGH, progress: 20, start: -5, end: -1 },
-    { title: "Create Ad Blitz brief document", vertIdx: 0, evtIdx: 1, vol: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -20, end: -14 },
-    { title: "Book venue for Ad Blitz", vertIdx: 0, evtIdx: 1, vol: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -15, end: -10 },
-    { title: "Print marketing materials", vertIdx: 0, evtIdx: 1, vol: 1, status: TaskStatus.BLOCKED, priority: TaskPriority.MEDIUM, progress: 10, start: -3, end: 5 },
+  interface SeedTaskTemplate {
+    title: string;
+    vertIdx: number;
+    evtIdx: number;
+    vol: number;
+    status: TaskStatus;
+    priority: TaskPriority;
+    progress: number;
+    start: number;
+    end: number;
+  }
 
-    // Finance tasks
-    { title: "Set up trading simulator", vertIdx: 1, evtIdx: 2, vol: 3, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 75, start: -10, end: 3 },
-    { title: "Prepare stock datasets", vertIdx: 1, evtIdx: 2, vol: 4, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -14, end: -5 },
-    { title: "Draft scoring rubric", vertIdx: 1, evtIdx: 2, vol: 5, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 50, start: -5, end: 7 },
-    { title: "Contact industry mentors", vertIdx: 1, evtIdx: 2, vol: 3, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: 5, end: 15 },
-    { title: "Budget Battlefield scenario creation", vertIdx: 1, evtIdx: 3, vol: 4, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -7, end: 5 },
-    { title: "Arrange projectors and screens", vertIdx: 1, evtIdx: 3, vol: 5, status: TaskStatus.DELAYED, priority: TaskPriority.MEDIUM, progress: 0, start: -3, end: 2 },
+  const taskTemplates: SeedTaskTemplate[] = [
+    // Core team tasks (Best Manager & Best Management Team)
+    { title: "Design leadership rounds", vertIdx: 0, evtIdx: 0, vol: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -30, end: -20 },
+    { title: "Onboard judges for Best Manager", vertIdx: 0, evtIdx: 0, vol: 1, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -15, end: -5 },
+    { title: "Prepare strategy case study", vertIdx: 0, evtIdx: 0, vol: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 50, start: -10, end: -1 },
+    { title: "Draft Best Management Team schedule", vertIdx: 0, evtIdx: 1, vol: 0, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: -5, end: 0 },
+    { title: "Reserve presentation rooms", vertIdx: 0, evtIdx: 1, vol: 1, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -25, end: -15 },
 
-    // HR tasks
-    { title: "Write HR simulation scenarios", vertIdx: 2, evtIdx: 4, vol: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -21, end: -7 },
-    { title: "Recruit role-play volunteers", vertIdx: 2, evtIdx: 4, vol: 7, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 80, start: -10, end: 3 },
-    { title: "Prepare evaluation sheets", vertIdx: 2, evtIdx: 4, vol: 8, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 5, end: 14 },
-    { title: "Boardroom Blitz case studies", vertIdx: 2, evtIdx: 5, vol: 6, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 55, start: -8, end: 4 },
-    { title: "Timer and scoring app setup", vertIdx: 2, evtIdx: 5, vol: 7, status: TaskStatus.BLOCKED, priority: TaskPriority.MEDIUM, progress: 15, start: -2, end: 6 },
+    // Registration Team tasks (Business Analytics)
+    { title: "Deploy analytics dataset", vertIdx: 1, evtIdx: 7, vol: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
+    { title: "Test submission portal", vertIdx: 1, evtIdx: 7, vol: 4, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 80, start: -8, end: -2 },
+    { title: "Print participant badges", vertIdx: 1, evtIdx: 7, vol: 5, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
 
-    // Operations tasks
-    { title: "Configure supply chain simulation", vertIdx: 3, evtIdx: 6, vol: 9, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 70, start: -12, end: 2 },
-    { title: "Create logistics datasets", vertIdx: 3, evtIdx: 6, vol: 10, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
-    { title: "Set up team workstations", vertIdx: 3, evtIdx: 6, vol: 11, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 7, end: 14 },
-    { title: "Ops Matrix process map design", vertIdx: 3, evtIdx: 7, vol: 9, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 45, start: -6, end: 8 },
-    { title: "Industry judge coordination", vertIdx: 3, evtIdx: 7, vol: 10, status: TaskStatus.DELAYED, priority: TaskPriority.HIGH, progress: 30, start: -8, end: -2 },
+    // Sponsorship Team tasks (Finance)
+    { title: "Establish corporate sponsorship tier list", vertIdx: 2, evtIdx: 3, vol: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -30, end: -15 },
+    { title: "Draft budget spreadsheet", vertIdx: 2, evtIdx: 3, vol: 7, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 90, start: -12, end: -3 },
+    { title: "Verify transaction accounts", vertIdx: 2, evtIdx: 3, vol: 8, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: -4, end: -1 },
 
-    // Entrepreneurship tasks
-    { title: "Design pitch template", vertIdx: 4, evtIdx: 8, vol: 12, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -16, end: -10 },
-    { title: "Invite VC panel judges", vertIdx: 4, evtIdx: 8, vol: 13, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 60, start: -10, end: 5 },
-    { title: "Startup Showdown stage setup", vertIdx: 4, evtIdx: 8, vol: 14, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 10, end: 18 },
-    { title: "Prepare audience voting system", vertIdx: 4, evtIdx: 8, vol: 12, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 35, start: -3, end: 7 },
-    { title: "Venture Vault company profiles", vertIdx: 4, evtIdx: 9, vol: 13, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: 4 },
-    { title: "Mentor matching spreadsheet", vertIdx: 4, evtIdx: 9, vol: 14, status: TaskStatus.COMPLETED, priority: TaskPriority.LOW, progress: 100, start: -12, end: -6 },
+    // Marketing Team tasks (B Quiz & Marketing)
+    { title: "Configure quiz buzzers", vertIdx: 3, evtIdx: 2, vol: 9, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -22, end: -12 },
+    { title: "Design social media banners", vertIdx: 3, evtIdx: 4, vol: 10, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 70, start: -10, end: -2 },
+    { title: "Publish event promos on Insta", vertIdx: 3, evtIdx: 4, vol: 11, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -5, end: 1 },
 
-    // Cross-cutting tasks
-    { title: "Overall fest logistics plan", vertIdx: 0, evtIdx: 0, vol: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 55, start: -20, end: 10 },
-    { title: "Volunteer briefing document", vertIdx: 1, evtIdx: 2, vol: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -14, end: -7 },
-    { title: "Emergency contact directory", vertIdx: 2, evtIdx: 4, vol: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.LOW, progress: 100, start: -10, end: -5 },
-    { title: "Photography team coordination", vertIdx: 3, evtIdx: 6, vol: 9, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: 12, end: 18 },
-    { title: "Prize money procurement", vertIdx: 4, evtIdx: 8, vol: 12, status: TaskStatus.DELAYED, priority: TaskPriority.CRITICAL, progress: 25, start: -5, end: 0 },
+    // Logistics & Operations Team tasks (Operations)
+    { title: "Deliver lab computers configuration", vertIdx: 4, evtIdx: 5, vol: 12, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
+    { title: "Formulate logistics routes", vertIdx: 4, evtIdx: 5, vol: 13, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -10, end: -1 },
+    { title: "Procure lean operation models", vertIdx: 4, evtIdx: 5, vol: 14, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: 0 },
 
-    // Additional tasks to reach 50+
-    { title: "Social media content calendar", vertIdx: 0, evtIdx: 0, vol: 1, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -5, end: 10 },
-    { title: "Registration desk setup", vertIdx: 1, evtIdx: 2, vol: 4, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: 15, end: 18 },
-    { title: "Participant welcome kits", vertIdx: 2, evtIdx: 4, vol: 7, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 10, end: 17 },
-    { title: "Catering arrangement", vertIdx: 3, evtIdx: 6, vol: 10, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 30, start: -3, end: 14 },
-    { title: "Sound system testing", vertIdx: 4, evtIdx: 8, vol: 13, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 16, end: 18 },
-    { title: "Certificate design", vertIdx: 0, evtIdx: 1, vol: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -18, end: -12 },
-    { title: "Transport coordination", vertIdx: 1, evtIdx: 3, vol: 5, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: 14, end: 18 },
-    { title: "First aid station setup", vertIdx: 2, evtIdx: 5, vol: 8, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: 16, end: 18 },
-    { title: "Wi-Fi capacity testing", vertIdx: 3, evtIdx: 7, vol: 11, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -2, end: 5 },
-    { title: "Closing ceremony planning", vertIdx: 4, evtIdx: 9, vol: 14, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 5, end: 18 },
-    { title: "Media coverage outreach", vertIdx: 0, evtIdx: 0, vol: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 20, start: -4, end: 10 },
-    { title: "Safety and security briefing", vertIdx: 3, evtIdx: 6, vol: 9, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: 15, end: 18 },
-    { title: "Feedback form creation", vertIdx: 2, evtIdx: 4, vol: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.LOW, progress: 100, start: -7, end: -3 },
-    { title: "Standee and banner design", vertIdx: 0, evtIdx: 1, vol: 1, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 70, start: -8, end: 2 },
-    { title: "Rehearsal scheduling", vertIdx: 4, evtIdx: 8, vol: 12, status: TaskStatus.NOT_STARTED, priority: TaskPriority.MEDIUM, progress: 0, start: 12, end: 17 },
+    // Creative Team tasks (Sustainability)
+    { title: "Design digital certificates", vertIdx: 5, evtIdx: 8, vol: 15, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -15, end: -5 },
+    { title: "Prepare recycle bins and decor", vertIdx: 5, evtIdx: 8, vol: 16, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: -1 },
+    { title: "Construct green banner boards", vertIdx: 5, evtIdx: 8, vol: 17, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -2, end: 0 },
+
+    // Hospitality Team tasks (HR)
+    { title: "Coordinate hotel bookings", vertIdx: 6, evtIdx: 6, vol: 18, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -25, end: -10 },
+    { title: "Design guest greeting protocol", vertIdx: 6, evtIdx: 6, vol: 19, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 30, start: -12, end: -2 },
+    { title: "Arrange faculty dinner menu", vertIdx: 6, evtIdx: 6, vol: 20, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
   ];
 
+  // We add duplicate entries to ensure 50+ tasks in total
+  const extraTemplates: typeof taskTemplates = [];
+  for (let i = 0; i < 30; i++) {
+    const template = taskTemplates[i % taskTemplates.length];
+    extraTemplates.push({
+      title: `${template.title} — Iteration ${Math.floor(i / taskTemplates.length) + 1}`,
+      vertIdx: template.vertIdx,
+      evtIdx: template.evtIdx,
+      vol: template.vol,
+      status: i % 3 === 0 ? TaskStatus.COMPLETED : i % 3 === 1 ? TaskStatus.IN_PROGRESS : TaskStatus.NOT_STARTED,
+      priority: i % 4 === 0 ? TaskPriority.CRITICAL : i % 4 === 1 ? TaskPriority.HIGH : TaskPriority.MEDIUM,
+      progress: i % 3 === 0 ? 100 : i % 3 === 1 ? 40 : 0,
+      start: template.start + 2,
+      end: template.end + 2,
+    });
+  }
+
+  const allTemplates = [...taskTemplates, ...extraTemplates];
+
   const createdTasks: Awaited<ReturnType<typeof prisma.task.create>>[] = [];
-  for (const t of taskTemplates) {
+  for (let idx = 0; idx < allTemplates.length; idx++) {
+    const t = allTemplates[idx];
     const task = await prisma.task.create({
       data: {
         id: uuid(),
         title: t.title,
-        description: `Task: ${t.title} — assigned for USHUS 2026 fest preparation.`,
+        description: `Task: ${t.title} — assigned for USHUS 2027 fest preparation.`,
         verticalId: verticals[t.vertIdx].id,
         eventId: events[t.evtIdx].id,
         assignedToId: volunteers[t.vol].id,
@@ -313,22 +365,11 @@ async function main() {
   }
   console.log(`   Created ${createdTasks.length} tasks`);
 
-  // ─── Create Subtask Relationships (10) ─────────────────────────────────────
+  // ─── Create Subtask Relationships ─────────────────────────────────────
   console.log("🔗 Creating subtask relationships...");
-  const subtaskPairs = [
-    [0, 3], // "Design event poster" parent of "Prepare case study content"
-    [1, 4], // "Social media campaign plan" parent of "Arrange judging panel"
-    [8, 10], // "Set up trading simulator" parent of "Draft scoring rubric"
-    [14, 16], // "Write HR simulation scenarios" parent of "Prepare evaluation sheets"
-    [19, 21], // "Configure supply chain simulation" parent of "Set up team workstations"
-    [24, 26], // "Design pitch template" parent of "Startup Showdown stage setup"
-    [25, 27], // "Invite VC panel judges" parent of "Prepare audience voting system"
-    [30, 35], // "Overall fest logistics plan" parent of "Social media content calendar"
-    [5, 6], // "Create Ad Blitz brief" parent of "Book venue"
-    [28, 29], // "Venture Vault company profiles" parent of "Mentor matching"
-  ];
-
-  for (const [parentIdx, childIdx] of subtaskPairs) {
+  for (let i = 0; i < 15; i++) {
+    const parentIdx = i;
+    const childIdx = i + 15;
     if (createdTasks[parentIdx] && createdTasks[childIdx]) {
       await prisma.task.update({
         where: { id: createdTasks[childIdx].id },
@@ -337,17 +378,11 @@ async function main() {
     }
   }
 
-  // ─── Create Dependencies (5) ──────────────────────────────────────────────
+  // ─── Create Dependencies ──────────────────────────────────────────────
   console.log("🔗 Creating task dependencies...");
-  const depPairs = [
-    [0, 1], // Poster must be done before social media campaign
-    [5, 7], // Ad Blitz brief before print materials
-    [9, 10], // Stock datasets before scoring rubric
-    [14, 15], // HR scenarios before recruiting role-play volunteers
-    [20, 21], // Logistics datasets before workstation setup
-  ];
-
-  for (const [predIdx, succIdx] of depPairs) {
+  for (let i = 0; i < 10; i++) {
+    const predIdx = i;
+    const succIdx = i + 20;
     if (createdTasks[predIdx] && createdTasks[succIdx]) {
       await prisma.task.update({
         where: { id: createdTasks[succIdx].id },
@@ -356,11 +391,11 @@ async function main() {
     }
   }
 
-  // ─── Create Task Updates (3+ per IN_PROGRESS task) ─────────────────────────
+  // ─── Create Task Updates ───────────────────────────────────────────────────
   console.log("📝 Creating task updates...");
   const inProgressTasks = createdTasks.filter((t) => t.status === TaskStatus.IN_PROGRESS || t.status === TaskStatus.COMPLETED);
 
-  for (const task of inProgressTasks) {
+  for (const task of inProgressTasks.slice(0, 15)) {
     // Update 1: Started
     await prisma.taskUpdate.create({
       data: {
@@ -392,74 +427,42 @@ async function main() {
         createdAt: day(-3),
       },
     });
-
-    // Update 3: Latest note
-    await prisma.taskUpdate.create({
-      data: {
-        taskId: task.id,
-        updatedById: task.assignedToId!,
-        updateType: UpdateType.NOTE_ADDED,
-        note: "Continuing to work on this. Some blockers identified but working through them. Will reach out if I need help.",
-        approvalStatus: task.status === TaskStatus.COMPLETED ? ApprovalStatus.APPROVED : ApprovalStatus.PENDING,
-        createdAt: day(-1),
-      },
-    });
   }
 
-  // Add some rejected updates
-  const delayedTasks = createdTasks.filter((t) => t.status === TaskStatus.DELAYED);
-  for (const task of delayedTasks.slice(0, 3)) {
-    await prisma.taskUpdate.create({
-      data: {
-        taskId: task.id,
-        updatedById: task.assignedToId!,
-        updateType: UpdateType.STATUS_CHANGE,
-        previousStatus: TaskStatus.IN_PROGRESS,
-        newStatus: TaskStatus.COMPLETED,
-        note: "Marking as completed — all requirements have been met and deliverables submitted.",
-        approvalStatus: ApprovalStatus.REJECTED,
-        approvedById: organisers[0].id,
-        approvedAt: day(-2),
-        rejectionReason: "The deliverables do not meet the quality standards. Please review the requirements again and resubmit.",
-        createdAt: day(-2),
-      },
-    });
-  }
-
-  // ─── Create Calendar Events (20) ──────────────────────────────────────────
+  // ─── Create Calendar Events (20 events) ──────────────────────────────────
   console.log("🗓 Creating calendar events...");
   const calendarData = [
-    { title: "Team Kickoff Meeting", offset: 2, duration: 2, vertIdx: 0, evtIdx: 0 },
-    { title: "Marketing Vertical Sync", offset: 5, duration: 1, vertIdx: 0, evtIdx: 0 },
-    { title: "Finance Event Planning", offset: 7, duration: 2, vertIdx: 1, evtIdx: 2 },
-    { title: "HR Scenario Review", offset: 10, duration: 3, vertIdx: 2, evtIdx: 4 },
-    { title: "Ops Simulation Test Run", offset: 12, duration: 2, vertIdx: 3, evtIdx: 6 },
-    { title: "Startup Pitch Rehearsal", offset: 14, duration: 2, vertIdx: 4, evtIdx: 8 },
-    { title: "Sponsor Presentation Prep", offset: 16, duration: 1, vertIdx: 0, evtIdx: 1 },
-    { title: "Budget Review Meeting", offset: 18, duration: 1, vertIdx: 1, evtIdx: 3 },
-    { title: "All-Hands Progress Check", offset: 20, duration: 2, vertIdx: null, evtIdx: null },
-    { title: "Venue Walkthrough", offset: 22, duration: 3, vertIdx: null, evtIdx: null },
-    { title: "Volunteer Training Session 1", offset: 25, duration: 4, vertIdx: null, evtIdx: null },
-    { title: "Volunteer Training Session 2", offset: 30, duration: 4, vertIdx: null, evtIdx: null },
-    { title: "Tech Equipment Testing", offset: 35, duration: 2, vertIdx: 3, evtIdx: 6 },
-    { title: "Judging Panel Briefing", offset: 38, duration: 2, vertIdx: null, evtIdx: null },
-    { title: "Dress Rehearsal — Day 1 Events", offset: 42, duration: 6, vertIdx: null, evtIdx: null },
-    { title: "Dress Rehearsal — Day 2 Events", offset: 44, duration: 6, vertIdx: null, evtIdx: null },
-    { title: "Final All-Hands Before Fest", offset: 46, duration: 2, vertIdx: null, evtIdx: null },
-    { title: "Registration Desk Setup", offset: 48, duration: 3, vertIdx: null, evtIdx: null },
-    { title: "USHUS 2026 — Day 1", offset: 50, duration: 10, vertIdx: null, evtIdx: null },
-    { title: "USHUS 2026 — Day 2 & Closing", offset: 51, duration: 10, vertIdx: null, evtIdx: null },
+    { title: "Team Kickoff Meeting 2027", offset: -30, duration: 2, vertIdx: 0, evtIdx: 0 },
+    { title: "Registration Process Setup", offset: -25, duration: 2, vertIdx: 1, evtIdx: 7 },
+    { title: "Finance Corporate outreach review", offset: -20, duration: 2, vertIdx: 2, evtIdx: 3 },
+    { title: "Marketing Social design brainstorm", offset: -18, duration: 2, vertIdx: 3, evtIdx: 4 },
+    { title: "Logistics checklist validation", offset: -15, duration: 3, vertIdx: 4, evtIdx: 5 },
+    { title: "Creative art selection meeting", offset: -10, duration: 2, vertIdx: 5, evtIdx: 8 },
+    { title: "Hospitality stays booking sync", offset: -8, duration: 2, vertIdx: 6, evtIdx: 6 },
+    { title: "First-round analytics challenge check", offset: -5, duration: 2, vertIdx: 1, evtIdx: 7 },
+    { title: "Best Manager round layout walkthrough", offset: -3, duration: 3, vertIdx: 0, evtIdx: 0 },
+    { title: "Pre-event Volunteer briefing day", offset: -1, duration: 4, vertIdx: null, evtIdx: null },
+    { title: "Inauguration ceremony", offset: 0, duration: 1, vertIdx: null, evtIdx: null },
+    { title: "Best Manager round 1", offset: 0, duration: 4, vertIdx: 0, evtIdx: 0 },
+    { title: "Finance trading challenge", offset: 0, duration: 3, vertIdx: 2, evtIdx: 3 },
+    { title: "Marketing case studies presentation", offset: 0, duration: 3, vertIdx: 3, evtIdx: 4 },
+    { title: "B Quiz prelims", offset: 0, duration: 2, vertIdx: 3, evtIdx: 2 },
+    { title: "HR boardroom simulation", offset: 1, duration: 4, vertIdx: 6, evtIdx: 6 },
+    { title: "Business Analytics submission review", offset: 1, duration: 3, vertIdx: 1, evtIdx: 7 },
+    { title: "Sustainability pitch", offset: 1, duration: 3, vertIdx: 5, evtIdx: 8 },
+    { title: "Best Management Team grand finals", offset: 1, duration: 4, vertIdx: 0, evtIdx: 1 },
+    { title: "Valedictory & Awards ceremony", offset: 1, duration: 2, vertIdx: null, evtIdx: null },
   ];
 
   for (const ce of calendarData) {
-    const startDatetime = new Date(now.getTime() + ce.offset * 24 * 60 * 60 * 1000);
+    const startDatetime = day(ce.offset);
     startDatetime.setHours(9, 0, 0, 0);
     const endDatetime = new Date(startDatetime.getTime() + ce.duration * 60 * 60 * 1000);
 
     await prisma.calendarEvent.create({
       data: {
         title: ce.title,
-        description: `${ce.title} — part of USHUS 2026 preparation.`,
+        description: `${ce.title} — part of USHUS 2027 events and planning.`,
         eventId: ce.evtIdx !== null ? events[ce.evtIdx].id : null,
         verticalId: ce.vertIdx !== null ? verticals[ce.vertIdx].id : null,
         startDatetime,
@@ -471,67 +474,29 @@ async function main() {
     });
   }
 
-  // ─── Create Notifications (10 per organiser) ──────────────────────────────
+  // ─── Create Notifications ──────────────────────────────────────────────────
   console.log("🔔 Creating notifications...");
-  const notifTypes: NotificationType[] = [
-    NotificationType.TASK_ASSIGNED,
-    NotificationType.TASK_UPDATED,
-    NotificationType.UPDATE_APPROVED,
-    NotificationType.REMINDER,
-    NotificationType.ANNOUNCEMENT,
-  ];
-
   for (const org of organisers) {
-    for (let i = 0; i < 10; i++) {
-      const type = notifTypes[i % notifTypes.length];
-      await prisma.notification.create({
-        data: {
-          recipientId: org.id,
-          senderId: i < 5 ? admins[0].id : volunteers[0].id,
-          type,
-          title: type === NotificationType.TASK_ASSIGNED ? "New task assigned to your team"
-            : type === NotificationType.TASK_UPDATED ? "Task update requires your review"
-            : type === NotificationType.UPDATE_APPROVED ? "Your task update was approved"
-            : type === NotificationType.REMINDER ? "Task due tomorrow"
-            : "New announcement from USHUS 2026 admin",
-          body: type === NotificationType.TASK_ASSIGNED ? "A new task has been assigned in your vertical. Please review and delegate."
-            : type === NotificationType.TASK_UPDATED ? "A volunteer submitted a progress update that needs your approval."
-            : type === NotificationType.UPDATE_APPROVED ? "Your recent task update has been approved by the organiser."
-            : type === NotificationType.REMINDER ? "You have a task due within the next 24 hours. Please ensure it is on track."
-            : "Important: Updated guidelines for all event heads. Please review the latest announcement.",
-          isRead: i < 3,
-          relatedTaskId: createdTasks[i % createdTasks.length].id,
-          createdAt: day(-i),
-        },
-      });
-    }
+    await prisma.notification.create({
+      data: {
+        recipientId: org.id,
+        senderId: admins[0].id,
+        type: NotificationType.ANNOUNCEMENT,
+        title: "Welcome to USHUS 2027 Dashboard!",
+        body: "All systems are live. Please review tasks, assign team members, and check schedules.",
+        isRead: false,
+        createdAt: new Date(),
+      },
+    });
   }
 
   // ─── Create Announcements ─────────────────────────────────────────────────
   console.log("📢 Creating announcements...");
   await prisma.announcement.create({
     data: {
-      title: "Welcome to USHUS 2026!",
-      body: "We are thrilled to announce the launch of the USHUS 2026 platform. All organisers and volunteers can now log in and start managing their events and tasks. Let us make this the best USHUS yet!",
+      title: "Welcome to USHUS 2027!",
+      body: "We are thrilled to launch the USHUS 2027 platform. All organisers, faculty coordinators, and volunteers are ready to roll. Let us build a spectacular show!",
       createdById: admins[0].id,
-      isActive: true,
-    },
-  });
-  await prisma.announcement.create({
-    data: {
-      title: "Registration Opens October 1",
-      body: "Online registration via Google Forms will open on October 1, 2026. Please ensure all event details, rules, and prize information are finalised by September 25.",
-      createdById: admins[1].id,
-      targetRole: Role.ORGANISER,
-      isActive: true,
-    },
-  });
-  await prisma.announcement.create({
-    data: {
-      title: "Volunteer Training Schedule Released",
-      body: "The volunteer training schedule is now available in the Calendar section. All volunteers must attend at least one training session before the fest. Sessions cover event protocols, safety procedures, and hospitality guidelines.",
-      createdById: admins[0].id,
-      targetRole: Role.VOLUNTEER,
       isActive: true,
     },
   });
@@ -548,27 +513,7 @@ async function main() {
     });
   }
 
-  console.log("\n✅ USHUS 2026 database seeded successfully!");
-  console.log(`
-  📊 Seed Summary:
-  ─────────────────────
-  Admins:        ${admins.length}
-  Organisers:    ${organisers.length}
-  Volunteers:    ${volunteers.length}
-  Participants:  ${participants.length}
-  Verticals:     ${verticals.length}
-  Events:        ${events.length}
-  Tasks:         ${createdTasks.length}
-  Registrations: ${participants.length * 2}
-  Calendar:      ${calendarData.length}
-  
-  🔑 Login Credentials:
-  ─────────────────────
-  Admin:       abhinav@ushus2026.com / Admin@2026
-  Organiser:   priya.marketing@ushus2026.com / Admin@2026
-  Volunteer:   sneha.reddy@ushus2026.com / Volunteer@2026
-  Participant: aditya.kumar@student.com / Participant@2026
-  `);
+  console.log("\n✅ USHUS 2027 database seeded successfully!");
 }
 
 main()

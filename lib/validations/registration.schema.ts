@@ -2,8 +2,9 @@ import { z } from "zod";
 import { RegistrationStatus } from "@prisma/client";
 
 const TeamMemberInfoSchema = z.object({
-  name: z.string().min(1),
-  email: z.string().email(),
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits").regex(/^\+?[1-9]\d{1,14}$|^[0-9]{10}$/, "Invalid phone format"),
   college: z.string().optional(),
 });
 

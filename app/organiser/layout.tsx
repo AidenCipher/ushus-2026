@@ -137,13 +137,15 @@ export default function OrganiserLayout({
 
           <div className="flex items-center gap-4">
             <NotificationBell />
-            <div className="hidden md:block text-right">
-              <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
-              <p className="text-xs text-indigo-400 mt-1 capitalize font-medium">{session?.user?.role?.toLowerCase()}</p>
-            </div>
-            <div className="w-9 h-9 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
-              {session?.user?.name?.charAt(0) || "O"}
-            </div>
+            <Link href="/profile" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <div className="hidden md:block text-right">
+                <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                <p className="text-xs text-indigo-400 mt-1 capitalize font-medium">{session?.user?.role?.toLowerCase()}</p>
+              </div>
+              <div className="w-9 h-9 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">
+                {session?.user?.name?.charAt(0) || "O"}
+              </div>
+            </Link>
           </div>
         </header>
 

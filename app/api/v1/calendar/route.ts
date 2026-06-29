@@ -48,16 +48,48 @@ export async function GET(req: Request) {
       ];
     }
 
-    const events = await prisma.calendarEvent.findMany({
-      where,
-      include: {
-        vertical: { select: { id: true, name: true } },
-        event: { select: { id: true, name: true } },
-      },
-      orderBy: { startDatetime: "asc" },
-    });
+    const [events, tasks] = await Promise.all([
+      prisma.calendarEvent.findMany({
+        where,
+        include: {
+          vertical: { select: { id: true, name: true } },
+          event: { select: { id: true, name: true } },
+        },
+        orderBy: { startDatetime: "asc" },
+      }),
+      prisma.task.findMany({
+        where: {
+          startDate: { not: null },
+          endDate: { not: null },
+          verticalId: verticalId || (userRole === "ORGANISER" || userRole === "VOLUNTEER" ? session.user.verticalId || undefined : undefined),
+        },
+        include: {
+          vertical: { select: { id: true, name: true, colorCode: true } },
+          event: { select: { id: true, name: true } },
+        },
+        orderBy: { startDate: "asc" },
+      }),
+    ]);
 
-    return NextResponse.json({ success: true, data: events });
+    const mappedTasks = tasks.map((task) => ({
+      id: `task_${task.id}`,
+      title: `[Task] ${task.title}`,
+      description: task.description || "",
+      eventId: task.eventId || null,
+      verticalId: task.verticalId || null,
+      startDatetime: task.startDate,
+      endDatetime: task.endDate || task.dueDate || task.startDate,
+      status: task.status,
+      colorCode: task.vertical?.colorCode || "#003580",
+      createdById: task.assignedById || "",
+      vertical: task.vertical,
+      event: task.event,
+      isTask: true,
+    }));
+
+    const combined = [...events, ...mappedTasks];
+
+    return NextResponse.json({ success: true, data: combined });
   } catch (error) {
     console.error("[Calendar GET] Error:", error);
     return NextResponse.json(

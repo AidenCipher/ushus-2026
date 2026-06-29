@@ -51,9 +51,97 @@ export async function GET(req: Request) {
       orderBy: { name: "asc" },
     });
 
+    const calendarEvents = await prisma.calendarEvent.findMany({
+      where: {
+        verticalId: { in: verticals.map((v) => v.id) },
+      },
+      orderBy: { startDatetime: "asc" },
+    });
+
     // Format data into standard GanttNode tree structure
     const treeData = verticals.map((vertical) => {
       const verticalNodeId = `v_${vertical.id}`;
+
+      // Calendar events belonging directly to the vertical (no eventId)
+      const verticalSchedules = calendarEvents
+        .filter((ce) => ce.verticalId === vertical.id && !ce.eventId)
+        .map((ce) => ({
+          id: `ce_${ce.id}`,
+          type: "task",
+          title: `[Schedule] ${ce.title}`,
+          depth: 1,
+          isExpanded: false,
+          parentId: verticalNodeId,
+          children: [],
+          taskData: {
+            assignedTo: null,
+            status: ce.status || "PLANNED",
+            priority: "MEDIUM",
+            startDate: ce.startDatetime,
+            endDate: ce.endDatetime,
+            dueDate: ce.endDatetime,
+            progressPercent: ce.status === "COMPLETED" ? 100 : 0,
+            dependsOnIds: [],
+          },
+        }));
+
+      const eventNodes = vertical.events.map((event) => {
+        const eventNodeId = `e_${event.id}`;
+        
+        // Calendar events belonging directly to this event
+        const eventSchedules = calendarEvents
+          .filter((ce) => ce.eventId === event.id)
+          .map((ce) => ({
+            id: `ce_${ce.id}`,
+            type: "task",
+            title: `[Schedule] ${ce.title}`,
+            depth: 2,
+            isExpanded: false,
+            parentId: eventNodeId,
+            children: [],
+            taskData: {
+              assignedTo: null,
+              status: ce.status || "PLANNED",
+              priority: "MEDIUM",
+              startDate: ce.startDatetime,
+              endDate: ce.endDatetime,
+              dueDate: ce.endDatetime,
+              progressPercent: ce.status === "COMPLETED" ? 100 : 0,
+              dependsOnIds: [],
+            },
+          }));
+
+        const taskNodes = event.tasks.map((task) => ({
+          id: task.id, // Tasks use their actual UUID
+          type: "task",
+          title: task.title,
+          depth: 2,
+          isExpanded: false,
+          parentId: eventNodeId,
+          children: [],
+          taskData: {
+            assignedTo: task.assignedTo,
+            status: task.status,
+            priority: task.priority,
+            startDate: task.startDate,
+            endDate: task.endDate,
+            dueDate: task.dueDate,
+            progressPercent: task.progressPercent,
+            dependsOnIds: task.dependsOnIds,
+          },
+        }));
+
+        return {
+          id: eventNodeId,
+          type: "event",
+          title: event.name,
+          depth: 1,
+          isExpanded: true,
+          parentId: verticalNodeId,
+          children: [...taskNodes, ...eventSchedules],
+        };
+      });
+
       return {
         id: verticalNodeId,
         type: "vertical",
@@ -62,36 +150,7 @@ export async function GET(req: Request) {
         depth: 0,
         isExpanded: true,
         parentId: null,
-        children: vertical.events.map((event) => {
-          const eventNodeId = `e_${event.id}`;
-          return {
-            id: eventNodeId,
-            type: "event",
-            title: event.name,
-            depth: 1,
-            isExpanded: true,
-            parentId: verticalNodeId,
-            children: event.tasks.map((task) => ({
-              id: task.id, // Tasks use their actual UUID so we can update them
-              type: "task",
-              title: task.title,
-              depth: 2,
-              isExpanded: false,
-              parentId: eventNodeId,
-              children: [], // Tasks don't have children in this view, though they could support subtasks
-              taskData: {
-                assignedTo: task.assignedTo,
-                status: task.status,
-                priority: task.priority,
-                startDate: task.startDate,
-                endDate: task.endDate,
-                dueDate: task.dueDate,
-                progressPercent: task.progressPercent,
-                dependsOnIds: task.dependsOnIds,
-              },
-            })),
-          };
-        }),
+        children: [...eventNodes, ...verticalSchedules],
       };
     });
 

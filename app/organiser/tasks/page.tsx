@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
   CheckSquare, Search, Plus, Filter, Clock, 
-  Loader2, ChevronLeft, ChevronRight, ArrowUpDown 
+  Loader2, ChevronLeft, ChevronRight, ArrowUpDown, X, AlertCircle 
 } from "lucide-react";
 import {
   Select,
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 
@@ -73,6 +73,115 @@ export default function TasksPage() {
   const [viewMode, setViewMode] = React.useState<"my" | "all">(
     searchParams.get("view") === "all" ? "all" : "my"
   );
+
+  // Task creation states
+  const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [status, setStatus] = React.useState("NOT_STARTED");
+  const [priority, setPriority] = React.useState("MEDIUM");
+  const [startDate, setStartDate] = React.useState("");
+  const [endDate, setEndDate] = React.useState("");
+  const [dueDate, setDueDate] = React.useState("");
+  const [assignedToId, setAssignedToId] = React.useState("");
+  const [taskEventId, setTaskEventId] = React.useState("");
+  
+  const [events, setEvents] = React.useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = React.useState<any[]>([]);
+  const [submittingCreate, setSubmittingCreate] = React.useState(false);
+  const [createError, setCreateError] = React.useState<string | null>(null);
+
+  // Load events
+  React.useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await fetch("/api/v1/events");
+        if (res.ok) {
+          const json = await res.json();
+          const allEvts = json.data || [];
+          const matched = session?.user?.role === "ADMIN"
+            ? allEvts
+            : allEvts.filter((e: any) => e.verticalId === session?.user?.verticalId);
+          setEvents(matched);
+          if (matched.length > 0) {
+            setTaskEventId(matched[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load events:", err);
+      }
+    }
+    if (session) {
+      loadEvents();
+    }
+  }, [session, session?.user?.role]);
+
+  // Load team members
+  React.useEffect(() => {
+    async function loadTeam() {
+      if (!taskEventId) return;
+      try {
+        const res = await fetch(`/api/v1/teams?eventId=${taskEventId}`);
+        if (res.ok) {
+          const json = await res.json();
+          setTeamMembers(json.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load team members:", err);
+      }
+    }
+    loadTeam();
+  }, [taskEventId]);
+
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      setCreateError("Title is required");
+      return;
+    }
+    setSubmittingCreate(true);
+    setCreateError(null);
+
+    try {
+      const eventObj = events.find(e => e.id === taskEventId);
+      const verticalId = eventObj?.verticalId || session?.user?.verticalId;
+
+      const res = await fetch("/api/v1/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description: description || undefined,
+          eventId: taskEventId || undefined,
+          verticalId: verticalId || undefined,
+          assignedToId: assignedToId && assignedToId !== "unassigned" ? assignedToId : undefined,
+          startDate: startDate ? new Date(startDate).toISOString() : undefined,
+          endDate: endDate ? new Date(endDate).toISOString() : undefined,
+          dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+          priority,
+          status,
+        }),
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        setIsCreateOpen(false);
+        setTitle("");
+        setDescription("");
+        setStartDate("");
+        setEndDate("");
+        setDueDate("");
+        setAssignedToId("");
+        await fetchTasks(pagination.page);
+      } else {
+        setCreateError(json.error || "Failed to create task");
+      }
+    } catch (err) {
+      setCreateError("Failed to communicate with server");
+    } finally {
+      setSubmittingCreate(false);
+    }
+  };
 
   const fetchTasks = React.useCallback(async (page = 1) => {
     setLoading(true);
@@ -154,7 +263,10 @@ export default function TasksPage() {
           </p>
         </div>
         {(session?.user?.role === "ORGANISER" || session?.user?.role === "ADMIN") && (
-          <Button className="bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.4)]">
+          <Button 
+            onClick={() => setIsCreateOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 shadow-[0_0_15px_rgba(79,70,229,0.4)]"
+          >
             <Plus className="w-4 h-4 mr-2" /> Create Task
           </Button>
         )}
@@ -328,6 +440,177 @@ export default function TasksPage() {
           </div>
         </div>
       )}
+      {/* Task Creation Dialog */}
+      <AnimatePresence>
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsCreateOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold tracking-tight">Create New Task</h3>
+                <button
+                  onClick={() => setIsCreateOpen(false)}
+                  className="p-1.5 rounded-full hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {createError && (
+                <div className="bg-danger/10 border border-danger/20 text-danger text-xs p-3 rounded-md flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{createError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleCreateTask} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Task Title</label>
+                  <Input
+                    required
+                    placeholder="Enter task title"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    className="bg-background/50 border-white/10"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Description</label>
+                  <textarea
+                    placeholder="Add task details..."
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    className="w-full min-h-[80px] rounded-md border border-white/10 bg-background/50 p-3 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Priority</label>
+                    <Select value={priority} onValueChange={setPriority}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="LOW">Low</SelectItem>
+                        <SelectItem value="MEDIUM">Medium</SelectItem>
+                        <SelectItem value="HIGH">High</SelectItem>
+                        <SelectItem value="CRITICAL">Critical</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Status</label>
+                    <Select value={status} onValueChange={setStatus}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NOT_STARTED">Not Started</SelectItem>
+                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                        <SelectItem value="COMPLETED">Completed</SelectItem>
+                        <SelectItem value="DELAYED">Delayed</SelectItem>
+                        <SelectItem value="BLOCKED">Blocked</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Event</label>
+                    <Select value={taskEventId} onValueChange={setTaskEventId}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {events.map(ev => (
+                          <SelectItem key={ev.id} value={ev.id}>{ev.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Assignee</label>
+                    <Select value={assignedToId} onValueChange={setAssignedToId}>
+                      <SelectTrigger className="bg-background/50 border-white/10">
+                        <SelectValue placeholder="Unassigned" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {teamMembers.map(m => (
+                          <SelectItem key={m.user.id} value={m.user.id}>{m.user.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Start Date</label>
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">End Date</label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground">Due Date</label>
+                    <Input
+                      type="date"
+                      value={dueDate}
+                      onChange={e => setDueDate(e.target.value)}
+                      className="bg-background/50 border-white/10 text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <Button
+                    type="submit"
+                    disabled={submittingCreate}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    {submittingCreate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Create Task
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-white/10"
+                    onClick={() => setIsCreateOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
