@@ -412,11 +412,11 @@ export default function AdminEventsPage() {
       </Dialog>
 
       {/* Search Input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/75" />
         <Input 
-          placeholder="Search events, verticals..." 
-          className="pl-9 bg-background/50 border-white/10" 
+          placeholder="Search competition name, vertical, or venue..." 
+          className="pl-9 bg-background/40 border-white/10 focus:border-rose-500/30 transition-all" 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -424,68 +424,71 @@ export default function AdminEventsPage() {
 
       {/* Grid of Events */}
       {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <LoadingAnimation message="Syncing event configurations..." />
+        <div className="flex items-center justify-center py-20">
+          <LoadingAnimation message="Syncing Event Matrix configuration parameters..." />
         </div>
       ) : filteredEvents.length === 0 ? (
-        <Card className="glass border-white/10">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <Trophy className="w-12 h-12 text-rose-500 mb-4 opacity-50" />
-            <p className="font-semibold text-muted-foreground">No events found</p>
+        <Card className="glass border-white/5 bg-white/5">
+          <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+            <Trophy className="w-16 h-16 text-rose-500 mb-4 opacity-40 animate-pulse" />
+            <h3 className="font-semibold text-rose-100 text-lg">No competition verticals found</h3>
+            <p className="text-muted-foreground text-xs mt-1 max-w-sm">No events match your current search criteria. Try modifying your filters.</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map(event => (
-            <Card key={event.id} className="glass border-white/10 relative overflow-hidden flex flex-col justify-between hover:border-rose-500/20 transition-all duration-200">
+            <Card key={event.id} className="glass border-white/15 relative overflow-hidden flex flex-col justify-between hover:border-rose-500/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-rose-500/5 hover:-translate-y-1 transition-all duration-300">
               <div 
                 className="absolute top-0 left-0 w-full h-1"
                 style={{ backgroundColor: event.vertical.colorCode }}
               />
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-3 pl-5 pr-5 pt-5">
                 <div className="flex justify-between items-start gap-2">
-                  <Badge variant="outline" style={{ borderColor: event.vertical.colorCode, color: event.vertical.colorCode }}>
+                  <Badge variant="outline" style={{ borderColor: event.vertical.colorCode, color: event.vertical.colorCode }} className="text-[10px] uppercase font-bold tracking-wider bg-white/5">
                     {event.vertical.name}
                   </Badge>
-                  <div className="flex items-center gap-1">
-                    <Badge variant="outline" className={getStatusColor(event.status)}>
+                  <div className="flex items-center gap-1.5 bg-black/30 p-1 rounded-lg border border-white/5">
+                    <Badge variant="outline" className={`text-[9px] font-semibold ${getStatusColor(event.status)}`}>
                       {event.status.replace(/_/g, " ")}
                     </Badge>
                     <button
                       onClick={() => handleStartEdit(event)}
-                      className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                      className="p-1 rounded hover:bg-white/10 text-muted-foreground hover:text-rose-100 transition-colors"
+                      title="Edit event settings"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteEvent(event.id, event.name)}
                       className="p-1 rounded hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 transition-colors"
+                      title="Delete event configuration"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
-                <CardTitle className="text-base font-bold mt-2 leading-tight">{event.name}</CardTitle>
+                <CardTitle className="text-lg font-bold mt-3 leading-snug tracking-tight text-rose-50">{event.name}</CardTitle>
                 {event.description && (
-                  <CardDescription className="text-xs line-clamp-2 mt-1">{event.description}</CardDescription>
+                  <CardDescription className="text-xs line-clamp-2 mt-1.5 leading-relaxed text-muted-foreground/80">{event.description}</CardDescription>
                 )}
               </CardHeader>
-              <CardContent className="pt-0 space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground border-t border-white/5 pt-3">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-rose-400" /> {event.venue || "TBD"}
+              <CardContent className="pt-0 pl-5 pr-5 pb-5 space-y-4">
+                <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground/90 border-t border-white/5 pt-4">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-rose-400/80" /> {event.venue || "TBD"}
                   </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5 text-rose-400" /> {event.prizePool || "TBD"}
+                  <span className="flex items-center gap-1.5">
+                    <DollarSign className="w-3.5 h-3.5 text-rose-400/80" /> {event.prizePool || "TBD"}
                   </span>
-                  <span className="flex items-center gap-1 col-span-2 mt-1">
-                    <Users className="w-3.5 h-3.5 text-rose-400" /> Max Capacity: {event.maxParticipants || "Unlimited"}
+                  <span className="flex items-center gap-1.5 col-span-2 mt-1">
+                    <Users className="w-3.5 h-3.5 text-rose-400/80" /> Capacity Limit: <strong className="text-foreground">{event.maxParticipants || "Unlimited"}</strong>
                   </span>
                 </div>
                 {event.eventHead && (
-                  <div className="bg-white/5 p-2 rounded text-[10px] flex justify-between items-center mt-2 border border-white/5">
-                    <span className="text-muted-foreground">Event Head:</span>
-                    <span className="font-semibold text-foreground">{event.eventHead.name}</span>
+                  <div className="bg-[#0b0f19]/80 p-2.5 rounded-lg text-xs flex justify-between items-center border border-white/5 mt-2 shadow-inner">
+                    <span className="text-muted-foreground">Event Coordinator:</span>
+                    <span className="font-semibold text-rose-200">{event.eventHead.name}</span>
                   </div>
                 )}
               </CardContent>

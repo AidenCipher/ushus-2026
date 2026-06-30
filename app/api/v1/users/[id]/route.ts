@@ -72,8 +72,17 @@ export async function PATCH(
     const { id } = await params;
     const userRole = session.user.role as Role;
 
-    // Users can update their own profile. Admins can update anyone.
-    if (session.user.id !== id && !hasPermission(userRole, "MANAGE_USERS")) {
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+    }
+
+    const isOrganiserManagingVolunteer = 
+      userRole === "ORGANISER" && 
+      targetUser.role === "VOLUNTEER" && 
+      targetUser.verticalId === session.user.verticalId;
+
+    if (session.user.id !== id && !hasPermission(userRole, "MANAGE_USERS") && !isOrganiserManagingVolunteer) {
       return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
     }
 
@@ -88,12 +97,22 @@ export async function PATCH(
 
     const data = parsed.data;
 
-    // Prevent non-admins from changing roles or active status
-    if (session.user.id === id && !hasPermission(userRole, "MANAGE_USERS")) {
-      delete data.role;
-      delete data.isActive;
-      delete data.verticalId;
-      delete data.eventId;
+    // Prevent non-admins from assigning roles other than VOLUNTEER or changing vertical
+    if (!hasPermission(userRole, "MANAGE_USERS")) {
+      if (data.role && data.role !== "VOLUNTEER") {
+        return NextResponse.json({ success: false, error: "Organisers can only manage volunteers" }, { status: 400 });
+      }
+      if (data.verticalId && data.verticalId !== session.user.verticalId) {
+        return NextResponse.json({ success: false, error: "Organisers can only manage volunteers within their own vertical" }, { status: 400 });
+      }
+      
+      // If user is editing themselves, they can't change status or role
+      if (session.user.id === id) {
+        delete data.role;
+        delete data.isActive;
+        delete data.verticalId;
+        delete data.eventId;
+      }
     }
 
     const user = await prisma.user.update({
@@ -142,7 +161,17 @@ export async function DELETE(
     const { id } = await params;
     const userRole = session.user.role as Role;
 
-    if (!hasPermission(userRole, "MANAGE_USERS")) {
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+    }
+
+    const isOrganiserManagingVolunteer = 
+      userRole === "ORGANISER" && 
+      targetUser.role === "VOLUNTEER" && 
+      targetUser.verticalId === session.user.verticalId;
+
+    if (!hasPermission(userRole, "MANAGE_USERS") && !isOrganiserManagingVolunteer) {
       return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
     }
 

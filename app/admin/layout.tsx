@@ -99,7 +99,7 @@ export default function AdminLayout({
             <Button 
               variant="ghost" 
               className="w-full justify-start text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: "/" })}
             >
               <LogOut className="mr-2 h-4 w-4" />
               Exit Admin Mode

@@ -160,7 +160,7 @@ function rowIdToParentId(id: string): string | null {
 export default function GanttPage() {
   const { data: session } = useSession();
   const userRole = session?.user?.role || "VOLUNTEER";
-  const isOrganiserOrAdmin = ["ORGANISER", "ADMIN"].includes(userRole);
+  const isOrganiserOrAdmin = userRole === "ADMIN";
 
   const [loading, setLoading] = React.useState(true);
   const [zoomLevel, setZoomLevel] = React.useState<"day" | "week" | "month">("week");

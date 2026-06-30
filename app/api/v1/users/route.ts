@@ -78,10 +78,6 @@ export async function POST(req: Request) {
     }
 
     const userRole = session.user.role as Role;
-    if (!hasPermission(userRole, "MANAGE_USERS")) {
-      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
-    }
-
     const body = await req.json();
     const parsed = UserCreateSchema.safeParse(body);
     if (!parsed.success) {
@@ -92,6 +88,16 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
+
+    const isOrganiserManagingVolunteer = 
+      userRole === "ORGANISER" && 
+      data.role === "VOLUNTEER" && 
+      !!data.verticalId && 
+      data.verticalId === session.user.verticalId;
+
+    if (!hasPermission(userRole, "MANAGE_USERS") && !isOrganiserManagingVolunteer) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email.toLowerCase() },

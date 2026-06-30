@@ -33,11 +33,8 @@ export async function GET(req: Request) {
     // Apply role-based visibility constraints
     const userRole = session.user.role as Role;
     if (userRole === "VOLUNTEER") {
-      // Volunteers can only see tasks assigned to them, or tasks in their vertical
-      where.OR = [
-        { assignedToId: session.user.id },
-        { verticalId: session.user.verticalId || undefined },
-      ];
+      // Volunteers can only see tasks assigned specifically to them
+      where.assignedToId = session.user.id;
     } else if (userRole === "ORGANISER") {
       // Organisers can see all tasks in their vertical
       if (view !== "all") {

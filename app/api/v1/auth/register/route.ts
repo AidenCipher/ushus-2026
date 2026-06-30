@@ -17,6 +17,38 @@ export async function POST(req: Request) {
     }
 
     const { email, password, name, phone, college } = parsed.data;
+    const { emailOtp, phoneOtp } = body;
+
+    if (!emailOtp || !phoneOtp) {
+      return NextResponse.json(
+        { success: false, error: "Email and phone verification codes are required" },
+        { status: 400 }
+      );
+    }
+
+    // Verify email OTP
+    const emailOtpRecord = await prisma.verificationOtp.findUnique({
+      where: { type_target: { type: "EMAIL", target: email.toLowerCase().trim() } }
+    });
+
+    if (!emailOtpRecord || emailOtpRecord.code !== emailOtp.trim() || emailOtpRecord.expiresAt < new Date()) {
+      return NextResponse.json(
+        { success: false, error: "Invalid or expired email verification code" },
+        { status: 400 }
+      );
+    }
+
+    // Verify phone OTP
+    const phoneOtpRecord = await prisma.verificationOtp.findUnique({
+      where: { type_target: { type: "PHONE", target: phone.trim() } }
+    });
+
+    if (!phoneOtpRecord || phoneOtpRecord.code !== phoneOtp.trim() || phoneOtpRecord.expiresAt < new Date()) {
+      return NextResponse.json(
+        { success: false, error: "Invalid or expired phone verification code" },
+        { status: 400 }
+      );
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
@@ -30,6 +62,16 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await hash(password, 12);
+
+    // Delete OTP records on successful validation
+    await prisma.verificationOtp.deleteMany({
+      where: {
+        OR: [
+          { type: "EMAIL", target: email.toLowerCase().trim() },
+          { type: "PHONE", target: phone.trim() }
+        ]
+      }
+    });
 
     const user = await prisma.user.create({
       data: {

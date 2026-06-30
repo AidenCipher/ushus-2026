@@ -286,7 +286,9 @@ export default function TaskDetailPage() {
   }
 
   const userRole = session?.user?.role;
-  const canApprove = userRole === "ORGANISER" || userRole === "ADMIN";
+  const canApprove = 
+    userRole === "ADMIN" || 
+    (userRole === "ORGANISER" && !!session?.user?.verticalId && task?.vertical?.id === session?.user?.verticalId);
   const isAssignee = task?.assignedTo?.id === session?.user?.id;
 
   if (loading) {
@@ -474,6 +476,12 @@ export default function TaskDetailPage() {
                 <CardHeader>
                   <CardTitle className="text-lg">Submit Task Update</CardTitle>
                   <CardDescription>Describe what changed and why. Minimum 20 characters required.</CardDescription>
+                  {userRole === "VOLUNTEER" && (
+                    <div className="mt-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-md flex items-start gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                      <span>As a volunteer, you are required to provide a detailed explanation of the work done to propose a status change.</span>
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
