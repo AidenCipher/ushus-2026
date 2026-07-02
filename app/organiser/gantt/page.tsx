@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
-import { addDays, format, differenceInDays, subDays, parseISO } from "date-fns";
+import { addDays, format, differenceInDays, subDays, parseISO, startOfWeek, startOfMonth, endOfMonth } from "date-fns";
 import { 
   Plus, Filter, Settings, Loader2, ChevronDown, ChevronRight, User, Circle,
   Calendar as CalendarIcon, ZoomIn, ZoomOut, Check, ArrowRight, RefreshCw,
@@ -52,10 +52,85 @@ interface GanttNode {
   taskData?: GanttTaskData;
 }
 
-// Memory calculation engine for predecessors
+// Memory calculation engine for predecessors with dynamic duration scaling based on fest start date shifts
 function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGanttRow[] {
+  const baselineFestDate = new Date("2026-11-06");
+  const deltaDays = differenceInDays(festStartDate, baselineFestDate);
+
+  // Deep clone to avoid mutating the original GANTT_MASTER_DATA in-place
+  const clonedRows = rows.map(r => ({ ...r }));
+
+  if (deltaDays !== 0) {
+    const subtasks = clonedRows.filter(r => r.type === "sub-task");
+    if (subtasks.length > 0) {
+      const originalDurations = subtasks.map(s => s.duration || 1);
+      
+      const milestoneImportanceMap: Record<string, number> = {
+        M1: 4, M2: 5, M3: 5, M4: 4, M5: 4, M6: 3, M7: 3, M8: 2, M9: 1
+      };
+
+      const taskWeights = subtasks.map(s => {
+        const mId = s.id.split(".")[0];
+        const importance = milestoneImportanceMap[mId] || 2;
+        const priority = s.priority || "MEDIUM";
+        let complexity = 2;
+        if (priority === "CRITICAL") complexity = 4;
+        else if (priority === "HIGH") complexity = 3;
+        else if (priority === "LOW") complexity = 1;
+        return importance * complexity;
+      });
+
+      if (deltaDays > 0) {
+        // Postponed: Distribute extra days to tasks with HIGHER weights (more important/complex)
+        const totalWeight = taskWeights.reduce((sum, w) => sum + w, 0);
+        const adjustments = taskWeights.map(w => (w / totalWeight) * deltaDays);
+        const integerAdjustments = adjustments.map(Math.floor);
+        let distributed = integerAdjustments.reduce((sum, a) => sum + a, 0);
+        let remainder = deltaDays - distributed;
+
+        const decimals = adjustments.map((adj, idx) => ({ idx, decimal: adj - integerAdjustments[idx] }));
+        decimals.sort((a, b) => b.decimal - a.decimal);
+
+        for (let i = 0; i < remainder; i++) {
+          const idx = decimals[i % decimals.length].idx;
+          integerAdjustments[idx]++;
+        }
+
+        subtasks.forEach((s, idx) => {
+          s.duration = originalDurations[idx] + integerAdjustments[idx];
+        });
+      } else {
+        // Preponed: Subtract days from tasks with LOWEST weights first, protecting complex ones
+        let daysToReduce = Math.abs(deltaDays);
+        const currentDurations = [...originalDurations];
+
+        while (daysToReduce > 0) {
+          const candidates: number[] = [];
+          currentDurations.forEach((dur, idx) => {
+            if (dur > 1) {
+              candidates.push(idx);
+            }
+          });
+
+          if (candidates.length === 0) break; // All at minimum duration 1
+
+          // Choose candidate with the lowest weight (least important/complex)
+          candidates.sort((a, b) => taskWeights[a] - taskWeights[b]);
+          const targetIdx = candidates[0];
+          
+          currentDurations[targetIdx]--;
+          daysToReduce--;
+        }
+
+        subtasks.forEach((s, idx) => {
+          s.duration = currentDurations[idx];
+        });
+      }
+    }
+  }
+
   const computed: Record<string, RawGanttRow & { startDate?: Date; endDate?: Date }> = {};
-  rows.forEach(r => {
+  clonedRows.forEach(r => {
     computed[r.id] = { ...r };
   });
 
@@ -100,14 +175,14 @@ function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGantt
   }
 
   // Resolve sub-tasks first
-  rows.forEach(r => {
+  clonedRows.forEach(r => {
     if (r.type === "sub-task") {
       resolveRow(r.id);
     }
   });
 
   // Roll up Task ranges (Parents of Sub-tasks)
-  rows.forEach(r => {
+  clonedRows.forEach(r => {
     if (r.type === "task") {
       const children = Object.values(computed).filter(c => c.parentId === r.id);
       if (children.length > 0) {
@@ -128,7 +203,7 @@ function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGantt
   });
 
   // Roll up Milestone ranges (Parents of Tasks)
-  rows.forEach(r => {
+  clonedRows.forEach(r => {
     if (r.type === "milestone") {
       const children = Object.values(computed).filter(c => c.parentId === rowIdToParentId(c.id));
       if (children.length > 0) {
@@ -208,6 +283,38 @@ export default function GanttPage() {
   const leftScrollRef = React.useRef<HTMLDivElement>(null);
   const rightScrollRef = React.useRef<HTMLDivElement>(null);
 
+  // Load festStartDate from config on mount
+  React.useEffect(() => {
+    async function loadConfig() {
+      try {
+        const res = await fetch("/api/v1/admin/config");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data?.festStartDate) {
+            setFestStartDate(new Date(json.data.festStartDate));
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch system config:", e);
+      }
+    }
+    loadConfig();
+  }, []);
+
+  // Save festStartDate on change
+  const handleUpdateFestStartDate = async (newDate: Date) => {
+    setFestStartDate(newDate);
+    try {
+      await fetch("/api/v1/admin/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ festStartDate: format(newDate, "yyyy-MM-dd") }),
+      });
+    } catch (e) {
+      console.error("Failed to save fest start date:", e);
+    }
+  };
+
   // Dynamic WBS data calculations
   const computedRows = React.useMemo(() => {
     return calculateGanttDates(ganttRows, festStartDate);
@@ -227,6 +334,7 @@ export default function GanttPage() {
 
     return milestones.map(m => {
       const mTasks = tasks.filter(t => t.parentId === m.id);
+      const mComputed = computedRows.find(r => r.id === m.id);
       
       return {
         id: m.id,
@@ -235,8 +343,21 @@ export default function GanttPage() {
         colorCode: milestoneColorCodes[m.id] || "#3b82f6",
         depth: 0,
         parentId: null,
+        taskData: {
+          id: m.id,
+          startDate: mComputed?.startDate ? mComputed.startDate.toISOString() : null,
+          endDate: mComputed?.endDate ? mComputed.endDate.toISOString() : null,
+          dueDate: mComputed?.endDate ? mComputed.endDate.toISOString() : null,
+          status: "NOT_STARTED",
+          priority: "MEDIUM",
+          progressPercent: 0,
+          dependsOnIds: [],
+          verticalId: m.id,
+          eventId: null,
+        },
         children: mTasks.map(t => {
           const tSubs = subTasks.filter(s => s.parentId === t.id);
+          const tComputed = computedRows.find(r => r.id === t.id);
           
           return {
             id: t.id,
@@ -244,6 +365,18 @@ export default function GanttPage() {
             title: `${t.id} ${t.name}`,
             depth: 1,
             parentId: m.id,
+            taskData: {
+              id: t.id,
+              startDate: tComputed?.startDate ? tComputed.startDate.toISOString() : null,
+              endDate: tComputed?.endDate ? tComputed.endDate.toISOString() : null,
+              dueDate: tComputed?.endDate ? tComputed.endDate.toISOString() : null,
+              status: "NOT_STARTED",
+              priority: "MEDIUM",
+              progressPercent: 0,
+              dependsOnIds: [],
+              verticalId: m.id,
+              eventId: t.id,
+            },
             children: tSubs.map(s => ({
               id: s.id,
               type: "task",
@@ -307,22 +440,71 @@ export default function GanttPage() {
     });
   };
 
+  // Constants for timeline range based on selected filter
+  const { timelineStart, totalTimelineDays } = React.useMemo(() => {
+    switch (zoomLevel) {
+      case "day":
+        return {
+          timelineStart: festStartDate,
+          totalTimelineDays: 1
+        };
+      case "week":
+        return {
+          timelineStart: startOfWeek(festStartDate, { weekStartsOn: 1 }),
+          totalTimelineDays: 7
+        };
+      case "month":
+        const start = startOfMonth(festStartDate);
+        const end = endOfMonth(festStartDate);
+        return {
+          timelineStart: start,
+          totalTimelineDays: differenceInDays(end, start) + 1
+        };
+    }
+  }, [zoomLevel, festStartDate]);
+
+  const dayWidth = React.useMemo(() => {
+    switch (zoomLevel) {
+      case "day": return 350;
+      case "week": return 120;
+      case "month": return 35;
+    }
+  }, [zoomLevel]);
+
+  const timelineDays = React.useMemo(() => {
+    return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
+  }, [timelineStart, totalTimelineDays]);
+
+  // Hierarchical node visibility filter check
+  const isNodeVisible = React.useCallback((node: any): boolean => {
+    const rangeStart = timelineStart;
+    const rangeEnd = addDays(timelineStart, totalTimelineDays - 1);
+
+    if (node.type === "task" && node.taskData) {
+      const taskStart = node.taskData.startDate ? new Date(node.taskData.startDate) : null;
+      const taskEnd = node.taskData.endDate ? new Date(node.taskData.endDate) : null;
+      
+      if (!taskStart || !taskEnd) return false;
+      const overlapsRange = taskStart <= rangeEnd && taskEnd >= rangeStart;
+      
+      const matchesStatus = statusFilter === "all" || node.taskData.status === statusFilter;
+      const matchesPriority = priorityFilter === "all" || node.taskData.priority === priorityFilter;
+      const matchesSearch = !searchQuery || node.title.toLowerCase().includes(searchQuery.toLowerCase()) || node.id.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      return overlapsRange && matchesStatus && matchesPriority && matchesSearch;
+    }
+
+    // Milestones and Tasks (Verticals/Events) are visible if they have at least one visible child
+    return node.children.some((child: any) => isNodeVisible(child));
+  }, [timelineStart, totalTimelineDays, statusFilter, priorityFilter, searchQuery]);
+
   const flattenTree = (nodes: any[]): any[] => {
     const list: any[] = [];
     
     function recurse(n: any) {
-      const matchesSearch = !searchQuery || n.title.toLowerCase().includes(searchQuery.toLowerCase()) || n.id.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      let satisfiesFilters = true;
-      if (n.type === "task" && n.taskData) {
-        const matchesStatus = statusFilter === "all" || n.taskData.status === statusFilter;
-        const matchesPriority = priorityFilter === "all" || n.taskData.priority === priorityFilter;
-        satisfiesFilters = matchesStatus && matchesPriority;
-      }
+      if (!isNodeVisible(n)) return;
 
-      if (satisfiesFilters) {
-        list.push(n);
-      }
+      list.push(n);
 
       const isExpanded = expandedIds.has(n.id);
       if (isExpanded && n.children && n.children.length > 0) {
@@ -344,22 +526,6 @@ export default function GanttPage() {
     });
     return map;
   }, [flatNodes]);
-
-  // Constants for timeline
-  const timelineStart = React.useMemo(() => addDays(festStartDate, -160), [festStartDate]);
-  const totalTimelineDays = 210; // Spans from -160 to +50 days
-
-  const dayWidth = React.useMemo(() => {
-    switch (zoomLevel) {
-      case "day": return 60;
-      case "week": return 25;
-      case "month": return 8;
-    }
-  }, [zoomLevel]);
-
-  const timelineDays = React.useMemo(() => {
-    return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
-  }, [timelineStart]);
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -687,7 +853,7 @@ export default function GanttPage() {
               onChange={(e) => {
                 const newDate = parseISO(e.target.value);
                 if (!isNaN(newDate.getTime())) {
-                  setFestStartDate(newDate);
+                  handleUpdateFestStartDate(newDate);
                 }
               }}
             />
@@ -994,43 +1160,46 @@ export default function GanttPage() {
 
           {/* Split Pane: Right Timeline Panel */}
           <div className="flex-1 flex flex-col h-full overflow-hidden relative z-10">
-            {/* Timeline Days Header (Horizontal Scrolling Header) */}
-            <div className="h-12 border-b border-white/10 flex bg-white/[0.01] shrink-0 overflow-hidden relative">
-              <div 
-                className="flex absolute left-0 top-0 h-full"
-                style={{ width: timelineDays.length * dayWidth }}
-              >
-                {timelineDays.map((day, i) => {
-                  const isWeekend = day.getDay() === 0 || day.getDay() === 6;
-                  const isTodayDate = format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
-
-                  return (
-                    <div 
-                      key={i} 
-                      className={`shrink-0 border-r border-white/5 flex flex-col items-center justify-center p-1 relative h-full ${
-                        isTodayDate ? "bg-indigo-500/5" : ""
-                      }`}
-                      style={{ width: dayWidth }}
-                    >
-                      <span className="text-[8px] tracking-wider text-muted-foreground font-semibold uppercase">{format(day, 'MMM')}</span>
-                      <span className={`text-[11px] ${
-                        isTodayDate ? 'text-indigo-400 font-bold' : 
-                        isWeekend ? 'text-amber-500/75' : 'text-foreground/90'
-                      }`}>
-                        {format(day, 'dd')}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* Scrollable Timeline Grid Container */}
             <div 
               ref={rightScrollRef}
               onScroll={handleRightScroll}
               className="flex-1 overflow-auto custom-scrollbar relative bg-white/[0.005]"
             >
+              {/* Timeline Days Header (Horizontal Scrolling Header) */}
+              <div 
+                className="h-12 border-b border-white/10 flex bg-[#05070c] shrink-0 sticky top-0 z-30 overflow-hidden relative"
+                style={{ width: timelineDays.length * dayWidth }}
+              >
+                <div 
+                  className="flex absolute left-0 top-0 h-full"
+                  style={{ width: timelineDays.length * dayWidth }}
+                >
+                  {timelineDays.map((day, i) => {
+                    const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+                    const isTodayDate = format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+
+                    return (
+                      <div 
+                        key={i} 
+                        className={`shrink-0 border-r border-white/5 flex flex-col items-center justify-center p-1 relative h-full ${
+                          isTodayDate ? "bg-indigo-500/5" : ""
+                        }`}
+                        style={{ width: dayWidth }}
+                      >
+                        <span className="text-[8px] tracking-wider text-muted-foreground font-semibold uppercase">{format(day, 'MMM')}</span>
+                        <span className={`text-[11px] ${
+                          isTodayDate ? 'text-indigo-400 font-bold' : 
+                          isWeekend ? 'text-amber-500/75' : 'text-foreground/90'
+                        }`}>
+                          {format(day, 'dd')}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Timeline Grid Body */}
               <div 
                 className="relative min-h-full divide-y divide-white/5"
@@ -1127,7 +1296,7 @@ export default function GanttPage() {
                       </div>
 
                       {/* Timeline Task/Summary Bar */}
-                      {width > 0 && node.taskData && (
+                      {width > 0 && node.taskData && (node.type === "task" || !expandedIds.has(node.id)) && (
                         <div 
                           onClick={() => handleOpenDetails(node.taskData!)}
                           className={`absolute h-7 rounded-md border flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.4)] px-2.5 group cursor-pointer transition-all ${

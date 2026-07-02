@@ -40,7 +40,7 @@ export default function AdminLayout({
   }, [pathname]);
 
   return (
-    <div className="flex min-h-screen bg-background relative overflow-hidden">
+    <div className="flex h-screen bg-background relative overflow-hidden">
       <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (

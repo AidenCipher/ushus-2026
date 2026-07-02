@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Search, Plus, Loader2, Calendar, MapPin, DollarSign, Users, Pencil, Trash2 } from "lucide-react";
+import { Trophy, Search, Plus, Loader2, Calendar, MapPin, IndianRupee, Users, Pencil, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -479,7 +479,7 @@ export default function AdminEventsPage() {
                     <MapPin className="w-3.5 h-3.5 text-rose-400/80" /> {event.venue || "TBD"}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <DollarSign className="w-3.5 h-3.5 text-rose-400/80" /> {event.prizePool || "TBD"}
+                    <IndianRupee className="w-3.5 h-3.5 text-rose-400/80" /> {event.prizePool || "TBD"}
                   </span>
                   <span className="flex items-center gap-1.5 col-span-2 mt-1">
                     <Users className="w-3.5 h-3.5 text-rose-400/80" /> Capacity Limit: <strong className="text-foreground">{event.maxParticipants || "Unlimited"}</strong>

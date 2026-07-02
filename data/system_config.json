@@ -2,5 +2,6 @@
   "phase": "pre-event",
   "maxReg": "50",
   "allowReg": false,
-  "maintenance": false
+  "maintenance": false,
+  "festStartDate": "2026-11-06"
 }

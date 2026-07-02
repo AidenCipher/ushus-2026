@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { CalendarEventCreateSchema } from "@/lib/validations/calendar.schema";
 import { hasPermission } from "@/lib/permissions";
 import type { Prisma, Role } from "@prisma/client";
+import { getSystemConfig } from "@/lib/system_config";
 
 export async function GET(req: Request) {
   try {
@@ -46,6 +47,17 @@ export async function GET(req: Request) {
         { verticalId: null },
         { verticalId: session.user.verticalId || undefined }
       ];
+    } else if (userRole === "PARTICIPANT") {
+      const config = getSystemConfig();
+      const festStart = new Date(config.festStartDate);
+      festStart.setHours(0, 0, 0, 0);
+      const festEnd = new Date(festStart);
+      festEnd.setDate(festEnd.getDate() + 2); // End of day 2
+      
+      where.startDatetime = {
+        gte: festStart,
+        lt: festEnd,
+      };
     }
 
     const [events, tasks] = await Promise.all([
@@ -57,35 +69,39 @@ export async function GET(req: Request) {
         },
         orderBy: { startDatetime: "asc" },
       }),
-      prisma.task.findMany({
-        where: {
-          startDate: { not: null },
-          endDate: { not: null },
-          verticalId: verticalId || (userRole === "ORGANISER" || userRole === "VOLUNTEER" ? session.user.verticalId || undefined : undefined),
-        },
-        include: {
-          vertical: { select: { id: true, name: true, colorCode: true } },
-          event: { select: { id: true, name: true } },
-        },
-        orderBy: { startDate: "asc" },
-      }),
+      userRole === "PARTICIPANT"
+        ? Promise.resolve([])
+        : prisma.task.findMany({
+            where: {
+              startDate: { not: null },
+              endDate: { not: null },
+              verticalId: verticalId || (userRole === "ORGANISER" || userRole === "VOLUNTEER" ? session.user.verticalId || undefined : undefined),
+            },
+            include: {
+              vertical: { select: { id: true, name: true, colorCode: true } },
+              event: { select: { id: true, name: true } },
+            },
+            orderBy: { startDate: "asc" },
+          }),
     ]);
 
-    const mappedTasks = tasks.map((task) => ({
-      id: `task_${task.id}`,
-      title: `[Task] ${task.title}`,
-      description: task.description || "",
-      eventId: task.eventId || null,
-      verticalId: task.verticalId || null,
-      startDatetime: task.startDate,
-      endDatetime: task.endDate || task.dueDate || task.startDate,
-      status: task.status,
-      colorCode: task.vertical?.colorCode || "#003580",
-      createdById: task.assignedById || "",
-      vertical: task.vertical,
-      event: task.event,
-      isTask: true,
-    }));
+    const mappedTasks = userRole === "PARTICIPANT" 
+      ? [] 
+      : tasks.map((task) => ({
+          id: `task_${task.id}`,
+          title: `[Task] ${task.title}`,
+          description: task.description || "",
+          eventId: task.eventId || null,
+          verticalId: task.verticalId || null,
+          startDatetime: task.startDate,
+          endDatetime: task.endDate || task.dueDate || task.startDate,
+          status: task.status,
+          colorCode: task.vertical?.colorCode || "#003580",
+          createdById: task.assignedById || "",
+          vertical: task.vertical,
+          event: task.event,
+          isTask: true,
+        }));
 
     const combined = [...events, ...mappedTasks];
 

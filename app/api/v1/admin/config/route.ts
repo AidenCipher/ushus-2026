@@ -31,6 +31,7 @@ function loadConfig() {
     maxReg: "50",
     allowReg: true,
     maintenance: false,
+    festStartDate: "2026-11-06",
   };
 }
 
@@ -75,6 +76,7 @@ export async function POST(req: Request) {
       maxReg: String(body.maxReg ?? current.maxReg),
       allowReg: body.allowReg ?? current.allowReg,
       maintenance: body.maintenance ?? current.maintenance,
+      festStartDate: body.festStartDate ?? current.festStartDate,
     };
 
     saveConfig(updated);

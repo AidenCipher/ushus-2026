@@ -101,19 +101,21 @@ export const FEST_CONTENT = {
   },
 
   verticals: [
-    { name: "Core Team", colorCode: "#E63946" },
-    { name: "Registration Team", colorCode: "#2A9D8F" },
-    { name: "Sponsorship Team", colorCode: "#E9C46A" },
-    { name: "Marketing Team", colorCode: "#264653" },
-    { name: "Logistics & Operations Team", colorCode: "#F4A261" },
-    { name: "Creative Team", colorCode: "#8338EC" },
-    { name: "Hospitality Team", colorCode: "#3A86FF" },
+    { name: "Best Manager", colorCode: "#E63946" },
+    { name: "Best Management Team", colorCode: "#2A9D8F" },
+    { name: "B Quiz", colorCode: "#E9C46A" },
+    { name: "Finance", colorCode: "#264653" },
+    { name: "Marketing", colorCode: "#F4A261" },
+    { name: "Operations", colorCode: "#8338EC" },
+    { name: "HR", colorCode: "#3A86FF" },
+    { name: "Business Analytics", colorCode: "#FF006E" },
+    { name: "Sustainability", colorCode: "#38B000" },
   ],
 
   events: [
     {
       name: "Best Manager",
-      vertical: "Core Team",
+      vertical: "Best Manager",
       description: "The ultimate test of leadership, strategy, and business acumen. One individual will rise above the rest as the Best Manager.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹50,000",
@@ -122,7 +124,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "Best Management Team",
-      vertical: "Core Team",
+      vertical: "Best Management Team",
       description: "A collaborative challenge testing team dynamics, synergy, and execution across all business disciplines.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹40,000",
@@ -131,7 +133,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "B Quiz",
-      vertical: "Marketing Team",
+      vertical: "B Quiz",
       description: "A battle of wits and intelligence covering business history, current affairs, and global industry trends.",
       dateRange: "November 6, 2026",
       prizePool: "₹20,000",
@@ -140,7 +142,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "Finance",
-      vertical: "Sponsorship Team",
+      vertical: "Finance",
       description: "Test financial engineering, asset valuations, and portfolio defense under extreme volatility.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
@@ -149,7 +151,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "Marketing",
-      vertical: "Marketing Team",
+      vertical: "Marketing",
       description: "Design and present disruptive brand campaigns, product launches, and growth hacking strategies.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
@@ -158,7 +160,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "Operations",
-      vertical: "Logistics & Operations Team",
+      vertical: "Operations",
       description: "Solve complex logistics bottlenecks, warehouse configurations, and lean process designs.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
@@ -167,16 +169,16 @@ export const FEST_CONTENT = {
     },
     {
       name: "HR",
-      vertical: "Hospitality Team",
+      vertical: "HR",
       description: "Simulated boardroom scenarios focusing on negotiations, talent optimization, and organizational behavioral policy.",
       dateRange: "November 6-7, 2026",
-      prizePool: "₹30,000",
+      prizePool: "₹30,005",
       teamSize: "2 members",
       eligibility: "MBA / PGDM students",
     },
     {
       name: "Business Analytics",
-      vertical: "Registration Team",
+      vertical: "Business Analytics",
       description: "Sift through big data to extract commercial insights, predict trends, and deliver predictive modeling.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",
@@ -185,7 +187,7 @@ export const FEST_CONTENT = {
     },
     {
       name: "Sustainability",
-      vertical: "Creative Team",
+      vertical: "Sustainability",
       description: "Develop corporate action plans resolving carbon footprinting, greenwashing, and circular economy compliance.",
       dateRange: "November 6-7, 2026",
       prizePool: "₹30,000",

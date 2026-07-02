@@ -28,10 +28,27 @@ export default function RegisterPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [allowReg, setAllowReg] = React.useState(true);
+  const [configLoading, setConfigLoading] = React.useState(true);
 
   // Clear any existing active session (like Admin) when hitting the registration page
   React.useEffect(() => {
     signOut({ redirect: false });
+    
+    async function checkRegistrations() {
+      try {
+        const res = await fetch("/api/v1/admin/config");
+        if (res.ok) {
+          const json = await res.json();
+          setAllowReg(json.data.allowReg);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setConfigLoading(false);
+      }
+    }
+    checkRegistrations();
   }, []);
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
@@ -73,6 +90,43 @@ export default function RegisterPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (configLoading) {
+    return (
+      <Card className="glass border-white/10 w-full shadow-2xl max-w-md mx-auto">
+        <CardContent className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground text-sm">Checking registration status...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!allowReg) {
+    return (
+      <Card className="glass border-white/10 w-full shadow-2xl max-w-md mx-auto">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl font-bold tracking-tight">Registrations Closed</CardTitle>
+          <CardDescription>
+            The registration portal is currently inactive
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center p-6 text-center space-y-4">
+          <div className="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mb-2 border border-amber-500/20">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+          <p className="text-sm text-slate-350 leading-relaxed">
+            USHUS 2026 registration has closed or been suspended by the administrators. Please contact the Christ University MBA Fest Organising Committee if you believe this is in error.
+          </p>
+        </CardContent>
+        <CardFooter className="flex justify-center border-t border-white/5 pt-6 pb-6">
+          <Link href="/login" className="text-primary hover:underline text-sm font-medium">
+            Sign In with existing account
+          </Link>
+        </CardFooter>
+      </Card>
+    );
   }
 
   if (success) {

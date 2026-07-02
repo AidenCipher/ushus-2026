@@ -21,7 +21,7 @@ export default function VenuePage() {
     <div className="space-y-6 max-w-5xl">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Venue & Maps</h1>
-        <p className="text-muted-foreground mt-1">Navigate Christ University Bangalore Central Campus with ease.</p>
+        <p className="text-muted-foreground mt-1">Navigate Christ University Hosur Road Campus with ease.</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -44,7 +44,7 @@ export default function VenuePage() {
                     allowFullScreen={true} 
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Christ University Central Campus Map"
+                    title="Christ University Hosur Road Campus Map"
                     className="absolute inset-0"
                   />
                 </CardContent>

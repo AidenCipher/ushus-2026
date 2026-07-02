@@ -3,9 +3,18 @@ import { prisma } from "@/lib/db";
 import { RegisterSchema } from "@/lib/validations/auth.schema";
 import { hash } from "bcryptjs";
 import { Role } from "@prisma/client";
+import { getSystemConfig } from "@/lib/system_config";
 
 export async function POST(req: Request) {
   try {
+    const config = getSystemConfig();
+    if (!config.allowReg) {
+      return NextResponse.json(
+        { success: false, error: "Registrations are currently closed." },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const parsed = RegisterSchema.safeParse(body);
     
