@@ -11,9 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
-import { addDays, format, differenceInDays, subDays, parseISO, startOfWeek, startOfMonth, endOfMonth } from "date-fns";
+import { addDays, format, differenceInDays, subDays, parseISO, startOfWeek, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { 
-  Plus, Filter, Settings, Loader2, ChevronDown, ChevronRight, User, Circle,
+  Plus, Filter, Settings, Loader2, ChevronDown, ChevronRight, ChevronLeft, User, Circle,
   Calendar as CalendarIcon, ZoomIn, ZoomOut, Check, ArrowRight, RefreshCw,
   Edit2, Trash2, CheckSquare, Clock, AlertTriangle, FileSpreadsheet, Lock
 } from "lucide-react";
@@ -247,6 +247,15 @@ export default function GanttPage() {
   const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-06"));
   const [ganttRows, setGanttRows] = React.useState<any[]>(GANTT_MASTER_DATA);
 
+  // Active view window and filter state
+  const [focusDate, setFocusDate] = React.useState<Date>(new Date("2026-11-06"));
+  const [filterByDateRange, setFilterByDateRange] = React.useState<boolean>(false);
+
+  // Sync focus date with master start date changes
+  React.useEffect(() => {
+    setFocusDate(festStartDate);
+  }, [festStartDate]);
+
   // Expanded nodes map
   const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
 
@@ -315,7 +324,38 @@ export default function GanttPage() {
     }
   };
 
-  // Dynamic WBS data calculations
+  const handlePrevDate = () => {
+    setFocusDate(prev => {
+      switch (zoomLevel) {
+        case "day": return addDays(prev, -1);
+        case "week": return addDays(prev, -7);
+        case "month": return subMonths(prev, 1);
+      }
+    });
+  };
+
+  const handleNextDate = () => {
+    setFocusDate(prev => {
+      switch (zoomLevel) {
+        case "day": return addDays(prev, 1);
+        case "week": return addDays(prev, 7);
+        case "month": return addMonths(prev, 1);
+      }
+    });
+  };
+
+  const formatFocusDateLabel = () => {
+    switch (zoomLevel) {
+      case "day":
+        return format(focusDate, "dd MMM yyyy");
+      case "week":
+        const start = startOfWeek(focusDate, { weekStartsOn: 1 });
+        const end = addDays(start, 6);
+        return `${format(start, "dd MMM")} - ${format(end, "dd MMM yyyy")}`;
+      case "month":
+        return format(focusDate, "MMMM yyyy");
+    }
+  };
   const computedRows = React.useMemo(() => {
     return calculateGanttDates(ganttRows, festStartDate);
   }, [ganttRows, festStartDate]);
@@ -442,34 +482,47 @@ export default function GanttPage() {
 
   // Constants for timeline range based on selected filter
   const { timelineStart, totalTimelineDays } = React.useMemo(() => {
+    if (!filterByDateRange) {
+      return {
+        timelineStart: addDays(festStartDate, -165), // Covers start of M1 (June 9)
+        totalTimelineDays: 220
+      };
+    }
     switch (zoomLevel) {
       case "day":
         return {
-          timelineStart: festStartDate,
+          timelineStart: focusDate,
           totalTimelineDays: 1
         };
       case "week":
         return {
-          timelineStart: startOfWeek(festStartDate, { weekStartsOn: 1 }),
+          timelineStart: startOfWeek(focusDate, { weekStartsOn: 1 }),
           totalTimelineDays: 7
         };
       case "month":
-        const start = startOfMonth(festStartDate);
-        const end = endOfMonth(festStartDate);
+        const start = startOfMonth(focusDate);
+        const end = endOfMonth(focusDate);
         return {
           timelineStart: start,
           totalTimelineDays: differenceInDays(end, start) + 1
         };
     }
-  }, [zoomLevel, festStartDate]);
+  }, [zoomLevel, focusDate, festStartDate, filterByDateRange]);
 
   const dayWidth = React.useMemo(() => {
+    if (!filterByDateRange) {
+      switch (zoomLevel) {
+        case "day": return 60;
+        case "week": return 25;
+        case "month": return 8;
+      }
+    }
     switch (zoomLevel) {
       case "day": return 350;
       case "week": return 120;
       case "month": return 35;
     }
-  }, [zoomLevel]);
+  }, [zoomLevel, filterByDateRange]);
 
   const timelineDays = React.useMemo(() => {
     return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
@@ -485,7 +538,7 @@ export default function GanttPage() {
       const taskEnd = node.taskData.endDate ? new Date(node.taskData.endDate) : null;
       
       if (!taskStart || !taskEnd) return false;
-      const overlapsRange = taskStart <= rangeEnd && taskEnd >= rangeStart;
+      const overlapsRange = !filterByDateRange || (taskStart <= rangeEnd && taskEnd >= rangeStart);
       
       const matchesStatus = statusFilter === "all" || node.taskData.status === statusFilter;
       const matchesPriority = priorityFilter === "all" || node.taskData.priority === priorityFilter;
@@ -496,7 +549,7 @@ export default function GanttPage() {
 
     // Milestones and Tasks (Verticals/Events) are visible if they have at least one visible child
     return node.children.some((child: any) => isNodeVisible(child));
-  }, [timelineStart, totalTimelineDays, statusFilter, priorityFilter, searchQuery]);
+  }, [timelineStart, totalTimelineDays, statusFilter, priorityFilter, searchQuery, filterByDateRange]);
 
   const flattenTree = (nodes: any[]): any[] => {
     const list: any[] = [];
@@ -891,6 +944,45 @@ export default function GanttPage() {
                 {zoom}
               </button>
             ))}
+          </div>
+
+          {/* Date Navigation Controls */}
+          {filterByDateRange && (
+            <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground p-0"
+                onClick={handlePrevDate}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="text-[10px] font-bold text-slate-300 px-2 min-w-[120px] text-center">
+                {formatFocusDateLabel()}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground p-0"
+                onClick={handleNextDate}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Filter by Date Toggle Checkbox */}
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5">
+            <input
+              type="checkbox"
+              id="filterByDateRange"
+              checked={filterByDateRange}
+              onChange={(e) => setFilterByDateRange(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-white/20 bg-[#0b0f19] text-indigo-500 focus:ring-indigo-500/30 focus:ring-offset-0 cursor-pointer"
+            />
+            <label htmlFor="filterByDateRange" className="text-xs font-semibold text-indigo-300 cursor-pointer select-none">
+              Filter by date
+            </label>
           </div>
 
           {/* Filters */}
