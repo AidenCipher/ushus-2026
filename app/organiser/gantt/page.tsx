@@ -205,7 +205,7 @@ function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGantt
   // Roll up Milestone ranges (Parents of Tasks)
   clonedRows.forEach(r => {
     if (r.type === "milestone") {
-      const children = Object.values(computed).filter(c => c.parentId === rowIdToParentId(c.id));
+      const children = Object.values(computed).filter(c => c.parentId === r.id);
       if (children.length > 0) {
         const starts = children.map(c => c.startDate).filter(Boolean) as Date[];
         const ends = children.map(c => c.endDate).filter(Boolean) as Date[];
@@ -235,7 +235,7 @@ function rowIdToParentId(id: string): string | null {
 export default function GanttPage() {
   const { data: session } = useSession();
   const userRole = session?.user?.role || "VOLUNTEER";
-  const isOrganiserOrAdmin = userRole === "ADMIN";
+  const isOrganiserOrAdmin = userRole === "ADMIN" || userRole === "ORGANISER";
 
   const [loading, setLoading] = React.useState(true);
   const [zoomLevel, setZoomLevel] = React.useState<"day" | "week" | "month">("week");
@@ -848,7 +848,8 @@ export default function GanttPage() {
             <label className="text-xs font-semibold text-indigo-300">Fest Start Date:</label>
             <Input
               type="date"
-              className="w-36 bg-[#0b0f19] border-white/10 text-xs h-7 py-0"
+              disabled={!isOrganiserOrAdmin}
+              className="w-36 bg-[#0b0f19] border-white/10 text-xs h-7 py-0 disabled:opacity-50 disabled:cursor-not-allowed"
               value={format(festStartDate, "yyyy-MM-dd")}
               onChange={(e) => {
                 const newDate = parseISO(e.target.value);

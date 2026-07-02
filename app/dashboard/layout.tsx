@@ -15,7 +15,8 @@ import {
   LogOut,
   Sparkles,
   MapPin,
-  Hotel
+  Hotel,
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
@@ -26,6 +27,7 @@ const sidebarLinks = [
   { name: "My Registration", href: "/dashboard", icon: LayoutDashboard },
   { name: "Event Details", href: "/dashboard/events", icon: Trophy },
   { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays },
+  { name: "Gantt Timeline", href: "/dashboard/gantt", icon: Calendar },
   { name: "Venue & Maps", href: "/dashboard/venue", icon: MapPin },
   { name: "Accommodation", href: "/dashboard/accommodation", icon: Hotel },
   { name: "Contacts", href: "/dashboard/contacts", icon: Users },
