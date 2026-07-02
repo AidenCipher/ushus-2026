@@ -238,7 +238,7 @@ export default function GanttPage() {
   const isOrganiserOrAdmin = userRole === "ADMIN" || userRole === "ORGANISER";
 
   const [loading, setLoading] = React.useState(true);
-  const [zoomLevel, setZoomLevel] = React.useState<"day" | "week" | "month">("week");
+  const [zoomLevel, setZoomLevel] = React.useState<"day" | "week">("week");
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [priorityFilter, setPriorityFilter] = React.useState("all");
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -329,7 +329,6 @@ export default function GanttPage() {
       switch (zoomLevel) {
         case "day": return addDays(prev, -1);
         case "week": return addDays(prev, -7);
-        case "month": return subMonths(prev, 1);
       }
     });
   };
@@ -339,7 +338,6 @@ export default function GanttPage() {
       switch (zoomLevel) {
         case "day": return addDays(prev, 1);
         case "week": return addDays(prev, 7);
-        case "month": return addMonths(prev, 1);
       }
     });
   };
@@ -352,8 +350,6 @@ export default function GanttPage() {
         const start = startOfWeek(focusDate, { weekStartsOn: 1 });
         const end = addDays(start, 6);
         return `${format(start, "dd MMM")} - ${format(end, "dd MMM yyyy")}`;
-      case "month":
-        return format(focusDate, "MMMM yyyy");
     }
   };
   const computedRows = React.useMemo(() => {
@@ -499,13 +495,6 @@ export default function GanttPage() {
           timelineStart: startOfWeek(focusDate, { weekStartsOn: 1 }),
           totalTimelineDays: 7
         };
-      case "month":
-        const start = startOfMonth(focusDate);
-        const end = endOfMonth(focusDate);
-        return {
-          timelineStart: start,
-          totalTimelineDays: differenceInDays(end, start) + 1
-        };
     }
   }, [zoomLevel, focusDate, festStartDate, filterByDateRange]);
 
@@ -514,19 +503,31 @@ export default function GanttPage() {
       switch (zoomLevel) {
         case "day": return 60;
         case "week": return 25;
-        case "month": return 8;
       }
     }
     switch (zoomLevel) {
       case "day": return 350;
       case "week": return 120;
-      case "month": return 35;
     }
   }, [zoomLevel, filterByDateRange]);
 
   const timelineDays = React.useMemo(() => {
     return Array.from({ length: totalTimelineDays }).map((_, i) => addDays(timelineStart, i));
   }, [timelineStart, totalTimelineDays]);
+
+  const getTodayLineOffset = React.useCallback(() => {
+    const today = new Date();
+    const start = timelineStart;
+    const end = addDays(timelineStart, totalTimelineDays);
+    if (today >= start && today <= end) {
+      const startMs = start.getTime();
+      const endMs = end.getTime();
+      const todayMs = today.getTime();
+      const ratio = (todayMs - startMs) / (endMs - startMs);
+      return ratio * totalTimelineDays * dayWidth;
+    }
+    return null;
+  }, [timelineStart, totalTimelineDays, dayWidth]);
 
   // Hierarchical node visibility filter check
   const isNodeVisible = React.useCallback((node: any): boolean => {
@@ -931,7 +932,7 @@ export default function GanttPage() {
 
           {/* Zoom Selector */}
           <div className="flex bg-white/5 border border-white/10 rounded-lg p-1">
-            {(["day", "week", "month"] as const).map(zoom => (
+            {(["day", "week"] as const).map(zoom => (
               <button
                 key={zoom}
                 onClick={() => setZoomLevel(zoom)}
@@ -1299,6 +1300,22 @@ export default function GanttPage() {
                 style={{ width: timelineDays.length * dayWidth }}
               >
                 
+                {/* Today vertical line overlay */}
+                {(() => {
+                  const todayOffset = getTodayLineOffset();
+                  if (todayOffset === null) return null;
+                  return (
+                    <div 
+                      className="absolute top-0 bottom-0 w-0.5 bg-indigo-500/80 z-20 pointer-events-none shadow-[0_0_8px_rgba(99,102,241,0.6)]"
+                      style={{ left: todayOffset }}
+                    >
+                      <div className="absolute top-1 -left-4 bg-indigo-600 text-[8px] font-extrabold px-1.5 py-0.5 rounded text-indigo-100 uppercase tracking-wider shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+                        Today
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {/* SVG Dependency Line Connector Layer */}
                 <svg className="absolute inset-0 pointer-events-none z-10 w-full h-full">
                   <defs>
