@@ -199,11 +199,11 @@ export const authConfig: NextAuthConfig = {
 
   cookies: {
     sessionToken: {
-      name: "ushus-session-token",
+      name: process.env.NODE_ENV === "production" ? "__Secure-ushus-session-token" : "ushus-session-token",
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
         path: "/",
       },
     },
