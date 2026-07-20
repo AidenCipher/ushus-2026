@@ -132,7 +132,7 @@ export default function StoryPage() {
             <div className="p-6 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-bold">USHUS 2026</h3>
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Theme: Constellation I</span>
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(201, 168, 76, 0.15)", color: "#C9A84C", border: "1px solid rgba(201, 168, 76, 0.3)", fontFamily: "'Cinzel', serif" }}>Theme: VIRENZA</span>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Expanding to 10 events across marketing, HR, and operations, USHUS 2026 hit a record 1,500 registrations. The introduction of complex cross-domain corporate crisis scenarios pushed participants to think holistically.
@@ -194,7 +194,7 @@ export default function StoryPage() {
         <div className="text-center pt-8 border-t border-white/10 space-y-6">
           <h2 className="text-2xl font-bold">Ready to write your own chapter?</h2>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            USHUS 2026 is coming on November 6th and 7th. Join 500+ participants competing for the ultimate management glory.
+            USHUS 2026 is coming on November 4th and 5th. Join 600+ participants competing for the ultimate management glory.
           </p>
           <Link href="/register">
             <Button size="lg" className="shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_30px_rgba(var(--primary),0.5)] transition-all">

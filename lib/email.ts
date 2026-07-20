@@ -61,7 +61,7 @@ export async function sendPasswordResetEmail(
         <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
           <div style="text-align: center; margin-bottom: 32px;">
             <h1 style="color: #003580; font-size: 24px; margin: 0;">USHUS 2026</h1>
-            <p style="color: #6C757D; font-size: 14px; margin-top: 4px;">Constellation — Illuminate your potential</p>
+            <p style="color: #6C757D; font-size: 14px; margin-top: 4px;">VIRENZA — Ancient wisdom. Modern leaders.</p>
           </div>
           <h2 style="color: #1A1A2E; font-size: 20px;">Password Reset</h2>
           <p style="color: #4a4a4a; line-height: 1.6;">

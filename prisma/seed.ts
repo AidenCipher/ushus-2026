@@ -29,15 +29,16 @@ async function main() {
   // ─── Create Event Verticals ─────────────────────────────────────────────────────
   console.log("📁 Creating event verticals...");
   const verticalsData = [
-    { name: "Best Manager", description: "Best Manager event vertical", colorCode: "#E63946" },
-    { name: "Best Management Team", description: "Best Management Team event vertical", colorCode: "#2A9D8F" },
-    { name: "B Quiz", description: "B Quiz event vertical", colorCode: "#E9C46A" },
-    { name: "Finance", description: "Finance event vertical", colorCode: "#264653" },
-    { name: "Marketing", description: "Marketing event vertical", colorCode: "#F4A261" },
-    { name: "Operations", description: "Operations event vertical", colorCode: "#8338EC" },
-    { name: "HR", description: "HR event vertical", colorCode: "#3A86FF" },
-    { name: "Business Analytics", description: "Business Analytics event vertical", colorCode: "#FF006E" },
-    { name: "Sustainability", description: "Sustainability event vertical", colorCode: "#38B000" },
+    { name: "Best Manager", description: "MAURYA - Best Manager", colorCode: "#C8102E" },
+    { name: "Best Management Team", description: "ASHTAPRADHAN - Best Management Team", colorCode: "#A67C00" },
+    { name: "B-Quiz", description: "PALLAVA - B-Quiz", colorCode: "#8B0000" },
+    { name: "Finance", description: "SATAVAHANA - Finance", colorCode: "#B8860B" },
+    { name: "Marketing", description: "MUGHAL - Marketing", colorCode: "#9B2335" },
+    { name: "Business Plan", description: "VIJAYANAGARA - Business Plan", colorCode: "#A0522D" },
+    { name: "HR", description: "GUPTA - HR", colorCode: "#6B0F1A" },
+    { name: "Business Analytics (BA)", description: "CHOLA - Business Analytics (BA)", colorCode: "#8B6914" },
+    { name: "Logistics, Operations & Systems (LOS)", description: "KAKATIYA - Logistics, Operations & Systems (LOS)", colorCode: "#7B5E00" },
+    { name: "Strategy", description: "CHALUKYA - Strategy", colorCode: "#722F37" },
   ];
 
   const verticals = await Promise.all(
@@ -110,22 +111,23 @@ async function main() {
     },
   });
 
-  // ─── Create Events (9 events corresponding to verticals) ─────────────────────
+  // ─── Create Events (10 events corresponding to verticals) ─────────────────────
   console.log("🎪 Creating events...");
-  const baseFestDateStart = new Date("2026-11-06T09:00:00");
-  const baseFestDateEnd = new Date("2026-11-07T18:00:00");
-  const baseDeadline = new Date("2026-10-27T23:59:59");
+  const baseFestDateStart = new Date("2026-11-04T09:00:00");
+  const baseFestDateEnd = new Date("2026-11-05T18:00:00");
+  const baseDeadline = new Date("2026-10-25T23:59:59");
 
   const eventData = [
-    { name: "Best Manager", vertical: verticalMap["Best Manager"], head: null, desc: "The ultimate leadership and business acumen test.", venue: "Auditorium A", prize: "₹50,000", max: 50 },
-    { name: "Best Management Team", vertical: verticalMap["Best Management Team"], head: null, desc: "Collaboration challenge testing group strategy.", venue: "Seminar Hall 1", prize: "₹40,000", max: 40 },
-    { name: "B Quiz", vertical: verticalMap["B Quiz"], head: null, desc: "Corporate quiz bowl.", venue: "Auditorium B", prize: "₹20,000", max: 100 },
-    { name: "Finance", vertical: verticalMap["Finance"], head: null, desc: "Asset valuations and portfolio defense.", venue: "Computer Lab 2", prize: "₹30,000", max: 80 },
-    { name: "Marketing", vertical: verticalMap["Marketing"], head: organiser, desc: "Disruptive brand campaigns.", venue: "Seminar Hall 2", prize: "₹30,000", max: 80 },
-    { name: "Operations", vertical: verticalMap["Operations"], head: null, desc: "Logistics bottlenecks and lean process design.", venue: "Computer Lab 1", prize: "₹30,000", max: 80 },
-    { name: "HR", vertical: verticalMap["HR"], head: null, desc: "Negotiations and talent optimization.", venue: "Conference Room A", prize: "₹30,000", max: 60 },
-    { name: "Business Analytics", vertical: verticalMap["Business Analytics"], head: null, desc: "Data insights and predictive modeling.", venue: "Computer Lab 3", prize: "₹30,000", max: 80 },
-    { name: "Sustainability", vertical: verticalMap["Sustainability"], head: null, desc: "Carbon footprint and green strategy.", venue: "Seminar Hall 3", prize: "₹30,000", max: 60 },
+    { name: "Best Manager", vertical: verticalMap["Best Manager"], head: null, desc: "MAURYA - The ultimate leadership and business acumen test.", venue: "Auditorium A", prize: "₹50,000", max: 50 },
+    { name: "Best Management Team", vertical: verticalMap["Best Management Team"], head: null, desc: "ASHTAPRADHAN - Collaboration challenge testing group strategy.", venue: "Seminar Hall 1", prize: "₹40,000", max: 40 },
+    { name: "B-Quiz", vertical: verticalMap["B-Quiz"], head: null, desc: "PALLAVA - Corporate quiz bowl of ideas.", venue: "Auditorium B", prize: "₹20,000", max: 100 },
+    { name: "Finance", vertical: verticalMap["Finance"], head: null, desc: "SATAVAHANA - Asset valuations and portfolio defense.", venue: "Computer Lab 2", prize: "₹30,000", max: 80 },
+    { name: "Marketing", vertical: verticalMap["Marketing"], head: organiser, desc: "MUGHAL - Disruptive brand campaigns.", venue: "Seminar Hall 2", prize: "₹30,000", max: 80 },
+    { name: "Business Plan", vertical: verticalMap["Business Plan"], head: null, desc: "VIJAYANAGARA - Build a scalable business plan.", venue: "Seminar Hall 3", prize: "₹30,000", max: 60 },
+    { name: "HR", vertical: verticalMap["HR"], head: null, desc: "GUPTA - Negotiations and talent optimization.", venue: "Conference Room A", prize: "₹30,000", max: 60 },
+    { name: "Business Analytics (BA)", vertical: verticalMap["Business Analytics (BA)"], head: null, desc: "CHOLA - Data insights and predictive modeling.", venue: "Computer Lab 3", prize: "₹30,000", max: 80 },
+    { name: "Logistics, Operations & Systems (LOS)", vertical: verticalMap["Logistics, Operations & Systems (LOS)"], head: null, desc: "KAKATIYA - Logistics bottlenecks and lean process design.", venue: "Computer Lab 1", prize: "₹30,000", max: 80 },
+    { name: "Strategy", vertical: verticalMap["Strategy"], head: null, desc: "CHALUKYA - Dynamic strategic execution under pressure.", venue: "Seminar Hall 4", prize: "₹30,000", max: 80 },
   ];
 
   const events = await Promise.all(
@@ -211,42 +213,44 @@ async function main() {
   }
 
   const taskTemplates: SeedTaskTemplate[] = [
-    // Best Manager Vertical Tasks
-    { title: "Design leadership rounds", vertIdx: 0, evtIdx: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -30, end: -20 },
-    { title: "Onboard judges for Best Manager", vertIdx: 0, evtIdx: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -15, end: -5 },
-    { title: "Prepare strategy case study", vertIdx: 0, evtIdx: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 50, start: -10, end: -1 },
+    // Best Manager
+    { title: "Design Maurya leadership rounds", vertIdx: 0, evtIdx: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -30, end: -20 },
+    { title: "Onboard judges for Maurya Best Manager", vertIdx: 0, evtIdx: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -15, end: -5 },
     
-    // Best Management Team Tasks
-    { title: "Draft Best Management Team schedule", vertIdx: 1, evtIdx: 1, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: -5, end: 0 },
-    { title: "Reserve presentation rooms", vertIdx: 1, evtIdx: 1, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -25, end: -15 },
+    // Best Management Team
+    { title: "Draft Ashtapradhan council structure", vertIdx: 1, evtIdx: 1, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: -5, end: 0 },
+    { title: "Reserve Ashtapradhan team rooms", vertIdx: 1, evtIdx: 1, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -25, end: -15 },
 
-    // B Quiz Tasks
-    { title: "Formulate B-Quiz round rules", vertIdx: 2, evtIdx: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
-    { title: "Purchase buzzer system licenses", vertIdx: 2, evtIdx: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 80, start: -8, end: -2 },
+    // B-Quiz
+    { title: "Formulate Pallava B-Quiz questions", vertIdx: 2, evtIdx: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
+    { title: "Onboard Pallava quiz master", vertIdx: 2, evtIdx: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 80, start: -8, end: -2 },
 
-    // Finance Tasks
-    { title: "Establish corporate sponsorship tier list", vertIdx: 3, evtIdx: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -30, end: -15 },
-    { title: "Draft budget spreadsheet", vertIdx: 3, evtIdx: 3, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 90, start: -12, end: -3 },
+    // Finance
+    { title: "Configure Satavahana ledger rules", vertIdx: 3, evtIdx: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -30, end: -15 },
+    { title: "Review Satavahana audit balances", vertIdx: 3, evtIdx: 3, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 90, start: -12, end: -3 },
 
-    // Marketing Tasks
-    { title: "Configure quiz buzzers", vertIdx: 4, evtIdx: 4, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -22, end: -12 },
-    { title: "Design social media banners", vertIdx: 4, evtIdx: 4, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 70, start: -10, end: -2 },
+    // Marketing
+    { title: "Design Mughal marketing deck", vertIdx: 4, evtIdx: 4, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -22, end: -12 },
+    { title: "Prepare Mughal dynamic pricing campaigns", vertIdx: 4, evtIdx: 4, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 70, start: -10, end: -2 },
 
-    // Operations Tasks
-    { title: "Deliver lab computers configuration", vertIdx: 5, evtIdx: 5, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
-    { title: "Formulate logistics routes", vertIdx: 5, evtIdx: 5, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -10, end: -1 },
+    // Business Plan
+    { title: "Draft Vijayanagara market criteria", vertIdx: 5, evtIdx: 5, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
+    { title: "Review Vijayanagara pitch submissions", vertIdx: 5, evtIdx: 5, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -10, end: -1 },
 
-    // HR Tasks
-    { title: "Coordinate hotel bookings", vertIdx: 6, evtIdx: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -25, end: -10 },
-    { title: "Design guest greeting protocol", vertIdx: 6, evtIdx: 6, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 30, start: -12, end: -2 },
+    // HR
+    { title: "Setup Gupta HR negotiation scripts", vertIdx: 6, evtIdx: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -25, end: -10 },
+    { title: "Review Gupta conflict scenarios", vertIdx: 6, evtIdx: 6, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 30, start: -12, end: -2 },
 
-    // Business Analytics Tasks
-    { title: "Print participant badges", vertIdx: 7, evtIdx: 7, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
-    { title: "Deploy analytics dataset", vertIdx: 7, evtIdx: 7, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
+    // Business Analytics (BA)
+    { title: "Design Chola analytics database schema", vertIdx: 7, evtIdx: 7, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
+    { title: "Formulate Chola forecasting queries", vertIdx: 7, evtIdx: 7, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
 
-    // Sustainability Tasks
-    { title: "Design digital certificates", vertIdx: 8, evtIdx: 8, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -15, end: -5 },
-    { title: "Prepare recycle bins and decor", vertIdx: 8, evtIdx: 8, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: -1 },
+    // Logistics, Operations & Systems (LOS)
+    { title: "Plan Kakatiya cascade routing model", vertIdx: 8, evtIdx: 8, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -15, end: -5 },
+    { title: "Test Kakatiya logistics network parameters", vertIdx: 8, evtIdx: 8, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: -1 },
+
+    // Strategy
+    { title: "Draft Chalukya strategic positioning case", vertIdx: 9, evtIdx: 9, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -12, end: -4 },
   ];
 
   // Duplicate to ensure 50+ total tasks

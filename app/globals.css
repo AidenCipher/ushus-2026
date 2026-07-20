@@ -1,25 +1,28 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   /* ─── Brand Colours ─────────────────────────────────────────────────────── */
-  --color-primary: #003580;
-  --color-primary-light: #0047AB;
-  --color-primary-dark: #002460;
-  --color-accent: #F5A623;
-  --color-accent-dark: #D4881A;
+  --color-primary: #C9A84C;
+  --color-primary-light: #D4AF37;
+  --color-primary-dark: #8B6914;
+  --color-accent: #6B1E2E;
+  --color-accent-dark: #4A1020;
+  --color-parchment: #F5E6C8;
+  --color-parchment-dark: #E8D5A3;
+  --color-burgundy: #6B1E2E;
 
   /* ─── Surfaces ──────────────────────────────────────────────────────────── */
-  --color-background: #030014;
-  --color-surface: #05070c;
-  --color-surface-alt: #0b0f19;
-  --color-border: rgba(255, 255, 255, 0.1);
+  --color-background: #1C0F00;
+  --color-surface: #1C0F00;
+  --color-surface-alt: #2A1506;
+  --color-border: rgba(201, 168, 76, 0.2);
 
   /* ─── Text ──────────────────────────────────────────────────────────────── */
-  --color-text: #f8fafc;
-  --color-text-muted: #94a3b8;
+  --color-text: #FAF0D0;
+  --color-text-muted: #C0A878;
 
   /* ─── Semantic ──────────────────────────────────────────────────────────── */
   --color-success: #22C55E;
@@ -29,28 +32,28 @@
 
   /* ─── Task Status Colours ───────────────────────────────────────────────── */
   --color-status-not-started: #9CA3AF;
-  --color-status-in-progress: #3B82F6;
+  --color-status-in-progress: #C9A84C;
   --color-status-completed: #22C55E;
   --color-status-delayed: #EF4444;
   --color-status-blocked: #F97316;
 
   /* ─── Typography ────────────────────────────────────────────────────────── */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "EB Garamond", Georgia, ui-serif, serif;
+  --font-display: "Cinzel", Georgia, ui-serif, serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   /* ─── Radius ────────────────────────────────────────────────────────────── */
   --radius: 0.625rem;
 
   /* ─── Sidebar (shadcn) ──────────────────────────────────────────────────── */
-  --sidebar-background: #003580;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #F5A623;
-  --sidebar-primary-foreground: #1A1A2E;
-  --sidebar-accent: #0047AB;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.15);
-  --sidebar-ring: #F5A623;
+  --sidebar-background: #2A1506;
+  --sidebar-foreground: #F5E6C8;
+  --sidebar-primary: #C9A84C;
+  --sidebar-primary-foreground: #1C0F00;
+  --sidebar-accent: #6B1E2E;
+  --sidebar-accent-foreground: #F5E6C8;
+  --sidebar-border: rgba(201, 168, 76, 0.15);
+  --sidebar-ring: #C9A84C;
 }
 
 /* ─── Base Styles ───────────────────────────────────────────────────────────── */
@@ -65,6 +68,19 @@ body {
   background-color: var(--color-surface);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide native cursor on fine-pointer (desktop) devices — Chariot Wheel replaces it */
+@media (pointer: fine) {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+}
+
+/* ─── Display Font Utility ──────────────────────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-display);
 }
 
 /* ─── Reduced Motion ────────────────────────────────────────────────────────── */
@@ -91,12 +107,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: rgba(201, 168, 76, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: rgba(201, 168, 76, 0.55);
 }
 
 /* ─── Focus Visible ─────────────────────────────────────────────────────────── */
@@ -110,8 +126,8 @@ body {
 /* ─── Selection ─────────────────────────────────────────────────────────────── */
 
 ::selection {
-  background-color: var(--color-primary);
-  color: white;
+  background-color: rgba(201, 168, 76, 0.35);
+  color: #F5E6C8;
 }
 
 /* ─── Confirmation Code Typography ──────────────────────────────────────────── */
@@ -121,33 +137,42 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* ─── Glassmorphism utility ─────────────────────────────────────────────────── */
+/* ─── Glassmorphism utility (VIRENZA Parchment variant) ─────────────────────── */
 
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(42, 21, 6, 0.65);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.glass-parchment {
+  background: rgba(245, 230, 200, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(201, 168, 76, 0.2);
 }
 
 .glass-dark {
-  background: rgba(0, 53, 128, 0.85);
+  background: rgba(28, 15, 0, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Gold Divider ───────────────────────────────────────────────────────────── */
+
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.5), transparent);
+  margin: 1.5rem 0;
 }
 
 /* ─── Animated Gradient ─────────────────────────────────────────────────────── */
 
 @keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .animate-gradient {
@@ -155,50 +180,110 @@ body {
   animation: gradient-shift 8s ease infinite;
 }
 
-/* ─── Floating Orb Animation ────────────────────────────────────────────────── */
+/* ─── Floating Animation ────────────────────────────────────────────────────── */
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.05);
-  }
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50%       { transform: translateY(-16px) scale(1.03); }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: float 8s ease-in-out 2s infinite;
-}
-
-.animate-float-slow {
-  animation: float 10s ease-in-out 4s infinite;
-}
+.animate-float         { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float 8s ease-in-out 2s infinite; }
+.animate-float-slow    { animation: float 10s ease-in-out 4s infinite; }
 
 /* ─── Scroll Chevron ────────────────────────────────────────────────────────── */
 
 @keyframes bounce-down {
-  0%,
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(8px);
-    opacity: 0.5;
-  }
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50%       { transform: translateY(8px); opacity: 0.5; }
 }
 
-.animate-bounce-down {
-  animation: bounce-down 2s ease-in-out infinite;
+.animate-bounce-down { animation: bounce-down 2s ease-in-out infinite; }
+
+/* ─── Blob / Ambient Animation (warm gold/amber) ────────────────────────────── */
+
+@keyframes blob {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) scale(1); }
+  33%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(30px, -50px) scale(1.1); }
+  66%       { border-radius: 20% 60% 40% 60% / 30% 40% 60% 50%; transform: translate(-20px, 20px) scale(0.9); }
 }
+
+.animate-blob       { animation: blob 14s ease-in-out infinite; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
 
 /* ─── Count-up number ───────────────────────────────────────────────────────── */
 
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* ─── VIRENZA Signature Styles ───────────────────────────────────────────────── */
+
+.virenza-title {
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, #FFF5E0 0%, #E8C87A 28%, #C9A84C 58%, #A88020 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-glow {
+  filter: drop-shadow(0 0 20px rgba(201, 168, 76, 0.45)) drop-shadow(0 0 50px rgba(201, 168, 76, 0.15));
+}
+
+.parchment-card {
+  background: linear-gradient(135deg, rgba(42, 21, 6, 0.8), rgba(28, 15, 0, 0.9));
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  backdrop-filter: blur(16px);
+}
+
+/* Base text color overrides to globally brighten the UI */
+.text-muted-foreground {
+  color: var(--color-text-muted) !important;
+}
+.text-slate-400 {
+  color: #D2C6B0 !important; /* brighter warm gray */
+}
+.text-slate-300 {
+  color: #E6DCBF !important; /* even brighter warm tint */
+}
+.text-slate-200 {
+  color: #FAF4E0 !important;
+}
+.text-gray-400 {
+  color: #DCD2BB !important;
+}
+.text-gray-300 {
+  color: #FAF0D0 !important;
+}
+.text-amber-200 {
+  color: #FFF5D0 !important;
+}
+
+
+/* ─── Decorative Corner Marks ───────────────────────────────────────────────── */
+
+.corner-marks {
+  position: relative;
+}
+
+.corner-marks::before,
+.corner-marks::after {
+  content: "";
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-color: rgba(201, 168, 76, 0.4);
+  border-style: solid;
+}
+
+.corner-marks::before {
+  top: 0.75rem;
+  left: 0.75rem;
+  border-width: 1.5px 0 0 1.5px;
+}
+
+.corner-marks::after {
+  bottom: 0.75rem;
+  right: 0.75rem;
+  border-width: 0 1.5px 1.5px 0;
 }

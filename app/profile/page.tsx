@@ -15,10 +15,10 @@ import { StarryBackground } from "@/components/StarryBackground";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 
 const PRESET_AVATARS = [
-  { name: "Orion", url: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=150&q=80" },
-  { name: "Andromeda", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=150&q=80" },
-  { name: "Pegasus", url: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=150&q=80" },
-  { name: "Cassiopeia", url: "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=150&q=80" },
+  { name: "Maurya", url: "https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=150&q=80" },
+  { name: "Chola", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=150&q=80" },
+  { name: "Gupta", url: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=150&q=80" },
+  { name: "Maratha", url: "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=150&q=80" },
 ];
 
 export default function ProfilePage() {

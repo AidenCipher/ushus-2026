@@ -1,4 +1,4 @@
-// Auto-generated Gantt Master Data
+// Auto-generated Gantt Master Data — updated from USHUS_Gantt_Master_2026-11-04.xlsx
 export interface RawGanttRow {
   id: string;
   name: string;
@@ -21,12 +21,12 @@ export interface RawGanttRow {
 export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1",
-    "name": "M1. Strategy & Master Manual",
+    "name": "Strategy & Master Manual",
     "owner": "Core (Abhinav & Aishwarya)",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 32,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -38,7 +38,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M1",
     "startOffset": null,
-    "duration": 17,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -46,7 +46,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T1.S1",
     "name": "Draft v1: Core/Sponsorship/Marketing/Ops/Hospitality/Creative structure",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T1",
     "startOffset": -150,
@@ -58,7 +58,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T1.S2",
     "name": "Internal critique & expansion pass (gap analysis)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T1",
     "startOffset": null,
@@ -70,7 +70,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T1.S3",
     "name": "Add Registration Committee section",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T1",
     "startOffset": null,
@@ -82,7 +82,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T1.S4",
     "name": "Add Selection Framework (POC/Organiser/Volunteer criteria)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T1",
     "startOffset": null,
@@ -94,11 +94,11 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T1.S5",
     "name": "Final formatting & visual design pass (v3)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T1",
     "startOffset": null,
-    "duration": 5,
+    "duration": 2,
     "predecessorId": "M1.T1.S4",
     "lag": 1,
     "isFixedAnchor": false
@@ -110,7 +110,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M1",
     "startOffset": null,
-    "duration": 8,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -118,7 +118,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T2.S1",
     "name": "Define eligibility gates for POC/Organiser/Volunteer",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T2",
     "startOffset": null,
@@ -130,7 +130,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T2.S2",
     "name": "Build scoring rubrics (100-pt scales per tier)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T2",
     "startOffset": null,
@@ -142,7 +142,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T2.S3",
     "name": "Document anti-bias & conflict-of-interest protocol",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T2",
     "startOffset": null,
@@ -154,7 +154,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T2.S4",
     "name": "Finalize appeal & transparency mechanism",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T2",
     "startOffset": null,
@@ -170,7 +170,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M1",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -178,47 +178,47 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M1.T3.S1",
     "name": "Build category-level budget template",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T3",
-    "startOffset": null,
+    "startOffset": -111,
     "duration": 3,
-    "predecessorId": "M1.T2.S4",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M1.T3.S2",
     "name": "Set contingency reserve (10-15% of total)",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T3",
-    "startOffset": null,
+    "startOffset": -108,
     "duration": 1,
-    "predecessorId": "M1.T3.S1",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M1.T3.S3",
-    "name": "Circulate to Director/HOD for indicative approval",
-    "owner": "Core - Finance",
+    "name": "Present first-draft budget to Director/HOD for indicative approval",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M1.T3",
-    "startOffset": null,
-    "duration": 3,
-    "predecessorId": "M1.T3.S2",
-    "lag": 1,
-    "isFixedAnchor": false
+    "startOffset": -107,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M2",
-    "name": "M2. POC, Organiser & Volunteer Selection",
+    "name": "POC, Organiser & Volunteer Selection",
     "owner": "Core + All Committees",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 42,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -230,7 +230,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M2",
     "startOffset": null,
-    "duration": 13,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -238,10 +238,10 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T1.S1",
     "name": "Publish Vertical POC & Event POC applications",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T1",
-    "startOffset": -135,
+    "startOffset": -122,
     "duration": 1,
     "predecessorId": null,
     "lag": null,
@@ -250,38 +250,38 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T1.S2",
     "name": "Publish Organiser applications (all 11 committees)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T1",
-    "startOffset": null,
+    "startOffset": -121,
     "duration": 1,
-    "predecessorId": "M2.T1.S1",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M2.T1.S3",
     "name": "Open application window",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T1",
-    "startOffset": null,
+    "startOffset": -120,
     "duration": 10,
-    "predecessorId": "M2.T1.S2",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M2.T1.S4",
-    "name": "Close applications (hard deadline)",
-    "owner": "Core",
+    "name": "Close applications — interested-student list finalized & preferences collected",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T1",
-    "startOffset": null,
+    "startOffset": -110,
     "duration": 1,
-    "predecessorId": "M2.T1.S3",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M2.T2",
@@ -290,7 +290,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M2",
     "startOffset": null,
-    "duration": 9,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -298,19 +298,19 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T2.S1",
     "name": "Blind scoring review by panel (anonymized rubric)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T2",
-    "startOffset": null,
+    "startOffset": -106,
     "duration": 3,
-    "predecessorId": "M2.T1.S4",
-    "lag": 1,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M2.T2.S2",
     "name": "Shortlist top candidates per vertical",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T2",
     "startOffset": null,
@@ -322,7 +322,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T2.S3",
     "name": "Panel interviews",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T2",
     "startOffset": null,
@@ -334,7 +334,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T2.S4",
     "name": "Conflict-of-interest cross-check",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T2",
     "startOffset": null,
@@ -346,7 +346,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T2.S5",
     "name": "Final POC announcements",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T2",
     "startOffset": null,
@@ -362,7 +362,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M2",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -370,7 +370,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T3.S1",
     "name": "Application screening against eligibility gates",
-    "owner": "Core + Committee POCs",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T3",
     "startOffset": null,
@@ -382,7 +382,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T3.S2",
     "name": "Scored shortlisting (100-pt rubric per committee)",
-    "owner": "Core + Committee POCs",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T3",
     "startOffset": null,
@@ -394,7 +394,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T3.S3",
     "name": "Organiser interviews across all committees",
-    "owner": "Core + Committee POCs",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T3",
     "startOffset": null,
@@ -406,7 +406,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T3.S4",
     "name": "Diversity & balance review",
-    "owner": "Core + Committee POCs",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T3",
     "startOffset": null,
@@ -418,7 +418,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T3.S5",
     "name": "Organiser confirmation & onboarding email",
-    "owner": "Core + Committee POCs",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T3",
     "startOffset": null,
@@ -434,7 +434,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M2",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -442,7 +442,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T4.S1",
     "name": "Open volunteer registration (general pool)",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T4",
     "startOffset": null,
@@ -454,7 +454,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T4.S2",
     "name": "Zone-based lottery for oversubscribed zones",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T4",
     "startOffset": null,
@@ -466,7 +466,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M2.T4.S3",
     "name": "Volunteer confirmation & WhatsApp group onboarding",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M2.T4",
     "startOffset": null,
@@ -477,12 +477,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M3",
-    "name": "M3. Creative & Branding",
+    "name": "Creative & Branding",
     "owner": "Creative & Decor Team",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 121,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -494,7 +494,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M3",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -502,7 +502,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T1.S1",
     "name": "Present theme options to Core (Kings/Constellations/Time Travel)",
-    "owner": "Creative + Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T1",
     "startOffset": -120,
@@ -514,7 +514,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T1.S2",
     "name": "Theme decision locked",
-    "owner": "Creative + Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T1",
     "startOffset": null,
@@ -526,7 +526,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T1.S3",
     "name": "Build brand style guide (typography, icon set, palette)",
-    "owner": "Creative + Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T1",
     "startOffset": null,
@@ -542,7 +542,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M3",
     "startOffset": null,
-    "duration": 12,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -550,7 +550,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T2.S1",
     "name": "Social media post templates & LinkedIn headers",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T2",
     "startOffset": null,
@@ -562,7 +562,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T2.S2",
     "name": "Digital rulebook templates",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T2",
     "startOffset": null,
@@ -574,7 +574,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T2.S3",
     "name": "Event intro video & motion graphics for backdrops",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T2",
     "startOffset": null,
@@ -586,7 +586,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T2.S4",
     "name": "Digital winner certificate templates",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T2",
     "startOffset": null,
@@ -602,7 +602,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M3",
     "startOffset": null,
-    "duration": 102,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -610,7 +610,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S1",
     "name": "Design standees, banners, entrance arch, ID cards",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": null,
@@ -622,7 +622,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S2",
     "name": "Internal design review & Core brand sign-off (24h SLA)",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": null,
@@ -634,7 +634,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S3",
     "name": "Submit small-scale proofs to vendor (72-Hour Proofing Rule)",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": null,
@@ -646,7 +646,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S4",
     "name": "Proof correction window (color/spelling/resolution)",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": null,
@@ -658,7 +658,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S5",
     "name": "Final print production run",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": null,
@@ -670,7 +670,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M3.T3.S6",
     "name": "On-campus installation fabrication (photo booths, arches)",
-    "owner": "Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M3.T3",
     "startOffset": -2,
@@ -681,12 +681,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M4",
-    "name": "M4. Marketing & Outreach",
+    "name": "Marketing & Outreach",
     "owner": "Marketing Team",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 106,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -698,7 +698,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M4",
     "startOffset": null,
-    "duration": 8,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -706,7 +706,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T1.S1",
     "name": "Compile database of 60+ B-school contacts",
-    "owner": "Marketing - Outreach",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T1",
     "startOffset": -110,
@@ -718,7 +718,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T1.S2",
     "name": "Assign CL liaison owners per region",
-    "owner": "Marketing - Outreach",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T1",
     "startOffset": null,
@@ -728,50 +728,122 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "isFixedAnchor": false
   },
   {
+    "id": "M4.T1.S3",
+    "name": "Poster & brochure — final design and print ready",
+    "owner": "Marketing / Creative",
+    "type": "sub-task",
+    "parentId": "M4.T1",
+    "startOffset": -105,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
     "id": "M4.T2",
-    "name": "60-Day Content Calendar",
-    "owner": "Marketing - Digital",
+    "name": "Video Content Calendar (MDC — 2 videos/month)",
+    "owner": "Marketing - MDC",
     "type": "task",
     "parentId": "M4",
     "startOffset": null,
-    "duration": 9,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
   },
   {
     "id": "M4.T2.S1",
-    "name": "Launch teaser videos & theme reveal posts",
-    "owner": "Marketing - Digital",
+    "name": "First teaser video release",
+    "owner": "Marketing - MDC",
     "type": "sub-task",
     "parentId": "M4.T2",
-    "startOffset": -60,
-    "duration": 3,
+    "startOffset": -89,
+    "duration": 1,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M4.T2.S2",
-    "name": "Vertical reveal & judge announcement content",
-    "owner": "Marketing - Digital",
+    "name": "August video 2 — theme / vertical reveal",
+    "owner": "Marketing - MDC",
     "type": "sub-task",
     "parentId": "M4.T2",
-    "startOffset": null,
-    "duration": 5,
-    "predecessorId": "M4.T2.S1",
-    "lag": 1,
-    "isFixedAnchor": false
+    "startOffset": -75,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M4.T2.S3",
+    "name": "September video 1",
+    "owner": "Marketing - MDC",
+    "type": "sub-task",
+    "parentId": "M4.T2",
+    "startOffset": -58,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
+    "id": "M4.T2.S4",
+    "name": "September video 2 — judge announcement",
+    "owner": "Marketing - MDC",
+    "type": "sub-task",
+    "parentId": "M4.T2",
+    "startOffset": -44,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
+    "id": "M4.T2.S5",
+    "name": "October video 1",
+    "owner": "Marketing - MDC",
+    "type": "sub-task",
+    "parentId": "M4.T2",
+    "startOffset": -28,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
+    "id": "M4.T2.S6",
+    "name": "October video 2",
+    "owner": "Marketing - MDC",
+    "type": "sub-task",
+    "parentId": "M4.T2",
+    "startOffset": -14,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
+    "id": "M4.T2.S7",
+    "name": "November pre-fest hype video",
+    "owner": "Marketing - MDC",
+    "type": "sub-task",
+    "parentId": "M4.T2",
+    "startOffset": -3,
+    "duration": 1,
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
+  },
+  {
+    "id": "M4.T2.S8",
     "name": "Countdown graphics cadence begins",
     "owner": "Marketing - Digital",
     "type": "sub-task",
     "parentId": "M4.T2",
     "startOffset": null,
     "duration": 1,
-    "predecessorId": "M4.T2.S2",
+    "predecessorId": "M4.T2.S7",
     "lag": 1,
     "isFixedAnchor": false
   },
@@ -782,7 +854,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M4",
     "startOffset": null,
-    "duration": 5,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -790,19 +862,19 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T3.S1",
     "name": "Draft CL kit (maps, hospitals, accommodation, schedule)",
-    "owner": "Marketing",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T3",
     "startOffset": null,
     "duration": 3,
-    "predecessorId": "M4.T2.S3",
+    "predecessorId": "M4.T1.S3",
     "lag": 1,
     "isFixedAnchor": false
   },
   {
     "id": "M4.T3.S2",
     "name": "Review with Hospitality & Operations for accuracy",
-    "owner": "Marketing",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T3",
     "startOffset": null,
@@ -814,7 +886,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T3.S3",
     "name": "Finalize & distribute to confirmed CLs",
-    "owner": "Marketing",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T3",
     "startOffset": null,
@@ -830,7 +902,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M4",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -838,7 +910,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T4.S1",
     "name": "Flash mobs & cafeteria stunts",
-    "owner": "Marketing - Promo",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T4",
     "startOffset": -14,
@@ -850,7 +922,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M4.T4.S2",
     "name": "Standee placement & final local awareness push",
-    "owner": "Marketing - Promo",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M4.T4",
     "startOffset": null,
@@ -861,12 +933,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M5",
-    "name": "M5. Registration Committee Operations",
+    "name": "Registration Committee Operations",
     "owner": "Registration Committee",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 100,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -878,7 +950,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M5",
     "startOffset": null,
-    "duration": 6,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -886,7 +958,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T1.S1",
     "name": "Audit registration form fields & payment gateway link",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T1",
     "startOffset": -100,
@@ -898,7 +970,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T1.S2",
     "name": "Set up master tracker (applications, payments, records)",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T1",
     "startOffset": null,
@@ -910,7 +982,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T1.S3",
     "name": "SOP briefing for Registration organisers",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T1",
     "startOffset": null,
@@ -922,7 +994,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T1.S4",
     "name": "Draft reminder & confirmation communication templates",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T1",
     "startOffset": null,
@@ -938,7 +1010,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M5",
     "startOffset": null,
-    "duration": 47,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -946,7 +1018,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T2.S1",
     "name": "Forms go live",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T2",
     "startOffset": null,
@@ -958,7 +1030,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T2.S2",
     "name": "Daily monitoring & duplicate/fraud flag checks",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T2",
     "startOffset": null,
@@ -970,7 +1042,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T2.S3",
     "name": "Payment verification cycles (SIB/UPI matching)",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T2",
     "startOffset": null,
@@ -982,7 +1054,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T2.S4",
     "name": "Weekly status reports to Core",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T2",
     "startOffset": null,
@@ -998,7 +1070,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M5",
     "startOffset": null,
-    "duration": 14,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1006,7 +1078,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T3.S1",
     "name": "Registration deadline (hard close)",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T3",
     "startOffset": -14,
@@ -1018,7 +1090,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T3.S2",
     "name": "Final payment reconciliation",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T3",
     "startOffset": null,
@@ -1030,7 +1102,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T3.S3",
     "name": "Locked master list distributed (48h before fest)",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T3",
     "startOffset": -2,
@@ -1042,7 +1114,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M5.T3.S4",
     "name": "Credential generation handover to Marketing",
-    "owner": "Registration",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M5.T3",
     "startOffset": -1,
@@ -1053,12 +1125,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M6",
-    "name": "M6. Sponsorship",
+    "name": "Sponsorship",
     "owner": "Sponsorship Team",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 151,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1070,7 +1142,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M6",
     "startOffset": null,
-    "duration": 6,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1078,7 +1150,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T1.S1",
     "name": "Build sponsorship pitch deck with Creative",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T1",
     "startOffset": -150,
@@ -1090,7 +1162,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T1.S2",
     "name": "Define sponsorship tiers & deliverables",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T1",
     "startOffset": null,
@@ -1102,7 +1174,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T1.S3",
     "name": "Set up centralized lead tracker",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T1",
     "startOffset": null,
@@ -1118,7 +1190,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M6",
     "startOffset": null,
-    "duration": 35,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1126,7 +1198,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T2.S1",
     "name": "Active corporate pitching rounds",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T2",
     "startOffset": null,
@@ -1138,7 +1210,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T2.S2",
     "name": "MoU drafting & negotiation per sponsor",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T2",
     "startOffset": null,
@@ -1150,7 +1222,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T2.S3",
     "name": "MoU execution & 50% deposit collection",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T2",
     "startOffset": null,
@@ -1166,7 +1238,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M6",
     "startOffset": null,
-    "duration": 15,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1174,7 +1246,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T3.S1",
     "name": "Collect 30% tranche (2 weeks before fest)",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T3",
     "startOffset": -14,
@@ -1186,7 +1258,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T3.S2",
     "name": "Branding asset handover to Creative for production",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T3",
     "startOffset": null,
@@ -1198,7 +1270,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T3.S3",
     "name": "In-kind/barter delivery physical inspection",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T3",
     "startOffset": null,
@@ -1210,7 +1282,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T3.S4",
     "name": "VIP lounge & stall arrangement finalize",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T3",
     "startOffset": null,
@@ -1222,7 +1294,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M6.T3.S5",
     "name": "Collect final 20% (morning of Day 1)",
-    "owner": "Sponsorship",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M6.T3",
     "startOffset": 0,
@@ -1233,12 +1305,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M7",
-    "name": "M7. Academic Events (Core Sub-Unit)",
+    "name": "Academic Events (Core Sub-Unit)",
     "owner": "Core - Academic Events Wing",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 107,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1250,7 +1322,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M7",
     "startOffset": null,
-    "duration": 12,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1258,7 +1330,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T1.S1",
     "name": "Draft rulebooks for all 10+ verticals",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T1",
     "startOffset": -110,
@@ -1270,7 +1342,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T1.S2",
     "name": "Finalize objective rubric weightings per vertical",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T1",
     "startOffset": null,
@@ -1282,7 +1354,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T1.S3",
     "name": "Core sign-off on all rulebooks",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T1",
     "startOffset": null,
@@ -1298,7 +1370,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M7",
     "startOffset": null,
-    "duration": 18,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1306,7 +1378,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T2.S1",
     "name": "Identify & invite industry judges",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T2",
     "startOffset": null,
@@ -1318,7 +1390,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T2.S2",
     "name": "Confirm judge availability per vertical",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T2",
     "startOffset": null,
@@ -1330,7 +1402,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T2.S3",
     "name": "Build backup judge bench (min. 3/vertical)",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T2",
     "startOffset": null,
@@ -1346,7 +1418,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M7",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1354,7 +1426,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T3.S1",
     "name": "Finalize case studies/simulations with academic clubs",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T3",
     "startOffset": null,
@@ -1366,7 +1438,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T3.S2",
     "name": "Set up time-locked digital distribution / sealed envelopes",
-    "owner": "Core - Academic",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T3",
     "startOffset": null,
@@ -1382,7 +1454,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M7",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1390,7 +1462,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T4.S1",
     "name": "Build master password-protected scoring sheet",
-    "owner": "Core - Tabulation",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T4",
     "startOffset": -10,
@@ -1402,7 +1474,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T4.S2",
     "name": "Run mock data stress tests (extreme score cases)",
-    "owner": "Core - Tabulation",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T4",
     "startOffset": null,
@@ -1414,7 +1486,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T4.S3",
     "name": "Dual-input protocol dry run (Abhinav & Aishwarya sheets)",
-    "owner": "Core - Tabulation",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T4",
     "startOffset": null,
@@ -1426,7 +1498,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M7.T4.S4",
     "name": "Judge calibration session protocol finalized",
-    "owner": "Core - Tabulation",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M7.T4",
     "startOffset": null,
@@ -1437,12 +1509,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M8",
-    "name": "M8. Operations",
+    "name": "Operations",
     "owner": "Operations Team",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 90,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1454,7 +1526,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M8",
     "startOffset": null,
-    "duration": 8,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1462,7 +1534,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T1.S1",
     "name": "Submit Estate Office reservation forms",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T1",
     "startOffset": -90,
@@ -1474,7 +1546,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T1.S2",
     "name": "Confirm room & auditorium bookings",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T1",
     "startOffset": null,
@@ -1490,7 +1562,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M8",
     "startOffset": null,
-    "duration": 9,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1498,7 +1570,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T2.S1",
     "name": "Source & vet technical vendors",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T2",
     "startOffset": null,
@@ -1510,7 +1582,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T2.S2",
     "name": "Negotiate contracts incl. delay penalty clauses",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T2",
     "startOffset": null,
@@ -1522,7 +1594,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T2.S3",
     "name": "Contracts signed",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T2",
     "startOffset": null,
@@ -1538,7 +1610,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M8",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1546,7 +1618,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T3.S1",
     "name": "Procure stationery, cables, podiums, clickers",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T3",
     "startOffset": null,
@@ -1558,7 +1630,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T3.S2",
     "name": "Assemble Tech Backup Kits (per venue zone)",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T3",
     "startOffset": null,
@@ -1570,7 +1642,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T3.S3",
     "name": "Rain Plan B rehearsal walkthrough",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T3",
     "startOffset": null,
@@ -1586,7 +1658,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M8",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1594,7 +1666,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T4.S1",
     "name": "Map volunteers to zones, gates, corridors",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T4",
     "startOffset": -10,
@@ -1606,7 +1678,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T4.S2",
     "name": "Print role cards & finalize escalation ladder",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T4",
     "startOffset": null,
@@ -1618,7 +1690,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M8.T4.S3",
     "name": "Volunteer onboarding session (evening before fest)",
-    "owner": "Operations",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M8.T4",
     "startOffset": -1,
@@ -1629,12 +1701,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M9",
-    "name": "M9. Hospitality",
+    "name": "Hospitality",
     "owner": "Hospitality Team",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 80,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1646,7 +1718,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M9",
     "startOffset": null,
-    "duration": 8,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1654,7 +1726,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T1.S1",
     "name": "Negotiate hotel corporate rates near campus",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T1",
     "startOffset": -80,
@@ -1666,7 +1738,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T1.S2",
     "name": "Confirm room blocks & shuttle schedules",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T1",
     "startOffset": null,
@@ -1682,7 +1754,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M9",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1690,7 +1762,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T2.S1",
     "name": "Collect judge profiles & travel details",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T2",
     "startOffset": null,
@@ -1702,7 +1774,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T2.S2",
     "name": "Send personalized hospitality packages",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T2",
     "startOffset": null,
@@ -1714,7 +1786,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T2.S3",
     "name": "Assign student emissaries to judges",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T2",
     "startOffset": null,
@@ -1730,7 +1802,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M9",
     "startOffset": null,
-    "duration": 6,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1738,7 +1810,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T3.S1",
     "name": "Menu engineering (VIP/competitor/volunteer tiers)",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T3",
     "startOffset": null,
@@ -1750,7 +1822,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T3.S2",
     "name": "Book catering vendors",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T3",
     "startOffset": null,
@@ -1766,7 +1838,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M9",
     "startOffset": null,
-    "duration": 5,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1774,7 +1846,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T4.S1",
     "name": "Arrange one first-aid kit & trained first-aider per floor",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T4",
     "startOffset": -5,
@@ -1786,7 +1858,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T4.S2",
     "name": "Coordinate emergency contact field with Registration form",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T4",
     "startOffset": null,
@@ -1798,7 +1870,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M9.T4.S3",
     "name": "Brief first-aiders on escalation path to medical room/hospital",
-    "owner": "Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M9.T4",
     "startOffset": null,
@@ -1809,12 +1881,12 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M10",
-    "name": "M10. Finance & Compliance",
+    "name": "Finance & Compliance",
     "owner": "Core - Finance & Compliance",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 147,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1826,7 +1898,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M10",
     "startOffset": null,
-    "duration": 10,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1834,7 +1906,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M10.T1.S1",
     "name": "Secure Director/HOD/Faculty sign-offs on dates & venue",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M10.T1",
     "startOffset": -150,
@@ -1846,7 +1918,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M10.T1.S2",
     "name": "Configure SIB payment gateway with accounts dept.",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M10.T1",
     "startOffset": null,
@@ -1862,7 +1934,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M10",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1870,7 +1942,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M10.T2.S1",
     "name": "Process vendor advance payouts",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M10.T2",
     "startOffset": -10,
@@ -1882,7 +1954,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M10.T2.S2",
     "name": "Lock final operating budget & petty cash float",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M10.T2",
     "startOffset": null,
@@ -1894,7 +1966,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M10.T2.S3",
     "name": "Confirm prize money escrow with accounts office",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M10.T2",
     "startOffset": null,
@@ -1905,24 +1977,24 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11",
-    "name": "M11. FEST DAYS — Nov 6 & 7, 2026",
+    "name": "FEST DAYS — Nov 4 & 5, 2026",
     "owner": "All Teams",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 2,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
   },
   {
     "id": "M11.T1",
-    "name": "Day 1 — Nov 6, 2026",
+    "name": "Day 1 — Nov 4, 2026",
     "owner": "All Teams",
     "type": "task",
     "parentId": "M11",
     "startOffset": null,
-    "duration": 1,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -1930,7 +2002,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M11.T1.S1",
     "name": "05:45 AM POC pre-briefing status dump (Google Form)",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
@@ -1942,95 +2014,95 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M11.T1.S2",
     "name": "06:00 AM Core command briefing (all 10 POCs)",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S3",
     "name": "Venue unlock, AV checks, mic/projector tests",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S4",
     "name": "Registration desks & sponsor stalls open",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S5",
     "name": "Competition rounds running (all verticals)",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S6",
     "name": "Live score sheet collection & dual-input audit",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S7",
     "name": "Day 1 results locked & handed to Marketing",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T1.S8",
     "name": "End-of-day POC feedback meeting (21:00-22:00)",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T1",
     "startOffset": 0,
     "duration": 1,
     "predecessorId": null,
-    "lag": 0,
+    "lag": null,
     "isFixedAnchor": true
   },
   {
     "id": "M11.T2",
-    "name": "Day 2 — Nov 7, 2026",
+    "name": "Day 2 — Nov 5, 2026",
     "owner": "All Teams",
     "type": "task",
     "parentId": "M11",
     "startOffset": null,
-    "duration": 2,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2038,7 +2110,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M11.T2.S1",
     "name": "06:00 AM Day 2 briefing & venue re-check",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T2",
     "startOffset": null,
@@ -2050,59 +2122,59 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M11.T2.S2",
     "name": "Final rounds & flagship competition finals",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T2",
-    "startOffset": null,
+    "startOffset": 0,
     "duration": 1,
-    "predecessorId": "M11.T1.S8",
-    "lag": 0,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M11.T2.S3",
     "name": "Valedictory ceremony & judge felicitation",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T2",
-    "startOffset": null,
+    "startOffset": 0,
     "duration": 1,
-    "predecessorId": "M11.T1.S8",
-    "lag": 0,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M11.T2.S4",
     "name": "Winner announcement & prize disbursement kickoff",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T2",
-    "startOffset": null,
+    "startOffset": 0,
     "duration": 1,
-    "predecessorId": "M11.T1.S8",
-    "lag": 0,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M11.T2.S5",
     "name": "Campus restoration & vendor breakdown begins",
-    "owner": "All Teams",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M11.T2",
-    "startOffset": null,
+    "startOffset": 0,
     "duration": 1,
-    "predecessorId": "M11.T1.S8",
-    "lag": 0,
-    "isFixedAnchor": false
+    "predecessorId": null,
+    "lag": null,
+    "isFixedAnchor": true
   },
   {
     "id": "M12",
-    "name": "M12. Post-Fest Closure",
+    "name": "Post-Fest Closure",
     "owner": "Core + All Committees",
     "type": "milestone",
     "parentId": null,
     "startOffset": null,
-    "duration": 29,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2114,7 +2186,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M12",
     "startOffset": null,
-    "duration": 8,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2122,7 +2194,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T1.S1",
     "name": "Collect physical bills, cash memos, food tokens",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T1",
     "startOffset": 1,
@@ -2134,7 +2206,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T1.S2",
     "name": "Reconcile ledger against university account",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T1",
     "startOffset": null,
@@ -2146,7 +2218,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T1.S3",
     "name": "Submit audited financial statement to management",
-    "owner": "Core - Finance",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T1",
     "startOffset": null,
@@ -2162,7 +2234,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M12",
     "startOffset": null,
-    "duration": 7,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2170,7 +2242,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T2.S1",
     "name": "Verify bank details, PAN cards, authorization letters",
-    "owner": "Core + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T2",
     "startOffset": null,
@@ -2182,7 +2254,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T2.S2",
     "name": "Process prize transfers via accounts office",
-    "owner": "Core + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T2",
     "startOffset": null,
@@ -2194,7 +2266,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T2.S3",
     "name": "Dispatch judge honoraria",
-    "owner": "Core + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T2",
     "startOffset": null,
@@ -2210,7 +2282,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M12",
     "startOffset": null,
-    "duration": 11,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2218,7 +2290,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T3.S1",
     "name": "Send sponsor proof-of-performance kits (7-day SLA)",
-    "owner": "Sponsorship + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T3",
     "startOffset": 2,
@@ -2230,7 +2302,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T3.S2",
     "name": "Send thank-you letters to judges (48h SLA)",
-    "owner": "Sponsorship + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T3",
     "startOffset": null,
@@ -2242,7 +2314,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T3.S3",
     "name": "Collect outstanding sponsorship dues",
-    "owner": "Sponsorship + Hospitality",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T3",
     "startOffset": null,
@@ -2258,7 +2330,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M12",
     "startOffset": null,
-    "duration": 15,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2266,7 +2338,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T4.S1",
     "name": "Edit & publish official aftermovie (5-day SLA)",
-    "owner": "Marketing + Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T4",
     "startOffset": 1,
@@ -2278,7 +2350,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T4.S2",
     "name": "Submit post-event press release",
-    "owner": "Marketing + Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T4",
     "startOffset": null,
@@ -2290,7 +2362,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T4.S3",
     "name": "Generate & distribute certificates (10-day SLA)",
-    "owner": "Marketing + Creative",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T4",
     "startOffset": null,
@@ -2306,7 +2378,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
     "type": "task",
     "parentId": "M12",
     "startOffset": null,
-    "duration": 25,
+    "duration": null,
     "predecessorId": null,
     "lag": null,
     "isFixedAnchor": false
@@ -2314,7 +2386,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T5.S1",
     "name": "Compile vendor & sponsor contact ratings",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T5",
     "startOffset": 5,
@@ -2326,7 +2398,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T5.S2",
     "name": "Document what failed & why (post-mortem)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T5",
     "startOffset": null,
@@ -2338,7 +2410,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T5.S3",
     "name": "Finalize reusable master tabulation template",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T5",
     "startOffset": null,
@@ -2350,7 +2422,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   {
     "id": "M12.T5.S4",
     "name": "Submit Knowledge Transfer Document (30-day SLA)",
-    "owner": "Core",
+    "owner": "",
     "type": "sub-task",
     "parentId": "M12.T5",
     "startOffset": null,

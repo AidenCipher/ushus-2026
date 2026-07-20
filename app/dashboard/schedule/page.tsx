@@ -41,7 +41,7 @@ export default function SchedulePage() {
   const [timeLeft, setTimeLeft] = React.useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
 
   // Default fest start date: Nov 6, 2026
-  const festStartDate = React.useMemo(() => new Date("2026-11-06T09:00:00"), []);
+  const festStartDate = React.useMemo(() => new Date("2026-11-04T09:00:00"), []);
 
   React.useEffect(() => {
     async function fetchData() {

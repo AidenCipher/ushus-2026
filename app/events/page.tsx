@@ -59,7 +59,7 @@ export default function EventsPage() {
               transition={{ delay: 0.2 }}
               className="text-muted-foreground text-lg"
             >
-              Explore our lineup of 10 competitive events across 5 core management verticals. Choose your battleground and register today.
+              Explore our lineup of 10 competitive events, each mapped to a legendary Indian dynasty. Choose your battleground and register today.
             </motion.p>
           </div>
 

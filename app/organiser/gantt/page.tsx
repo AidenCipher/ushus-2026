@@ -54,7 +54,7 @@ interface GanttNode {
 
 // Memory calculation engine for predecessors with dynamic duration scaling based on fest start date shifts
 function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGanttRow[] {
-  const baselineFestDate = new Date("2026-11-06");
+  const baselineFestDate = new Date("2026-11-04");
   const deltaDays = differenceInDays(festStartDate, baselineFestDate);
 
   // Deep clone to avoid mutating the original GANTT_MASTER_DATA in-place
@@ -66,7 +66,7 @@ function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGantt
       const originalDurations = subtasks.map(s => s.duration || 1);
       
       const milestoneImportanceMap: Record<string, number> = {
-        M1: 4, M2: 5, M3: 5, M4: 4, M5: 4, M6: 3, M7: 3, M8: 2, M9: 1
+        M1: 4, M2: 5, M3: 5, M4: 4, M5: 4, M6: 3, M7: 3, M8: 2, M9: 1, M10: 2, M11: 5, M12: 2
       };
 
       const taskWeights = subtasks.map(s => {
@@ -244,11 +244,11 @@ export default function GanttPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
 
   // Master Fest Start Date configuration
-  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-06"));
+  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-04"));
   const [ganttRows, setGanttRows] = React.useState<any[]>(GANTT_MASTER_DATA);
 
   // Active view window and filter state
-  const [focusDate, setFocusDate] = React.useState<Date>(new Date("2026-11-06"));
+  const [focusDate, setFocusDate] = React.useState<Date>(new Date("2026-11-04"));
   const [filterByDateRange, setFilterByDateRange] = React.useState<boolean>(false);
 
   // Sync focus date with master start date changes
@@ -363,9 +363,9 @@ export default function GanttPage() {
     const subTasks = computedRows.filter(r => r.type === "sub-task");
 
     const milestoneColorCodes: Record<string, string> = {
-      M1: "#E63946", M2: "#2A9D8F", M3: "#E9C46A", M4: "#264653",
-      M5: "#F4A261", M6: "#8338EC", M7: "#3A86FF", M8: "#FF006E",
-      M9: "#38B000", M10: "#7209B7", M11: "#FF70A6", M12: "#FF9F1C"
+      M1: "#C8102E", M2: "#A67C00", M3: "#8B0000", M4: "#B8860B",
+      M5: "#9B2335", M6: "#7B5E00", M7: "#6B0F1A", M8: "#8B6914",
+      M9: "#A0522D", M10: "#722F37", M11: "#CD853F", M12: "#8B4513"
     };
 
     return milestones.map(m => {
@@ -890,8 +890,8 @@ export default function GanttPage() {
       {/* Page Title & Controls */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-indigo-50">Constellation Timeline</h1>
-          <p className="text-muted-foreground mt-1">Hierarchical project WBS mapping & dynamic Excel-linked Gantt chart.</p>
+          <h1 className="text-3xl font-bold tracking-tight" style={{fontFamily:'Georgia,serif',color:'#E8C87A'}}>VIRENZA Master Timeline</h1>
+          <p className="text-muted-foreground mt-1">Hierarchical WBS · Nov 4–5, 2026 · Dynasties of India</p>
         </div>
         
         {/* Upper Controls Bar */}
@@ -899,7 +899,7 @@ export default function GanttPage() {
           
           {/* Master Fest Date setting */}
           <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5">
-            <label className="text-xs font-semibold text-indigo-300">Fest Start Date:</label>
+            <label className="text-xs font-semibold" style={{color:'#E8C87A'}}>Fest Start Date:</label>
             <Input
               type="date"
               disabled={!isOrganiserOrAdmin}
@@ -938,8 +938,8 @@ export default function GanttPage() {
                 onClick={() => setZoomLevel(zoom)}
                 className={`px-3 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                   zoomLevel === zoom 
-                    ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" 
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-amber-200 border border-amber-700/50" 
+                  : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {zoom}
@@ -981,7 +981,7 @@ export default function GanttPage() {
               onChange={(e) => setFilterByDateRange(e.target.checked)}
               className="w-3.5 h-3.5 rounded border-white/20 bg-[#0b0f19] text-indigo-500 focus:ring-indigo-500/30 focus:ring-offset-0 cursor-pointer"
             />
-            <label htmlFor="filterByDateRange" className="text-xs font-semibold text-indigo-300 cursor-pointer select-none">
+            <label htmlFor="filterByDateRange" className="text-xs font-semibold cursor-pointer select-none" style={{color:'#E8C87A'}}>
               Filter by date
             </label>
           </div>
