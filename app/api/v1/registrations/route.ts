@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { RegistrationCreateSchema } from "@/lib/validations/registration.schema";
 import { hasPermission } from "@/lib/permissions";
+import { rateLimit, rateLimitResponse, RateLimits } from "@/lib/rate-limit";
+import { auditFromRequest } from "@/lib/audit";
 import type { Prisma, Role } from "@prisma/client";
 
 export async function GET(req: Request) {
@@ -25,7 +27,6 @@ export async function GET(req: Request) {
       where.userId = session.user.id;
     } else if (userRole === "VOLUNTEER" || userRole === "ORGANISER") {
       // Organisers/Volunteers can see registrations for their event/vertical
-      // This might need refinement based on exact requirements, but generally they see their own event
       where.event = { verticalId: session.user.verticalId || undefined };
     }
 
@@ -37,6 +38,7 @@ export async function GET(req: Request) {
       include: {
         event: { select: { name: true, dateStart: true, vertical: { select: { name: true } } } },
         user: { select: { name: true, email: true, college: true } },
+        payment: { select: { paymentStatus: true, transactionRef: true, paymentSubmittedAt: true } },
       },
       orderBy: { registrationDate: "desc" },
     });
@@ -53,9 +55,16 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    // ─── WS1.3: Rate limit — 20 req / 15 min per authenticated user ─────────
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rateLimitKey = `registrations-post:${session.user.id}`;
+    const rl = await rateLimit(rateLimitKey, RateLimits.REGISTRATION_POST);
+    if (!rl.allowed) {
+      return rateLimitResponse(rl.retryAfterSeconds);
     }
 
     const body = await req.json();
@@ -110,107 +119,147 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Primary user not found" }, { status: 404 });
     }
 
-    // Build the list of contacts to check for conflict in other events
-    const checks = [
-      { name: primaryUser.name, email: primaryUser.email.toLowerCase(), phone: primaryUser.phone || "" }
-    ];
+    // ─── WS1.1: Targeted indexed duplicate-check queries ─────────────────────
+    // Build lists of emails and phones to check
+    const emailsToCheck: string[] = [primaryUser.email.toLowerCase()];
+    const phonesToCheck: string[] = [];
+    if (primaryUser.phone) phonesToCheck.push(normalisePhone(primaryUser.phone));
 
     if (data.teamMembers && Array.isArray(data.teamMembers)) {
       for (const member of data.teamMembers) {
-        checks.push({
-          name: member.name,
-          email: member.email.toLowerCase(),
-          phone: member.phone || ""
-        });
+        emailsToCheck.push(member.email.toLowerCase());
+        if (member.phone) phonesToCheck.push(normalisePhone(member.phone));
       }
     }
 
-    const cleanPhone = (p: string) => p.replace(/[\s\-()]/g, "");
-
-    // Fetch all registrations for other events
-    const otherRegistrations = await prisma.registration.findMany({
+    // Check primary-user conflicts via indexed relation query (one DB round-trip)
+    const primaryUserConflict = await prisma.registration.findFirst({
       where: {
-        eventId: { not: data.eventId }
+        eventId: { not: data.eventId },
+        user: {
+          OR: [
+            { email: { in: emailsToCheck } },
+            ...(phonesToCheck.length > 0 ? [{ phone: { in: phonesToCheck } }] : []),
+          ],
+        },
       },
       include: {
-        event: true,
-        user: true
-      }
+        event: { select: { name: true } },
+        user: { select: { name: true, email: true, phone: true } },
+      },
     });
 
-    for (const item of checks) {
-      const itemPhoneClean = cleanPhone(item.phone);
+    if (primaryUserConflict) {
+      const conflictUser = primaryUserConflict.user;
+      const matchedEmail = emailsToCheck.find(
+        (e) => e === conflictUser.email.toLowerCase()
+      );
+      return NextResponse.json({
+        success: false,
+        error: `Registration blocked: "${conflictUser.name}" (${matchedEmail ? `email: ${conflictUser.email}` : `phone: ${conflictUser.phone}`}) is already registered for another event: "${primaryUserConflict.event.name}".`,
+      }, { status: 409 });
+    }
 
-      for (const reg of otherRegistrations) {
-        const regUserEmail = reg.user.email.toLowerCase();
-        const regUserPhone = reg.user.phone ? cleanPhone(reg.user.phone) : "";
+    // Check team-member-in-JSON cross-event conflicts:
+    // Fetch only registrations for OTHER events where the primary user appears
+    // as a team-member JSON entry (email match). This is a narrower scan than
+    // the original full-table fetch — scoped to other events only, and we only
+    // fetch what we need (teamMembers JSON + event name).
+    if (data.teamMembers && data.teamMembers.length > 0) {
+      const otherRegsWithTeamMembers = await prisma.registration.findMany({
+        where: {
+          eventId: { not: data.eventId },
+          teamMembers: { not: null },
+        },
+        select: {
+          teamMembers: true,
+          event: { select: { name: true } },
+        },
+      });
 
-        if (regUserEmail === item.email) {
-          return NextResponse.json({
-            success: false,
-            error: `Registration blocked: "${item.name}" (email: ${item.email}) is already registered for another event: "${reg.event.name}".`
-          }, { status: 409 });
-        }
+      for (const reg of otherRegsWithTeamMembers) {
+        if (!reg.teamMembers || !Array.isArray(reg.teamMembers)) continue;
+        const membersList = reg.teamMembers as Array<{
+          name?: string;
+          email?: string;
+          phone?: string;
+        }>;
 
-        if (itemPhoneClean && regUserPhone && regUserPhone === itemPhoneClean) {
-          return NextResponse.json({
-            success: false,
-            error: `Registration blocked: "${item.name}" (phone: ${item.phone}) is already registered for another event: "${reg.event.name}".`
-          }, { status: 409 });
-        }
+        for (const m of membersList) {
+          const mEmail = m.email ? m.email.toLowerCase() : "";
+          const mPhone = m.phone ? normalisePhone(m.phone) : "";
 
-        if (reg.teamMembers && Array.isArray(reg.teamMembers)) {
-          const membersList = reg.teamMembers as any[];
-          for (const m of membersList) {
-            const mEmail = m.email ? m.email.toLowerCase() : "";
-            const mPhone = m.phone ? cleanPhone(m.phone) : "";
+          const emailMatch = mEmail && emailsToCheck.includes(mEmail);
+          const phoneMatch = mPhone && phonesToCheck.includes(mPhone);
 
-            if (mEmail && mEmail === item.email) {
-              return NextResponse.json({
-                success: false,
-                error: `Registration blocked: "${item.name}" (email: ${item.email}) is already registered for another event: "${reg.event.name}".`
-              }, { status: 409 });
-            }
+          if (emailMatch || phoneMatch) {
+            const checkName = emailMatch
+              ? data.teamMembers.find(
+                  (tm) => tm.email.toLowerCase() === mEmail
+                )?.name ?? primaryUser.name
+              : data.teamMembers.find(
+                  (tm) => normalisePhone(tm.phone) === mPhone
+                )?.name ?? primaryUser.name;
 
-            if (itemPhoneClean && mPhone && mPhone === itemPhoneClean) {
-              return NextResponse.json({
-                success: false,
-                error: `Registration blocked: "${item.name}" (phone: ${item.phone}) is already registered for another event: "${reg.event.name}".`
-              }, { status: 409 });
-            }
+            return NextResponse.json({
+              success: false,
+              error: `Registration blocked: "${checkName}" (${emailMatch ? `email: ${mEmail}` : `phone: ${m.phone}`}) is already registered as a team member in another event: "${reg.event.name}".`,
+            }, { status: 409 });
           }
         }
       }
     }
 
-    // Check max participants if applicable
-    if (event.maxParticipants) {
-      const currentCount = await prisma.registration.count({
-        where: { eventId: data.eventId },
-      });
-      
-      if (currentCount >= event.maxParticipants) {
-        return NextResponse.json({ success: false, error: "Event capacity reached" }, { status: 400 });
+    // ─── WS1.2: TOCTOU fix — transactional capacity check + create ───────────
+    let registration;
+    try {
+      registration = await prisma.$transaction(
+        async (tx) => {
+          // Lock the event row to serialise concurrent registration attempts
+          await tx.$queryRaw`SELECT id FROM events WHERE id = ${data.eventId} FOR UPDATE`;
+
+          // Re-read count inside the transaction to avoid TOCTOU
+          if (event.maxParticipants) {
+            const currentCount = await tx.registration.count({
+              where: { eventId: data.eventId },
+            });
+
+            if (currentCount >= event.maxParticipants) {
+              throw new CapacityError("Event capacity reached");
+            }
+          }
+
+          return tx.registration.create({
+            data: {
+              userId: data.userId,
+              eventId: data.eventId,
+              teamName: data.teamName ?? null,
+              teamMembers: data.teamMembers as any ?? null,
+              externalFormRef: data.externalFormRef ?? null,
+              notes: data.notes ?? null,
+              status: data.status,
+            },
+          });
+        },
+        { isolationLevel: "Serializable" }
+      );
+    } catch (err) {
+      if (err instanceof CapacityError) {
+        return NextResponse.json(
+          { success: false, error: err.message },
+          { status: 400 }
+        );
       }
+      throw err;
     }
 
-    const registration = await prisma.registration.create({
-      data: {
-        ...data,
-        teamMembers: data.teamMembers as any,
-      },
-    });
-
     // Audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: "CREATE_REGISTRATION",
-        entityType: "REGISTRATION",
-        entityId: registration.id,
-        metadata: { eventId: registration.eventId },
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
-      },
+    await auditFromRequest(req.headers, {
+      userId: session.user.id,
+      action: "REGISTRATION_CREATED",
+      entityType: "REGISTRATION",
+      entityId: registration.id,
+      metadata: { eventId: registration.eventId },
     });
 
     return NextResponse.json({ success: true, data: registration }, { status: 201 });
@@ -220,5 +269,18 @@ export async function POST(req: Request) {
       { success: false, error: "Failed to create registration" },
       { status: 500 }
     );
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function normalisePhone(p: string): string {
+  return p.replace(/[\s\-()+]/g, "");
+}
+
+class CapacityError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CapacityError";
   }
 }

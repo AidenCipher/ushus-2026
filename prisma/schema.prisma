@@ -188,6 +188,7 @@ model Registration {
   notes            String?
 
   @@unique([userId, eventId])
+  @@index([eventId])   // WS1.1: indexed for duplicate-check and capacity queries
   @@map("registrations")
 }
 

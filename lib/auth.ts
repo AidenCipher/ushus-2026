@@ -5,6 +5,7 @@ import { compare } from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { LoginSchema } from "@/lib/validations/auth.schema";
 import type { Role } from "@prisma/client";
+import { RateLimits } from "@/lib/rate-limit";
 
 /**
  * Extend NextAuth types to include custom fields in the session
@@ -49,7 +50,7 @@ async function checkRateLimit(ip: string): Promise<{
   retryAfterSeconds: number;
 }> {
   const windowMs = 15 * 60 * 1000; // 15 minutes
-  const maxAttempts = 10;
+  const maxAttempts = RateLimits.LOGIN; // configurable via RATE_LIMIT_LOGIN env var
 
   // Clean up expired entries
   await prisma.rateLimitEntry.deleteMany({

@@ -93,7 +93,7 @@ export default auth((req) => {
     }
   }
 
-  // ─── Security headers ──────────────────────────────────────────────────
+  // ─── Security headers ──────────────────────────────────────────
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-pathname", pathname);
 
@@ -105,6 +105,28 @@ export default auth((req) => {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  // ─── WS1.3: Content-Security-Policy ──────────────────────────────
+  // Sources audited from the codebase:
+  //   - Fonts: fonts.googleapis.com, fonts.gstatic.com (globals.css @import)
+  //   - WebSocket: wss://*.pusher.com (pusher-js client)
+  //   - API calls: *.pusher.com, *.supabase.co
+  //   - Images: *.supabase.co (payment screenshots, profile pictures)
+  //   - Scripts: 'self' only; Next.js inlines __NEXT_DATA__ (requires 'unsafe-inline' for now)
+  //   - Styles: 'unsafe-inline' required by Tailwind CSS v4 runtime
+  const csp = [
+    `default-src 'self'`,
+    `script-src 'self' 'unsafe-inline'`,        // Next.js __NEXT_DATA__ requires this
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
+    `font-src 'self' https://fonts.gstatic.com`,
+    `img-src 'self' data: https://*.supabase.co`,
+    `connect-src 'self' https://*.pusher.com wss://*.pusher.com https://*.supabase.co`,
+    `frame-ancestors 'none'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+    `upgrade-insecure-requests`,
+  ].join("; ");
+  response.headers.set("Content-Security-Policy", csp);
 
   return response;
 });

@@ -4,9 +4,20 @@ import { RegisterSchema } from "@/lib/validations/auth.schema";
 import { hash } from "bcryptjs";
 import { Role } from "@prisma/client";
 import { getSystemConfig } from "@/lib/system_config";
+import { rateLimit, rateLimitResponse, RateLimits } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
+    // ─── WS1.3: Rate limit — 10 req / 15 min per IP ──────────────────────────
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      req.headers.get("x-real-ip") ??
+      "unknown";
+    const rl = await rateLimit(`register:${ip}`, RateLimits.REGISTER);
+    if (!rl.allowed) {
+      return rateLimitResponse(rl.retryAfterSeconds);
+    }
+
     const config = getSystemConfig();
     if (!config.allowReg) {
       return NextResponse.json(
