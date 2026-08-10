@@ -77,6 +77,7 @@ export async function sendPusherNotification(
 export const PusherChannels = {
   userNotifications: (userId: string) => `private-user-${userId}`,
   globalAnnouncements: "global-announcements",
+  organiserPaymentQueue: "organiser-payment-queue", // WS2
 } as const;
 
 /**
@@ -86,4 +87,7 @@ export const PusherEvents = {
   NEW_NOTIFICATION: "new-notification",
   TASK_UPDATED: "task-updated",
   ANNOUNCEMENT: "announcement",
+  // WS2: Payment events
+  PAYMENT_SUBMITTED: "payment-submitted",
+  PAYMENT_STATUS_UPDATED: "payment-status-updated",
 } as const;

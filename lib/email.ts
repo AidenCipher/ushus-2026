@@ -182,3 +182,115 @@ export async function sendTaskReminderEmail(
     `,
   });
 }
+
+// ─── WS2: Payment Email Functions ─────────────────────────────────────────────
+
+/**
+ * Send payment submission receipt to participant
+ */
+export async function sendPaymentSubmittedEmail(
+  email: string,
+  participantName: string,
+  eventName: string,
+  transactionRef: string
+): Promise<boolean> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+  return sendEmail({
+    to: email,
+    subject: `USHUS 2026 — Payment Submitted: ${eventName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family: 'Inter', -apple-system, sans-serif; background-color: #f8f9fa; padding: 40px 20px;">
+        <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #003580; font-size: 24px; margin: 0;">USHUS 2026</h1>
+            <p style="color: #6C757D; font-size: 14px; margin-top: 4px;">Payment Confirmation</p>
+          </div>
+          <h2 style="color: #1A1A2E; font-size: 20px;">Payment Received ✓</h2>
+          <p style="color: #4a4a4a; line-height: 1.6;">
+            Hi <strong>${participantName}</strong>,<br><br>
+            We have received your payment details for <strong>${eventName}</strong>.
+            Your registration is now awaiting verification by our team. You will receive
+            an email once your payment has been reviewed.
+          </p>
+          <div style="background-color: #F0F9FF; border-left: 4px solid #003580; padding: 16px; border-radius: 4px; margin: 16px 0;">
+            <p style="color: #6C757D; font-size: 13px; margin: 0 0 4px 0;">Transaction Reference</p>
+            <p style="color: #1A1A2E; font-weight: 700; font-family: monospace; font-size: 16px; margin: 0;">${transactionRef}</p>
+          </div>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${appUrl}/dashboard/events" style="background-color: #003580; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+              View Registration Status
+            </a>
+          </div>
+          <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
+          <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
+            © 2026 USHUS — Christ University, Bangalore Central Campus.
+          </p>
+        </div>
+      </body>
+      </html>
+    `,
+  });
+}
+
+/**
+ * Send payment verification outcome email (verified or rejected) to participant
+ */
+export async function sendPaymentOutcomeEmail(
+  email: string,
+  participantName: string,
+  eventName: string,
+  status: "VERIFIED" | "REJECTED",
+  rejectionReason?: string
+): Promise<boolean> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const isVerified = status === "VERIFIED";
+
+  return sendEmail({
+    to: email,
+    subject: `USHUS 2026 — Payment ${isVerified ? "Verified" : "Rejected"}: ${eventName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family: 'Inter', -apple-system, sans-serif; background-color: #f8f9fa; padding: 40px 20px;">
+        <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #003580; font-size: 24px; margin: 0;">USHUS 2026</h1>
+            <p style="color: #6C757D; font-size: 14px; margin-top: 4px;">Payment Update</p>
+          </div>
+          <h2 style="color: ${isVerified ? "#22C55E" : "#EF4444"}; font-size: 20px;">
+            ${isVerified ? "✓ Payment Verified — You're In!" : "✗ Payment Rejected"}
+          </h2>
+          <p style="color: #4a4a4a; line-height: 1.6;">
+            Hi <strong>${participantName}</strong>,<br><br>
+            ${isVerified
+              ? `Your payment for <strong>${eventName}</strong> has been verified. Your registration is now <strong>CONFIRMED</strong>. We look forward to seeing you at USHUS 2026!`
+              : `Unfortunately, we could not verify your payment for <strong>${eventName}</strong>. Please resubmit with the correct transaction reference.`
+            }
+          </p>
+          ${!isVerified && rejectionReason ? `
+          <div style="background-color: #FEF2F2; border-left: 4px solid #EF4444; padding: 16px; border-radius: 4px; margin: 16px 0;">
+            <p style="color: #6C757D; font-size: 13px; margin: 0 0 4px 0;">Reason</p>
+            <p style="color: #1A1A2E; margin: 0;">${rejectionReason}</p>
+          </div>
+          ` : ""}
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${appUrl}/dashboard/events" style="background-color: ${isVerified ? "#22C55E" : "#003580"}; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
+              ${isVerified ? "View My Registration" : "Resubmit Payment"}
+            </a>
+          </div>
+          <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
+          <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
+            © 2026 USHUS — Christ University, Bangalore Central Campus.
+          </p>
+        </div>
+      </body>
+      </html>
+    `,
+  });
+}
+

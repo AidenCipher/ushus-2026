@@ -81,6 +81,16 @@ enum RegistrationStatus {
   CANCELLED
 }
 
+// WS2: Payment status is distinct from registration status.
+// A registration can be PENDING with payment SUBMITTED awaiting review.
+// Registration only transitions to CONFIRMED once paymentStatus = VERIFIED.
+enum PaymentStatus {
+  NOT_SUBMITTED
+  SUBMITTED
+  VERIFIED
+  REJECTED
+}
+
 enum CalendarEventStatus {
   PLANNED
   IN_PROGRESS
@@ -126,6 +136,7 @@ model User {
   auditLogs             AuditLog[]
   announcements         Announcement[]
   calendarEvents        CalendarEvent[]
+  verifiedPayments      Payment[]      @relation("PaymentVerifier") // WS2
 
   @@map("users")
 }
@@ -187,9 +198,29 @@ model Registration {
   externalFormRef  String?
   notes            String?
 
+  payment          Payment? // WS2: 1:1 payment record
+
   @@unique([userId, eventId])
   @@index([eventId])   // WS1.1: indexed for duplicate-check and capacity queries
   @@map("registrations")
+}
+
+// WS2: Payment record — 1:1 with Registration
+model Payment {
+  id                   String        @id @default(uuid())
+  registrationId       String        @unique
+  registration         Registration  @relation(fields: [registrationId], references: [id])
+  transactionRef       String
+  paymentScreenshotUrl String?
+  paymentSubmittedAt   DateTime      @default(now())
+  paymentVerifiedAt    DateTime?
+  paymentVerifiedById  String?
+  paymentVerifiedBy    User?         @relation("PaymentVerifier", fields: [paymentVerifiedById], references: [id])
+  paymentStatus        PaymentStatus @default(NOT_SUBMITTED)
+  rejectionReason      String?
+
+  @@index([paymentStatus]) // for organiser queue queries
+  @@map("payments")
 }
 
 model Task {

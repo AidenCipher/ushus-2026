@@ -4,9 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trophy, FileText, Download, Clock, AlertCircle, Loader2, CreditCard, Sparkles, MapPin, Users, HelpCircle, ArrowRight, UserPlus, Trash2, X, CheckCircle2 } from "lucide-react";
+import { Trophy, FileText, Download, Clock, AlertCircle, Loader2, CreditCard, Sparkles, MapPin, Users, HelpCircle, ArrowRight, UserPlus, Trash2, X, CheckCircle2, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -28,6 +27,12 @@ interface RegistrationData {
       colorCode: string;
     };
   };
+  // WS2: payment status for participant
+  payment?: {
+    paymentStatus: "NOT_SUBMITTED" | "SUBMITTED" | "VERIFIED" | "REJECTED";
+    transactionRef?: string;
+    rejectionReason?: string | null;
+  } | null;
 }
 
 interface EventData {
@@ -64,6 +69,15 @@ export default function EventsDetailsPage() {
   const [registeringEvent, setRegisteringEvent] = React.useState<EventData | null>(null);
   const [showPaymentModal, setShowPaymentModal] = React.useState(false);
   const [paymentEventName, setPaymentEventName] = React.useState("");
+  const [paymentRegistrationId, setPaymentRegistrationId] = React.useState<string | null>(null);
+
+  // WS2: payment submission state
+  const [paymentLink, setPaymentLink] = React.useState("");
+  const [transactionRef, setTransactionRef] = React.useState("");
+  const [paymentScreenshotUrl, setPaymentScreenshotUrl] = React.useState("");
+  const [submittingPayment, setSubmittingPayment] = React.useState(false);
+  const [paymentError, setPaymentError] = React.useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = React.useState(false);
 
   // Registration Form state
   const [teamName, setTeamName] = React.useState("");
@@ -74,9 +88,10 @@ export default function EventsDetailsPage() {
 
   const fetchRegistryData = React.useCallback(async () => {
     try {
-      const [regRes, eventRes] = await Promise.all([
+      const [regRes, eventRes, configRes] = await Promise.all([
         fetch("/api/v1/registrations"),
-        fetch("/api/v1/events")
+        fetch("/api/v1/events"),
+        fetch("/api/v1/config"),
       ]);
 
       if (regRes.ok) {
@@ -87,6 +102,11 @@ export default function EventsDetailsPage() {
       if (eventRes.ok) {
         const json = await eventRes.json();
         setAllEvents(json.data || []);
+      }
+
+      if (configRes.ok) {
+        const json = await configRes.json();
+        setPaymentLink(json.data?.paymentLink || "");
       }
     } catch (error) {
       console.error("Failed to load participant event records:", error);
@@ -122,7 +142,6 @@ export default function EventsDetailsPage() {
     setTeamMembers(updated);
   };
 
-  // Submit registration form
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!registeringEvent) return;
@@ -150,10 +169,15 @@ export default function EventsDetailsPage() {
 
       if (res.ok) {
         setPaymentEventName(registeringEvent.name);
+        setPaymentRegistrationId(json.data?.id ?? null);
         setRegisteringEvent(null);
         setTeamName("");
         setTeamMembers([]);
         setNotes("");
+        setTransactionRef("");
+        setPaymentScreenshotUrl("");
+        setPaymentSuccess(false);
+        setPaymentError(null);
         setShowPaymentModal(true);
         await fetchRegistryData();
       } else {
@@ -163,6 +187,32 @@ export default function EventsDetailsPage() {
       setRegError("Network error. Please try again later.");
     } finally {
       setSubmittingReg(false);
+    }
+  };
+
+  // WS2: Submit payment reference
+  const handlePaymentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!paymentRegistrationId || !transactionRef.trim()) return;
+    setSubmittingPayment(true);
+    setPaymentError(null);
+    try {
+      const res = await fetch(`/api/v1/registrations/${paymentRegistrationId}/payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transactionRef: transactionRef.trim(),
+          paymentScreenshotUrl: paymentScreenshotUrl.trim() || null,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to submit payment");
+      setPaymentSuccess(true);
+      await fetchRegistryData();
+    } catch (err: any) {
+      setPaymentError(err.message);
+    } finally {
+      setSubmittingPayment(false);
     }
   };
 
@@ -217,12 +267,9 @@ export default function EventsDetailsPage() {
         ) : (
           <div className="grid gap-6">
             {registrations.map((reg) => (
-              <motion.div
-                key={reg.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-              >
+                <div
+                  key={reg.id}
+                >
                 <Card className="glass border-indigo-500/20 relative overflow-hidden shadow-lg hover:shadow-indigo-500/5 transition-all">
                   <div 
                     className="absolute top-0 left-0 w-1.5 h-full"
@@ -329,7 +376,7 @@ export default function EventsDetailsPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+                </div>
             ))}
           </div>
         )}
@@ -589,55 +636,137 @@ export default function EventsDetailsPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
 
-      {/* Payment Gateway Coming Soon Modal */}
-      <AnimatePresence>
-        {showPaymentModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPaymentModal(false)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-sm p-6 text-center overflow-hidden relative z-10 space-y-4 shadow-2xl"
-            >
-              <div className="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                <CreditCard className="w-8 h-8 animate-pulse" />
+      {/* WS2: Payment Submission Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            onClick={() => setShowPaymentModal(false)}
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          />
+          <div className="bg-background border border-border rounded-xl w-full max-w-md p-6 relative z-10 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-lg font-bold">Submit Payment</h3>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Registration for <strong>{paymentEventName}</strong>
+                </p>
               </div>
-              
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold tracking-tight text-foreground">Payment Gateway Pending</h3>
-                <Badge variant="secondary" className="bg-white/5 border border-white/10 mt-1 font-semibold text-xs px-2 py-0.5">
-                  Provisional Spot Reserved
-                </Badge>
-              </div>
-
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Your registration details for <strong>{paymentEventName}</strong> have been submitted! 
-                <br /><br />
-                The Christ University registration payment link is being initialized. For now, your registration remains in **PENDING** verification. We will send you an email once the gateway is live to complete payment.
-              </p>
-
-              <Button 
+              <button
                 onClick={() => setShowPaymentModal(false)}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 shadow-md font-semibold text-xs"
+                className="text-muted-foreground hover:text-foreground"
               >
-                Understood, Proceed
-              </Button>
-            </motion.div>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {paymentSuccess ? (
+              <div className="text-center space-y-4 py-4">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
+                <div>
+                  <p className="font-semibold">Payment details submitted!</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Our team will verify your payment and confirm your registration. You will receive an email once it is processed.
+                  </p>
+                </div>
+                <Button
+                  id="btn-close-payment-modal"
+                  onClick={() => setShowPaymentModal(false)}
+                  className="w-full"
+                >
+                  Close
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handlePaymentSubmit} className="space-y-4">
+                {/* Step 1: Pay via the college payment link */}
+                {paymentLink ? (
+                  <div className="bg-muted/30 border border-border rounded-lg p-4 space-y-2">
+                    <p className="text-sm font-semibold">Step 1 — Complete the Payment</p>
+                    <p className="text-xs text-muted-foreground">
+                      Use the official Christ University payment portal to pay the registration fee.
+                    </p>
+                    <a
+                      href={paymentLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      id="btn-pay-now"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary underline"
+                    >
+                      Open Payment Portal <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                ) : (
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                    <p className="text-xs text-amber-500">
+                      The payment portal link has not been configured yet. Please check back soon or contact the organisers.
+                    </p>
+                  </div>
+                )}
+
+                {/* Step 2: Submit transaction reference */}
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold">Step 2 — Submit Transaction Reference</p>
+                  <p className="text-xs text-muted-foreground">
+                    After completing payment, enter the transaction / UTR reference number below.
+                  </p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="input-transaction-ref">
+                    Transaction Reference <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    id="input-transaction-ref"
+                    placeholder="e.g. UPI/TXN/123456789"
+                    value={transactionRef}
+                    onChange={(e) => setTransactionRef(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" htmlFor="input-screenshot-url">
+                    Screenshot URL <span className="text-muted-foreground">(optional)</span>
+                  </label>
+                  <Input
+                    id="input-screenshot-url"
+                    placeholder="Supabase / Google Drive link to screenshot"
+                    value={paymentScreenshotUrl}
+                    onChange={(e) => setPaymentScreenshotUrl(e.target.value)}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Upload your payment screenshot to Supabase Storage or Google Drive and paste the link.
+                  </p>
+                </div>
+
+                {paymentError && (
+                  <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded p-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    {paymentError}
+                  </div>
+                )}
+
+                <Button
+                  id="btn-submit-payment"
+                  type="submit"
+                  className="w-full"
+                  disabled={!transactionRef.trim() || submittingPayment}
+                >
+                  {submittingPayment ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                  ) : (
+                    <>Submit Payment Details</>
+                  )}
+                </Button>
+              </form>
+            )}
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

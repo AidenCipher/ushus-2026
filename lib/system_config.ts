@@ -7,6 +7,7 @@ export interface SystemConfig {
   allowReg: boolean;
   maintenance: boolean;
   festStartDate: string;
+  paymentLink: string; // WS2: URL for the college payment portal
 }
 
 const CONFIG_FILE_PATH = path.join(process.cwd(), "data", "system_config.json");
@@ -26,5 +27,6 @@ export function getSystemConfig(): SystemConfig {
     allowReg: true,
     maintenance: false,
     festStartDate: "2026-11-04",
+    paymentLink: "", // WS2: Set this to the college payment portal URL
   };
 }

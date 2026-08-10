@@ -52,6 +52,9 @@ export const Actions = {
 
   // Dashboard access
   VIEW_ORGANISER_DASHBOARD: "VIEW_ORGANISER_DASHBOARD",
+
+  // Payment verification (WS2)
+  VERIFY_PAYMENT: "VERIFY_PAYMENT",
 } as const;
 
 export type Action = (typeof Actions)[keyof typeof Actions];
@@ -97,6 +100,7 @@ const permissionMap: Record<Role, Set<Action>> = {
     Actions.CREATE_ANNOUNCEMENT,
     Actions.VIEW_NOTIFICATIONS,
     Actions.VIEW_ORGANISER_DASHBOARD,
+    Actions.VERIFY_PAYMENT, // WS2
   ]),
 
   ADMIN: new Set([
@@ -124,6 +128,7 @@ const permissionMap: Record<Role, Set<Action>> = {
     Actions.MANAGE_EVENTS,
     Actions.VIEW_AUDIT_LOGS,
     Actions.VIEW_ORGANISER_DASHBOARD,
+    Actions.VERIFY_PAYMENT, // WS2
   ]),
 };
 
