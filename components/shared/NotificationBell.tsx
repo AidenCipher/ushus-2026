@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Notification {
   id: string;
@@ -117,13 +116,13 @@ export default function NotificationBell() {
         )}
       </button>
 
-      <AnimatePresence>
+      
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+          <div 
+ 
+ 
+ 
+ 
             className="absolute right-0 mt-2 w-80 rounded-lg border border-white/10 bg-background/95 shadow-2xl backdrop-blur-xl z-50 overflow-hidden"
           >
             <div className="p-3 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
@@ -178,9 +177,9 @@ export default function NotificationBell() {
                 </Button>
               </Link>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }

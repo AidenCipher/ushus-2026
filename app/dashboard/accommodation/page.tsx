@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { Hotel, ExternalLink, MapPin, Star, AlertCircle } from "lucide-react";
 import { FEST_CONTENT } from "@/lib/content";
-import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -156,11 +155,11 @@ export default function AccommodationPage() {
 
         <div className="grid sm:grid-cols-2 gap-4">
           {FEST_CONTENT.hotels.map((hotel, i) => (
-            <motion.div
+            <div
               key={hotel.name}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+ 
+ 
+ 
             >
               <Card className="glass border-white/10 h-full flex flex-col justify-between hover:border-primary/30 transition-colors">
                 <CardHeader className="pb-3">
@@ -186,7 +185,7 @@ export default function AccommodationPage() {
                   </a>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

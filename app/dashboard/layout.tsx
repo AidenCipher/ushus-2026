@@ -20,7 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
 import NotificationBell from "@/components/shared/NotificationBell";
-import { StarryBackground } from "@/components/StarryBackground";
 
 const sidebarLinks = [
   { name: "My Registration", href: "/dashboard", icon: LayoutDashboard },
@@ -48,7 +47,6 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-background relative overflow-hidden">
-      <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 

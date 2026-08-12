@@ -11,7 +11,6 @@ import {
   User, Mail, Phone, School, Image, ArrowLeft, 
   Check, Loader2, AlertCircle, ShieldAlert 
 } from "lucide-react";
-import { StarryBackground } from "@/components/StarryBackground";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 
 const PRESET_AVATARS = [
@@ -110,16 +109,12 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-background items-center justify-center relative overflow-hidden">
-        <StarryBackground />
-        <LoadingAnimation message="Syncing profile details..." />
-      </div>
+      <LoadingAnimation message="Syncing profile details..." />
     );
   }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col items-center justify-center p-4">
-      <StarryBackground />
       
       {/* Background ambient glow */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-50">

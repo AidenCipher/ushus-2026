@@ -10,7 +10,6 @@ import { Switch } from "@/components/ui/switch";
 import * as React from "react";
 import { useSession } from "next-auth/react";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface TeamMemberData {
   id: string;
@@ -649,20 +648,20 @@ export default function OrganiserTeamPage() {
       )}
 
       {/* Roster Add Modal */}
-      <AnimatePresence>
+      
         {isAddRosterOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+ 
+ 
+ 
               onClick={() => setIsAddRosterOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            <div
+ 
+ 
+ 
               className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-md p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl"
             >
               <div className="flex items-center justify-between">
@@ -736,26 +735,26 @@ export default function OrganiserTeamPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
 
       {/* Volunteer Create Modal */}
-      <AnimatePresence>
+      
         {isCreateOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+ 
+ 
+ 
               onClick={() => setIsCreateOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            <div
+ 
+ 
+ 
               className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-md p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl"
             >
               <div className="flex items-center justify-between">
@@ -806,26 +805,26 @@ export default function OrganiserTeamPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
 
       {/* Volunteer Edit Modal */}
-      <AnimatePresence>
+      
         {isEditOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+ 
+ 
+ 
               onClick={() => setIsEditOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            <div
+ 
+ 
+ 
               className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-md p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl"
             >
               <div className="flex items-center justify-between">
@@ -880,10 +879,10 @@ export default function OrganiserTeamPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }

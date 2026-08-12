@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react";
 import { useSession } from "next-auth/react";
 
@@ -243,13 +242,13 @@ export default function OrganiserNotificationsPage() {
             </div>
           ) : (
             <div className="divide-y divide-white/5">
-              <AnimatePresence initial={false}>
+              
                 {notifications.map((notif) => (
-                  <motion.div
+                  <div
                     key={notif.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+ 
+ 
+ 
                     className={`p-4 sm:p-5 flex gap-4 items-start ${!notif.isRead ? 'bg-indigo-500/5' : 'hover:bg-white/5'} transition-colors group`}
                   >
                     {/* Read indicator */}
@@ -293,9 +292,9 @@ export default function OrganiserNotificationsPage() {
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
-              </AnimatePresence>
+              
             </div>
           )}
         </CardContent>

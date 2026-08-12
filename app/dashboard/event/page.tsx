@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, FileText, Download, UploadCloud, Clock, ExternalLink } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function EventPage() {
@@ -59,11 +58,11 @@ export default function EventPage() {
                   { name: "Scoring Rubric", type: "PDF", size: "1.1 MB" },
                   { name: "Submission Portal Guide", type: "Link", size: "External" },
                 ].map((resource, i) => (
-                  <motion.div 
+                  <div 
                     key={resource.name}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
+ 
+ 
+ 
                     className="flex items-center justify-between p-3 hover:bg-white/5 rounded-lg transition-colors border border-transparent hover:border-white/5 group"
                   >
                     <div className="flex items-center gap-3">
@@ -78,7 +77,7 @@ export default function EventPage() {
                     <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
                       {resource.type === "Link" ? <ExternalLink className="w-4 h-4" /> : <Download className="w-4 h-4" />}
                     </Button>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </CardContent>

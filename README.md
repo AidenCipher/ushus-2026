@@ -81,25 +81,18 @@ Visit `http://localhost:3000` to see the application.
 
 ## 📅 Fest Details (USHUS 2026)
 
-- **Fest Dates**: November 6-7, 2026
-- **Expected Participation**: 500+
-- **Core Verticals (7)**:
-  1. Core Team (Coordinator, Organisers, Faculty)
-  2. Registration Team (Onboarding, Check-ins)
-  3. Sponsorship Team (Partnerships, Funding)
-  4. Marketing Team (Social Media, Outreach)
-  5. Logistics & Operations Team (Physical infrastructure, timelines)
-  6. Creative Team (Art, Decorations, Graphics)
-  7. Hospitality Team (Guest reception, catering)
-- **Events Matrix (9)**:
-  - Best Manager, Best Management Team, B Quiz, Finance, Marketing, Operations, HR, Business Analytics, Sustainability
+- **Fest Dates**: November 4-5, 2026
+- **Expected Participation**: 600+
+- **Events Matrix (10)**:
+  - Best Manager, Best Management Team, B-Quiz, Finance, Marketing, Logistics, Operations & Systems (LOS), HR, Business Analytics (BA), Business Plan, Strategy
 
-## 🔒 Security
+## 🔒 Security & Concurrency
 
-- Comprehensive RBAC implemented in middleware and API routes
-- Rate limiting on authentication endpoints
-- Strict Content Security Policy (CSP) headers
-- Audit logging for all sensitive mutations
+- **Role-Based Access Control**: Granular permissions (Admin, Organiser, Volunteer, Participant) via `lib/permissions.ts`.
+- **Concurrency Control**: Shared event capacity managed via `SELECT FOR UPDATE` in `Serializable` transactions to prevent overbooking.
+- **Rate Limiting**: Integrated connection throttling (10/15m for Register, 5/15m for Login, 20/15m for Event Registration).
+- **Security Headers**: Strict Content Security Policy (CSP) with `unsafe-inline` permitted for the Next.js runtime.
+- **Audit Logging**: Comprehensive action tracking for all sensitive mutations and verifications (e.g., `VERIFY_PAYMENT`).
 
 ## 📄 License
 

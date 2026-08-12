@@ -5,7 +5,8 @@ import { RegistrationCreateSchema } from "@/lib/validations/registration.schema"
 import { hasPermission } from "@/lib/permissions";
 import { rateLimit, rateLimitResponse, RateLimits } from "@/lib/rate-limit";
 import { auditFromRequest } from "@/lib/audit";
-import type { Prisma, Role } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import type { Role } from "@prisma/client";
 
 export async function GET(req: Request) {
   try {
@@ -169,7 +170,7 @@ export async function POST(req: Request) {
       const otherRegsWithTeamMembers = await prisma.registration.findMany({
         where: {
           eventId: { not: data.eventId },
-          teamMembers: { not: null },
+          teamMembers: { not: Prisma.JsonNull },
         },
         select: {
           teamMembers: true,

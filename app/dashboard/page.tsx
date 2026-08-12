@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
 import * as React from "react";
 import { generateConfirmationPDF } from "@/lib/pdf";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
@@ -250,7 +249,7 @@ export default function DashboardOverview() {
         <>
           {/* Quick Stats / Status Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <div >
               <Card className="glass border-primary/20 bg-primary/5">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Registration Status</CardTitle>
@@ -263,9 +262,9 @@ export default function DashboardOverview() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}>
+            <div >
               <Card className="glass border-white/10">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Confirmation Code</CardTitle>
@@ -278,9 +277,9 @@ export default function DashboardOverview() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
+            <div >
               <Card className="glass border-white/10">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">My Team</CardTitle>
@@ -293,7 +292,7 @@ export default function DashboardOverview() {
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 pt-4">

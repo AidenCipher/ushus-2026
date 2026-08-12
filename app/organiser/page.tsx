@@ -15,7 +15,6 @@ import {
   Plus
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import * as React from "react";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
@@ -156,7 +155,7 @@ export default function OrganiserOverview() {
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {stats.map((stat, i) => (
-          <motion.div key={stat.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+          <div key={stat.name} >
             <Card className="glass border-white/10 relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -171,7 +170,7 @@ export default function OrganiserOverview() {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
 

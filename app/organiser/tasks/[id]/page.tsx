@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 interface TaskUpdate {
@@ -471,7 +470,7 @@ export default function TaskDetailPage() {
 
           {/* Submit Update Form */}
           {showUpdateForm && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+            <div >
               <Card className="glass border-indigo-500/30">
                 <CardHeader>
                   <CardTitle className="text-lg">Submit Task Update</CardTitle>
@@ -528,7 +527,7 @@ export default function TaskDetailPage() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           )}
         </div>
 
@@ -550,11 +549,11 @@ export default function TaskDetailPage() {
           ) : (
             <div className="space-y-3">
               {task.updates.map((update, i) => (
-                <motion.div
+                <div
                   key={update.id}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+ 
+ 
+ 
                 >
                   <Card className="glass border-white/10">
                     <CardContent className="p-4 space-y-3">
@@ -665,27 +664,27 @@ export default function TaskDetailPage() {
                       )}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
       {/* Edit Task Dialog */}
-      <AnimatePresence>
+      
         {isEditModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+ 
+ 
+ 
               onClick={() => setIsEditModalOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            <div
+ 
+ 
+ 
               className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <div className="flex items-center justify-between">
@@ -838,10 +837,10 @@ export default function TaskDetailPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }

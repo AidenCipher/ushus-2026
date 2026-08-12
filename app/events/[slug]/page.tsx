@@ -5,11 +5,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { StarryBackground } from "@/components/StarryBackground";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FEST_CONTENT } from "@/lib/content";
-import { motion } from "framer-motion";
 import { ArrowLeft, Trophy, Users, Calendar, MapPin, Sparkles, BookOpen, AlertCircle, FileText } from "lucide-react";
 
 export default function EventDetailOrCategoryPage() {
@@ -67,7 +65,6 @@ export default function EventDetailOrCategoryPage() {
   if (vertical) {
     return (
       <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-        <StarryBackground />
         <Navbar />
 
         <main className="flex-grow relative z-10 pt-32 pb-24">
@@ -165,7 +162,6 @@ export default function EventDetailOrCategoryPage() {
   if (event) {
     return (
       <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-        <StarryBackground />
         <Navbar />
 
         <main className="flex-grow relative z-10 pt-32 pb-24">
@@ -308,7 +304,6 @@ export default function EventDetailOrCategoryPage() {
   // Fallback: Event or Category not found
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-      <StarryBackground />
       <Navbar />
 
       <main className="flex-grow relative z-10 pt-32 pb-24 flex items-center justify-center">

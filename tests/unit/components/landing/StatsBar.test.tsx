@@ -2,15 +2,6 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { StatsBar } from "@/components/landing/StatsBar";
 
-// Mock framer-motion useInView hook to instantly trigger animation
-jest.mock("framer-motion", () => {
-  const actual = jest.requireActual("framer-motion");
-  return {
-    ...actual,
-    useInView: () => true, // Simulate element always in view
-  };
-});
-
 describe("StatsBar Component", () => {
   it("should render four statistics cards", () => {
     render(<StatsBar />);

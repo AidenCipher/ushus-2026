@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -176,8 +175,7 @@ export function Navbar() {
               >
                 {link.label}
                 {active && (
-                  <motion.div
-                    layoutId="navbar-indicator"
+                  <div
                     className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full"
                     style={{ background: "linear-gradient(90deg, transparent, #C9A84C, transparent)" }}
                   />
@@ -229,13 +227,13 @@ export function Navbar() {
         </button>
 
         {/* ── Mobile Menu ───────────────────────────────────────────────────── */}
-        <AnimatePresence>
+        
           {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.2 }}
+            <div
+ 
+ 
+ 
+ 
               className="absolute top-full left-0 w-full backdrop-blur-xl shadow-2xl py-6 px-4 flex flex-col gap-4 md:hidden"
               style={{
                 background: "rgba(28, 15, 0, 0.96)",
@@ -294,9 +292,9 @@ export function Navbar() {
                   </button>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        
       </div>
     </header>
   );

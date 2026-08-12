@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Phone, Mail, Clock, ShieldAlert } from "lucide-react";
 import { FEST_CONTENT } from "@/lib/content";
-import { motion } from "framer-motion";
 import * as React from "react";
 
 export default function ContactsPage() {
@@ -23,11 +22,11 @@ export default function ContactsPage() {
 
           <div className="space-y-3">
             {FEST_CONTENT.coreTeam.map((member, i) => (
-              <motion.div
+              <div
                 key={member.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+ 
+ 
+ 
               >
                 <Card className="glass border-white/10 hover:border-primary/30 transition-colors">
                   <CardContent className="p-4 flex items-center justify-between gap-4">
@@ -51,7 +50,7 @@ export default function ContactsPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -64,11 +63,11 @@ export default function ContactsPage() {
 
           <div className="space-y-3">
             {FEST_CONTENT.emergencyContacts.map((contact, i) => (
-              <motion.div
+              <div
                 key={contact.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+ 
+ 
+ 
               >
                 <Card className="border-danger/20 bg-danger/5 hover:border-danger/30 transition-colors">
                   <CardContent className="p-4 flex items-center justify-between gap-4">
@@ -87,7 +86,7 @@ export default function ContactsPage() {
                     )}
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             ))}
 
             {/* Medical room note */}

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Users, UserPlus, Copy, Check, MoreVertical } from "lucide-react";
 import * as React from "react";
-import { motion } from "framer-motion";
 
 export default function TeamPage() {
   const [copied, setCopied] = React.useState(false);
@@ -42,11 +41,11 @@ export default function TeamPage() {
             <CardContent>
               <div className="space-y-4 mt-4">
                 {teamMembers.map((member, i) => (
-                  <motion.div 
+                  <div 
                     key={member.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.1 }}
+ 
+ 
+ 
                     className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5"
                   >
                     <div className="flex items-center gap-3">
@@ -66,7 +65,7 @@ export default function TeamPage() {
                         <MoreVertical className="w-4 h-4" />
                       </Button>
                     )}
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </CardContent>

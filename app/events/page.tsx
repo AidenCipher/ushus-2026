@@ -4,11 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { StarryBackground } from "@/components/StarryBackground";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FEST_CONTENT } from "@/lib/content";
-import { motion } from "framer-motion";
 import { ArrowRight, Trophy, Users, Calendar, MapPin, Sparkles } from "lucide-react";
 
 export default function EventsPage() {
@@ -26,7 +24,6 @@ export default function EventsPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-      <StarryBackground />
       <Navbar />
 
       <main className="flex-grow relative z-10 pt-32 pb-24">
@@ -37,30 +34,30 @@ export default function EventsPage() {
 
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div 
+ 
+ 
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm text-primary mb-6"
             >
               <Sparkles className="w-4 h-4" />
               <span className="text-sm font-medium">USHUS 2026 Arena</span>
-            </motion.div>
-            <motion.h1 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+            </div>
+            <h1 
+ 
+ 
+ 
               className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6"
             >
               The <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-400">Arena of Events</span>
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+            </h1>
+            <p 
+ 
+ 
+ 
               className="text-muted-foreground text-lg"
             >
               Explore our lineup of 10 competitive events, each mapped to a legendary Indian dynasty. Choose your battleground and register today.
-            </motion.p>
+            </p>
           </div>
 
           {/* Render by Vertical groups */}
@@ -73,12 +70,12 @@ export default function EventsPage() {
               const colorCode = verticalInfo?.colorCode || "#003580";
 
               return (
-                <motion.section
+                <section
                   key={verticalName}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.6 }}
+ 
+ 
+ 
+ 
                   className="relative"
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 pb-4 border-b border-white/10 gap-4">
@@ -164,7 +161,7 @@ export default function EventsPage() {
                       );
                     })}
                   </div>
-                </motion.section>
+                </section>
               );
             })}
           </div>

@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
-import { StarryBackground } from "@/components/StarryBackground";
 
 const sidebarLinks = [
   { name: "System Config", href: "/admin", icon: Settings },
@@ -41,7 +40,6 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen bg-background relative overflow-hidden">
-      <StarryBackground />
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 

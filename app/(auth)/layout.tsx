@@ -3,14 +3,10 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
-import { StarryBackground } from "@/components/StarryBackground";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden selection:bg-primary/30 p-4">
-      {/* Interactive Starry Background */}
-      <StarryBackground />
-
       {/* Ambient Background Blobs */}
       <div className="absolute inset-0 pointer-events-none z-[1]">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob" />

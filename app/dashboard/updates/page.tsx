@@ -3,7 +3,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Bell, Trophy, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
 
 export default function UpdatesPage() {
   const updates = [
@@ -45,11 +44,11 @@ export default function UpdatesPage() {
 
       <div className="space-y-4">
         {updates.map((update, i) => (
-          <motion.div
+          <div
             key={update.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
+ 
+ 
+ 
           >
             <Card className={`glass border-white/10 ${update.urgent ? 'border-primary/50 bg-primary/5' : ''}`}>
               <CardContent className="p-6">
@@ -70,7 +69,7 @@ export default function UpdatesPage() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

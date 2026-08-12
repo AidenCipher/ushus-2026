@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { useSession } from "next-auth/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 import { addDays, format, differenceInDays, subDays, parseISO, startOfWeek, startOfMonth, endOfMonth, addMonths, subMonths } from "date-fns";
 import { 
@@ -1463,21 +1462,21 @@ export default function GanttPage() {
       </Card>
 
       {/* Task Details Side Overlay Sheet */}
-      <AnimatePresence>
+      
         {isTaskDetailsOpen && selectedTask && (
           <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
-              exit={{ opacity: 0 }}
+            <div 
+ 
+ 
+ 
               onClick={() => setIsTaskDetailsOpen(false)}
               className="fixed inset-0 bg-black z-40"
             />
-            <motion.div 
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+            <div 
+ 
+ 
+ 
+ 
               className="fixed right-0 top-0 bottom-0 w-96 bg-[#0b0f19]/95 border-l border-white/10 shadow-2xl backdrop-blur-xl z-50 p-6 flex flex-col"
             >
               <div className="flex justify-between items-center pb-4 border-b border-white/10">
@@ -1536,10 +1535,10 @@ export default function GanttPage() {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }

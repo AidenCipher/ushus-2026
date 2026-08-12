@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 
@@ -346,7 +345,7 @@ function TasksPageContent() {
           {filteredTasks.map((task, i) => {
             const due = formatDueDate(task.dueDate);
             return (
-              <motion.div key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
+              <div key={task.id} >
                 <Link href={`/organiser/tasks/${task.id}`}>
                   <Card className="glass border-white/10 hover:border-indigo-500/30 transition-colors group cursor-pointer">
                     <CardContent className="p-4 sm:p-5">
@@ -406,7 +405,7 @@ function TasksPageContent() {
                     </CardContent>
                   </Card>
                 </Link>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -441,20 +440,20 @@ function TasksPageContent() {
         </div>
       )}
       {/* Task Creation Dialog */}
-      <AnimatePresence>
+      
         {isCreateOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+ 
+ 
+ 
               onClick={() => setIsCreateOpen(false)}
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            <div
+ 
+ 
+ 
               className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <div className="flex items-center justify-between">
@@ -607,10 +606,10 @@ function TasksPageContent() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      
     </div>
   );
 }
