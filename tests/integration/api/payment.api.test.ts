@@ -37,7 +37,7 @@ jest.mock("@/lib/pusher", () => ({
 }));
 
 import { auth } from "@/lib/auth";
-const mockAuth = auth as jest.MockedFunction<typeof auth>;
+const mockAuth = auth as unknown as jest.Mock;
 
 function makeSession(userId: string, role = "PARTICIPANT", verticalId?: string) {
   return {

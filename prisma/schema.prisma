@@ -91,6 +91,11 @@ enum PaymentStatus {
   REJECTED
 }
 
+enum RegistrationType {
+  INDIVIDUAL_EVENT
+  CONTINGENT
+}
+
 enum CalendarEventStatus {
   PLANNED
   IN_PROGRESS
@@ -171,6 +176,9 @@ model Event {
   registrationDeadline DateTime?
   rulesDocumentUrl     String?
   prizePool            String?
+  basePrice            Int         @default(1500) // WS2A
+  prizeFirst           Int         @default(15000) // WS2A
+  prizeSecond          Int?        @default(9000)  // WS2A (nullable for Vanguard/single winner)
   status               EventStatus @default(UPCOMING)
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
@@ -185,23 +193,35 @@ model Event {
 }
 
 model Registration {
-  id               String             @id @default(uuid())
-  userId           String
-  user             User               @relation(fields: [userId], references: [id])
-  eventId          String
-  event            Event              @relation(fields: [eventId], references: [id])
-  teamName         String?
-  teamMembers      Json?
-  registrationDate DateTime           @default(now())
-  status           RegistrationStatus @default(PENDING)
-  confirmationCode String             @unique @default(cuid())
-  externalFormRef  String?
-  notes            String?
+  id                     String             @id @default(uuid())
+  userId                 String
+  user                   User               @relation(fields: [userId], references: [id])
+  eventId                String
+  event                  Event              @relation(fields: [eventId], references: [id])
+  teamName               String?
+  teamMembers            Json?
+  registrationDate       DateTime           @default(now())
+  status                 RegistrationStatus @default(PENDING)
+  confirmationCode       String             @unique @default(cuid())
+  externalFormRef        String?
+  notes                  String?
 
-  payment          Payment? // WS2: 1:1 payment record
+  // WS2A & WS2 additions
+  registrationType       RegistrationType   @default(INDIVIDUAL_EVENT)
+  contingentId           String?
+  baseAmount             Decimal            @default(1500)
+  discountPercent        Decimal            @default(0)
+  finalAmountDue         Decimal            @default(1500)
+  accommodationRequested Boolean            @default(false)
+  facultyName            String?
+  facultyEmail           String?
+  facultyPhone           String?
+
+  payment                Payment? // WS2: 1:1 payment record
 
   @@unique([userId, eventId])
   @@index([eventId])   // WS1.1: indexed for duplicate-check and capacity queries
+  @@index([contingentId])
   @@map("registrations")
 }
 

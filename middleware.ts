@@ -114,19 +114,22 @@ export default auth((req) => {
   //   - Images: *.supabase.co (payment screenshots, profile pictures)
   //   - Scripts: 'self' only; Next.js inlines __NEXT_DATA__ (requires 'unsafe-inline' for now)
   //   - Styles: 'unsafe-inline' required by Tailwind CSS v4 runtime
+  const isDev = process.env.NODE_ENV !== "production";
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'unsafe-inline'`,        // Next.js __NEXT_DATA__ requires this
+    isDev ? `script-src 'self' 'unsafe-inline' 'unsafe-eval'` : `script-src 'self' 'unsafe-inline'`,
     `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
     `font-src 'self' https://fonts.gstatic.com`,
-    `img-src 'self' data: https://*.supabase.co`,
+    `img-src 'self' data: https://*.supabase.co https://images.unsplash.com`,
     `connect-src 'self' https://*.pusher.com wss://*.pusher.com https://*.supabase.co`,
     `frame-ancestors 'none'`,
     `base-uri 'self'`,
     `form-action 'self'`,
-    `upgrade-insecure-requests`,
-  ].join("; ");
-  response.headers.set("Content-Security-Policy", csp);
+  ];
+  if (!isDev) {
+    csp.push(`upgrade-insecure-requests`);
+  }
+  response.headers.set("Content-Security-Policy", csp.join("; "));
 
   return response;
 });

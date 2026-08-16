@@ -2,330 +2,439 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { FEST_CONTENT } from "@/lib/content";
-import { ArrowLeft, Trophy, Users, Calendar, MapPin, Sparkles, BookOpen, AlertCircle, FileText } from "lucide-react";
+import { Commander3DViewer } from "@/components/Commander3DViewer";
+import {
+  ArrowLeft,
+  Trophy,
+  Users,
+  Calendar,
+  MapPin,
+  BookOpen,
+  AlertCircle,
+  FileText,
+  Zap,
+  Leaf,
+  Crosshair,
+  Shield,
+  Layers,
+  CreditCard,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
 
-export default function EventDetailOrCategoryPage() {
+export default function EventDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const slug = (params?.slug as string) || "";
 
-  // 1. Check if the slug corresponds to a vertical category page
-  const vertical = React.useMemo(() => {
-    // Normalise slug
-    const normalized = slug.toLowerCase();
-    
-    // Find matching vertical (handle special aliases like human-resources -> HR)
-    return FEST_CONTENT.verticals.find((v) => {
-      const vName = v.name.toLowerCase();
-      if (normalized === "human-resources" && vName === "hr") return true;
-      return vName === normalized;
+  // Match event by slug, short name, or codename
+  const event = React.useMemo(() => {
+    const normalized = slug.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return FEST_CONTENT.events.find((e) => {
+      const fullSlug = e.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const shortSlug = e.name.toLowerCase().split(" ")[0].replace(/[^a-z0-9]/g, "");
+      const codeSlug = e.codename.toLowerCase().replace(/[^a-z0-9]/g, "");
+      return fullSlug === normalized || shortSlug === normalized || codeSlug === normalized;
     });
   }, [slug]);
 
-  // Get events belonging to this vertical if it is a category page
-  const verticalEvents = React.useMemo(() => {
-    if (!vertical) return [];
-    return FEST_CONTENT.events.filter(
-      (e) => e.vertical.toLowerCase() === vertical.name.toLowerCase()
-    );
-  }, [vertical]);
-
-  // 2. Check if the slug corresponds to a specific event detail page
-  const event = React.useMemo(() => {
-    if (vertical) return null; // If it's a vertical, it's not a single event
-
-    const normalized = slug.toLowerCase();
-    return FEST_CONTENT.events.find((e) => {
-      const eventSlug = e.name.toLowerCase().replace(/\s+/g, "-");
-      return eventSlug === normalized;
-    });
-  }, [slug, vertical]);
-
-  // Find color code based on context
-  const activeColor = React.useMemo(() => {
-    let verticalName = "";
-    if (vertical) {
-      verticalName = vertical.name;
-    } else if (event) {
-      verticalName = event.vertical;
-    }
-    const info = FEST_CONTENT.verticals.find(
-      (v) => v.name.toLowerCase() === verticalName.toLowerCase()
-    );
-    return info?.colorCode || "#003580";
-  }, [vertical, event]);
-
-  // Render Vertical Category Hub
-  if (vertical) {
+  // Not found
+  if (!event) {
     return (
-      <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
+      <div className="min-h-screen flex flex-col bg-[#0B132B]" style={{ color: "#F5ECD7" }}>
         <Navbar />
-
-        <main className="flex-grow relative z-10 pt-32 pb-24">
-          <div className="container mx-auto px-4">
-            <Link href="/events" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 group transition-colors">
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to all events</span>
-            </Link>
-
-            <div className="max-w-4xl mb-16">
-              <div className="flex items-center gap-4 mb-4">
-                <span 
-                  className="w-3 h-6 rounded-full" 
-                  style={{ backgroundColor: activeColor, boxShadow: `0 0 10px ${activeColor}` }}
-                />
-                <span className="text-sm font-semibold tracking-wider uppercase text-muted-foreground">Domain Vertical</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6">
-                {vertical.name} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-400">Events</span>
-              </h1>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                Compete and showcase your expertise in the {vertical.name} domain. Learn more about the challenges prepared by our organizing committees.
-              </p>
+        <main className="flex-grow relative z-10 pt-32 pb-24 flex items-center justify-center">
+          <div className="container mx-auto px-4 text-center max-w-md">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 bg-red-500/10 border border-red-500/30 text-red-400"
+            >
+              <AlertCircle className="w-8 h-8" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {verticalEvents.map((evt) => {
-                const evtSlug = evt.name.toLowerCase().replace(/\s+/g, "-");
-                return (
-                  <Card 
-                    key={evt.name}
-                    className="glass border-white/5 hover:border-primary/30 transition-all duration-300 group overflow-hidden relative"
-                  >
-                    <div 
-                      className="absolute -top-24 -right-24 w-48 h-48 rounded-full filter blur-[60px] opacity-0 group-hover:opacity-25 transition-opacity duration-500"
-                      style={{ backgroundColor: activeColor }}
-                    />
-                    <CardContent className="p-8 flex flex-col justify-between h-full relative z-10">
-                      <div>
-                        <h3 className="text-2xl font-bold tracking-tight mb-4 group-hover:text-primary transition-colors duration-300">
-                          {evt.name}
-                        </h3>
-                        <p className="text-muted-foreground mb-8 leading-relaxed line-clamp-3">
-                          {evt.description}
-                        </p>
-                      </div>
-
-                      <div className="space-y-6 pt-4 border-t border-white/5 mt-auto">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Trophy className="w-4 h-4 text-primary shrink-0" />
-                            <span>Prize: <strong className="text-foreground">{evt.prizePool}</strong></span>
-                          </div>
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Users className="w-4 h-4 text-primary shrink-0" />
-                            <span>Team: <strong className="text-foreground">{evt.teamSize}</strong></span>
-                          </div>
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Calendar className="w-4 h-4 text-primary shrink-0" />
-                            <span>Date: <strong className="text-foreground">{evt.dateRange}</strong></span>
-                          </div>
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <MapPin className="w-4 h-4 text-primary shrink-0" />
-                            <span>Venue: <strong className="text-foreground">Campus</strong></span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4 pt-2">
-                          <Link href={`/events/${evtSlug}`} className="flex-1">
-                            <Button className="w-full bg-white/5 hover:bg-white/10 text-foreground border border-white/10 group-hover:border-primary/50 transition-colors duration-300">
-                              View Event Rules
-                            </Button>
-                          </Link>
-                          <Link href="/register">
-                            <Button className="shrink-0">
-                              Register Now
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+            <h1
+              className="text-3xl font-bold tracking-tight mb-4 text-[#F5ECD7]"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              Arena Not Found
+            </h1>
+            <p className="mb-8 text-neutral-400">
+              The tactical arena you seek does not exist or has been redeployed.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Link href="/events">
+                <button
+                  className="w-full h-11 rounded-md text-sm font-bold bg-amber-500 text-black hover:bg-amber-400"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  Browse All Arenas
+                </button>
+              </Link>
+              <Link href="/">
+                <button
+                  className="w-full h-11 rounded-md text-sm font-semibold border border-amber-500/40 text-amber-400 bg-transparent hover:bg-amber-500/10"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  Back to Command Bridge
+                </button>
+              </Link>
             </div>
           </div>
         </main>
-
         <Footer />
       </div>
     );
   }
 
-  // Render Specific Event Detail Page
-  if (event) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-        <Navbar />
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0B132B]" style={{ color: "#F5ECD7" }}>
+      <Navbar />
 
-        <main className="flex-grow relative z-10 pt-32 pb-24">
-          <div className="container mx-auto px-4">
-            <Link href="/events" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 group transition-colors">
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to all events</span>
-            </Link>
+      <main className="flex-grow relative z-10 pt-28 pb-24">
+        <div className="container mx-auto px-4 max-w-6xl space-y-8">
+          {/* Back link */}
+          <Link
+            href="/events"
+            className="inline-flex items-center gap-2 group transition-colors text-neutral-400 hover:text-amber-400"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-mono tracking-wider">
+              RETURN TO ARENAS MATRIX
+            </span>
+          </Link>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-              {/* Event Showcase & Rules Description */}
-              <div className="lg:col-span-2 space-y-8">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span 
-                    className="text-xs font-semibold px-2.5 py-1 rounded-full border"
-                    style={{ borderColor: `${activeColor}40`, color: activeColor, backgroundColor: `${activeColor}10` }}
+          {/* ── Top Section: 3D Commander Viewer Canvas ────────────────────────── */}
+          <div className="w-full">
+            <Commander3DViewer event={event} />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start pt-6">
+            {/* ── Left 2 Columns: Deep Doctrine & 3-Era Round Structure ───────── */}
+            <div className="lg:col-span-2 space-y-8">
+
+              {/* Historical Doctrine Foundation */}
+              <div
+                className="rounded-xl p-6 space-y-3 border bg-[#101A36]/80 border-amber-500/20 backdrop-blur-md"
+              >
+                <div className="flex items-center gap-2">
+                  <Crosshair className="w-4 h-4 text-amber-400" />
+                  <h2
+                    className="text-xs font-bold tracking-widest uppercase text-amber-400"
+                    style={{ fontFamily: "'Cinzel', serif" }}
                   >
-                    {event.vertical} Vertical
-                  </span>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full border border-white/10 bg-white/5 text-muted-foreground">
-                    Christ University
-                  </span>
-                </div>
-
-                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-                  {event.name}
-                </h1>
-
-                <div className="glass border-white/5 rounded-2xl p-8 space-y-6">
-                  <h2 className="text-xl font-bold flex items-center gap-2.5 text-foreground">
-                    <BookOpen className="w-5 h-5 text-primary" />
-                    Event Description
+                    Historical Command Doctrine ({event.doctrine})
                   </h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-base">
-                    {event.description}
-                  </p>
                 </div>
-
-                <div className="glass border-white/5 rounded-2xl p-8 space-y-6">
-                  <h2 className="text-xl font-bold flex items-center gap-2.5 text-foreground">
-                    <FileText className="w-5 h-5 text-primary" />
-                    General Event Rules & Guidelines
-                  </h2>
-                  <ul className="space-y-4 text-muted-foreground text-sm list-disc pl-5">
-                    <li>All team members must be from the same college/institution.</li>
-                    <li>Cross-specialization teams are permitted and highly encouraged.</li>
-                    <li>Participants must carry their physical college ID cards throughout the fest.</li>
-                    <li>Specific event submissions must be uploaded via the portal or submitted on-campus as instructed by the committee.</li>
-                    <li>Decisions of the judges and organizing committee are final and binding in all cases.</li>
-                    <li>Rules might be updated/refined close to the event date. Registered teams will be notified via email.</li>
-                  </ul>
-                </div>
+                <p className="text-sm leading-relaxed text-neutral-300">
+                  {event.historicalFact}
+                </p>
               </div>
 
-              {/* Quick Info & Register CTA sidebar */}
-              <div className="space-y-8">
-                <Card className="glass border-white/5 overflow-hidden relative">
-                  <div 
-                    className="absolute -top-16 -right-16 w-32 h-32 rounded-full filter blur-[50px] opacity-20"
-                    style={{ backgroundColor: activeColor }}
-                  />
-                  <CardContent className="p-8 space-y-8 relative z-10">
-                    <h3 className="text-lg font-bold border-b border-white/10 pb-4">Event Quick Info</h3>
+              {/* 3-Era Round Structure Details */}
+              <div
+                className="rounded-xl p-6 space-y-6 border bg-[#101A36]/90 border-amber-500/30 backdrop-blur-md"
+              >
+                <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-amber-400" />
+                    <h2
+                      className="text-lg font-bold text-[#F5ECD7]"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      3-Era Gauntlet &amp; Round Breakdown
+                    </h2>
+                  </div>
+                  <span className="text-xs font-mono px-2.5 py-1 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                    10–14 TOTAL ROUNDS
+                  </span>
+                </div>
 
-                    <div className="space-y-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                          <Trophy className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Prize Pool</p>
-                          <p className="text-lg font-bold text-foreground">{event.prizePool}</p>
-                        </div>
-                      </div>
+                {/* Era 1 */}
+                <div className="space-y-2.5 p-4 rounded-lg bg-[#0B132B]/80 border border-amber-500/20">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-amber-300 font-mono uppercase">
+                      {event.era1.title}
+                    </h3>
+                    <span className="text-[10px] text-neutral-400 font-mono">PHASE 1</span>
+                  </div>
+                  <p className="text-xs italic text-amber-200/80">{event.era1.subtitle}</p>
+                  <p className="text-xs text-neutral-300 leading-relaxed">{event.era1.description}</p>
+                  <div className="pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 font-mono block mb-1">
+                      OPERATIONAL ROUNDS:
+                    </span>
+                    <ul className="list-disc list-inside text-xs text-neutral-300 space-y-1">
+                      {event.era1.rounds.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                          <Users className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Team Size</p>
-                          <p className="text-lg font-bold text-foreground">{event.teamSize}</p>
-                        </div>
-                      </div>
+                {/* Era 2 */}
+                <div className="space-y-2.5 p-4 rounded-lg bg-[#0B132B]/80 border border-amber-500/20">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-amber-300 font-mono uppercase">
+                      {event.era2.title}
+                    </h3>
+                    <span className="text-[10px] text-neutral-400 font-mono">PHASE 2</span>
+                  </div>
+                  <p className="text-xs italic text-amber-200/80">{event.era2.subtitle}</p>
+                  <p className="text-xs text-neutral-300 leading-relaxed">{event.era2.description}</p>
+                  <div className="pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 font-mono block mb-1">
+                      OPERATIONAL ROUNDS:
+                    </span>
+                    <ul className="list-disc list-inside text-xs text-neutral-300 space-y-1">
+                      {event.era2.rounds.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
 
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                          <Calendar className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Event Date</p>
-                          <p className="text-lg font-bold text-foreground">{event.dateRange}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-                          <MapPin className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Venue</p>
-                          <p className="text-lg font-bold text-foreground">{FEST_CONTENT.venue}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 space-y-4 border-t border-white/10">
-                      <Link href="/register" className="w-full block">
-                        <Button className="w-full text-base h-12 shadow-[0_0_20px_rgba(var(--primary),0.3)]">
-                          Register for USHUS
-                        </Button>
-                      </Link>
-                      <p className="text-center text-xs text-muted-foreground">
-                        Registrations close on {FEST_CONTENT.registrationDeadline}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Eligibility criteria notice */}
-                <div className="glass border-white/5 rounded-2xl p-6 flex items-start gap-4">
-                  <AlertCircle className="w-6 h-6 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-sm text-foreground mb-1">Eligibility Note</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {event.eligibility}
-                    </p>
+                {/* Era 3 */}
+                <div className="space-y-2.5 p-4 rounded-lg bg-[#0B132B]/80 border border-amber-500/20">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-amber-300 font-mono uppercase">
+                      {event.era3.title}
+                    </h3>
+                    <span className="text-[10px] text-neutral-400 font-mono">PHASE 3 (FINALS)</span>
+                  </div>
+                  <p className="text-xs italic text-amber-200/80">{event.era3.subtitle}</p>
+                  <p className="text-xs text-neutral-300 leading-relaxed">{event.era3.description}</p>
+                  <div className="pt-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 font-mono block mb-1">
+                      OPERATIONAL ROUNDS:
+                    </span>
+                    <ul className="list-disc list-inside text-xs text-neutral-300 space-y-1">
+                      {event.era3.rounds.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
+
+              {/* AI & Sustainability lenses */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div
+                  className="rounded-xl p-5 space-y-2 border bg-amber-500/5 border-amber-500/25"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="w-4 h-4 text-amber-400" />
+                    <span
+                      className="text-xs font-bold tracking-widest uppercase text-amber-400"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      AI Tactical Lens
+                    </span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-neutral-300">
+                    {event.aiLens}
+                  </p>
+                </div>
+                <div
+                  className="rounded-xl p-5 space-y-2 border bg-emerald-500/5 border-emerald-500/25"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Leaf className="w-4 h-4 text-emerald-400" />
+                    <span
+                      className="text-xs font-bold tracking-widest uppercase text-emerald-400"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      Long-Horizon Statecraft
+                    </span>
+                  </div>
+                  <p className="text-xs leading-relaxed text-neutral-300">
+                    {event.sustainabilityLens}
+                  </p>
+                </div>
+              </div>
+
+              {/* Rules of Engagement */}
+              <div
+                className="rounded-xl p-6 space-y-4 border bg-[#101A36]/80 border-amber-500/20"
+              >
+                <h2
+                  className="text-lg font-bold flex items-center gap-2.5 text-neutral-100"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  <FileText className="w-5 h-5 text-amber-400" />
+                  Rules of Engagement
+                </h2>
+                <ul className="space-y-2.5 text-xs md:text-sm list-disc pl-5 text-neutral-300">
+                  <li>All crew members must be bona fide students of the same registered institution.</li>
+                  <li>Interdisciplinary tactical units are permitted and encouraged.</li>
+                  <li>Participants must present digital confirmation passes and college IDs on arrival.</li>
+                  <li>All submissions and AI simulation inputs must be finalized within the designated windows.</li>
+                  <li>The decision of the supreme board of adjudicators is sovereign and final.</li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </main>
 
-        <Footer />
-      </div>
-    );
-  }
+            {/* ── Right Column: Sidebar Telemetry & Actions ─────────────────── */}
+            <div className="space-y-6">
+              {/* Mission Telemetry Card */}
+              <div
+                className="rounded-xl overflow-hidden border bg-[#101A36]/90 border-amber-500/30 backdrop-blur-md shadow-2xl"
+              >
+                <div className="px-6 py-4 border-b border-amber-500/20 flex items-center justify-between">
+                  <h3
+                    className="font-bold text-xs tracking-widest uppercase text-amber-400 font-mono"
+                  >
+                    MISSION TELEMETRY
+                  </h3>
+                  <span className="text-[10px] font-mono text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30">
+                    STATUS: ACTIVE
+                  </span>
+                </div>
+                <div className="p-6 space-y-5">
+                  {/* Prize 1st */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
+                      <Trophy className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                        1st Place Bounty
+                      </p>
+                      <p className="text-base font-black text-amber-300">
+                        ₹{event.prizeFirst.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
 
-  // Fallback: Event or Category not found
-  return (
-    <div className="min-h-screen bg-background flex flex-col overflow-hidden selection:bg-primary/30 relative">
-      <Navbar />
+                  {/* Prize 2nd */}
+                  {event.prizeSecond && (
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-300 border border-amber-500/30 bg-amber-500/10">
+                        <Trophy className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                          2nd Place Bounty
+                        </p>
+                        <p className="text-base font-black text-amber-200">
+                          ₹{event.prizeSecond.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-      <main className="flex-grow relative z-10 pt-32 pb-24 flex items-center justify-center">
-        <div className="container mx-auto px-4 text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-6 text-red-500">
-            <AlertCircle className="w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-4">Event Not Found</h1>
-          <p className="text-muted-foreground mb-8">
-            The event or category you are looking for does not exist or has been removed from the schedule.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Link href="/events">
-              <Button className="w-full">
-                Browse All Events
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button variant="outline" className="w-full">
-                Back to Home Page
-              </Button>
-            </Link>
+                  {/* Pricing Breakdown */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
+                      <CreditCard className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                        Registration Fee
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="line-through text-neutral-400 text-xs">₹1,500</span>
+                        <span className="text-base font-black text-amber-300">₹900 (Early Bird)</span>
+                      </div>
+                      <span className="text-[10px] text-amber-400/80 block mt-0.5">
+                        *50% off if registering all 10 events (₹7,500 total)
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Squad Capacity */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                        Squad Size
+                      </p>
+                      <p className="text-sm font-bold text-neutral-100">
+                        {event.teamSize}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dates */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                        Operational Dates
+                      </p>
+                      <p className="text-sm font-bold text-neutral-100">
+                        November 4–5, 2026
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Venue */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
+                        Theater Venue
+                      </p>
+                      <p className="text-sm font-bold text-neutral-100">
+                        {FEST_CONTENT.venue}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Accommodation Notice */}
+                <div className="p-4 mx-6 mb-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-neutral-300 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Accommodation:</strong> First-come-first-served inside Christ University campus, subject to availability.
+                  </span>
+                </div>
+
+                {/* Action CTA */}
+                <div className="p-6 border-t border-amber-500/20 space-y-3">
+                  <Link href="/register" className="block w-full">
+                    <button
+                      className="w-full h-12 rounded-md text-xs font-bold tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                      style={{
+                        background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
+                        color: "#050200",
+                        fontFamily: "'Cinzel', serif",
+                        boxShadow: "0 0 25px rgba(201, 168, 76, 0.3)",
+                      }}
+                    >
+                      DEPLOY CREW FOR {event.name.toUpperCase()} <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
+                  <p className="text-center text-[10px] font-mono text-neutral-400">
+                    EARLY BIRD DEADLINE: 30 SEPT 2026, 23:59 IST
+                  </p>
+                </div>
+              </div>
+
+              {/* Eligibility */}
+              <div
+                className="rounded-xl p-5 flex items-start gap-4 border bg-amber-500/5 border-amber-500/20"
+              >
+                <Shield className="w-5 h-5 flex-shrink-0 text-amber-400 mt-0.5" />
+                <div>
+                  <h4
+                    className="font-semibold text-xs mb-1 uppercase tracking-wider text-amber-300 font-mono"
+                  >
+                    CREW ELIGIBILITY
+                  </h4>
+                  <p className="text-xs leading-relaxed text-neutral-300">
+                    {event.eligibility}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>

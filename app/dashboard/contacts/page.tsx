@@ -21,13 +21,8 @@ export default function ContactsPage() {
           </h2>
 
           <div className="space-y-3">
-            {FEST_CONTENT.coreTeam.map((member, i) => (
-              <div
-                key={member.name}
- 
- 
- 
-              >
+            {FEST_CONTENT.emergencyContacts.map((member) => (
+              <div key={member.name}>
                 <Card className="glass border-white/10 hover:border-primary/30 transition-colors">
                   <CardContent className="p-4 flex items-center justify-between gap-4">
                     <div className="min-w-0">
@@ -35,18 +30,20 @@ export default function ContactsPage() {
                       <p className="text-xs text-muted-foreground mt-0.5">{member.role}</p>
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      {member.phone !== "TBD" && (
+                      {member.phone && member.phone !== "TBD" && (
                         <a href={`tel:${member.phone}`}>
                           <button className="p-2 bg-white/5 hover:bg-white/10 text-primary border border-white/10 rounded transition-colors" title="Call">
                             <Phone className="w-4 h-4" />
                           </button>
                         </a>
                       )}
-                      <a href={`mailto:${member.email}`}>
-                        <button className="p-2 bg-white/5 hover:bg-white/10 text-primary border border-white/10 rounded transition-colors" title="Email">
-                          <Mail className="w-4 h-4" />
-                        </button>
-                      </a>
+                      {member.email && (
+                        <a href={`mailto:${member.email}`}>
+                          <button className="p-2 bg-white/5 hover:bg-white/10 text-primary border border-white/10 rounded transition-colors" title="Email">
+                            <Mail className="w-4 h-4" />
+                          </button>
+                        </a>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -58,36 +55,25 @@ export default function ContactsPage() {
         {/* Emergency Services */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-danger" /> Emergency Services
+            <ShieldAlert className="w-5 h-5 text-danger" /> Campus Emergency Desk
           </h2>
 
           <div className="space-y-3">
-            {FEST_CONTENT.emergencyContacts.map((contact, i) => (
-              <div
-                key={contact.name}
- 
- 
- 
-              >
-                <Card className="border-danger/20 bg-danger/5 hover:border-danger/30 transition-colors">
-                  <CardContent className="p-4 flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-danger truncate">{contact.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5" /> {contact.available} availability
-                      </p>
-                    </div>
-                    {contact.phone !== "TBD" && (
-                      <a href={`tel:${contact.phone}`} className="shrink-0">
-                        <button className="p-2 bg-danger/10 hover:bg-danger/25 text-danger border border-danger/20 rounded transition-colors" title="Call">
-                          <Phone className="w-4 h-4" />
-                        </button>
-                      </a>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
+            <Card className="border-danger/20 bg-danger/5 hover:border-danger/30 transition-colors">
+              <CardContent className="p-4 flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold text-danger truncate">Campus Security Command</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" /> 24/7 Gate 1 Command
+                  </p>
+                </div>
+                <a href="tel:+918040129100" className="shrink-0">
+                  <button className="p-2 bg-danger/10 hover:bg-danger/25 text-danger border border-danger/20 rounded transition-colors" title="Call">
+                    <Phone className="w-4 h-4" />
+                  </button>
+                </a>
+              </CardContent>
+            </Card>
 
             {/* Medical room note */}
             <Card className="glass border-white/10">

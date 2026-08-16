@@ -889,8 +889,8 @@ export default function GanttPage() {
       {/* Page Title & Controls */}
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight" style={{fontFamily:'Georgia,serif',color:'#E8C87A'}}>VIRENZA Master Timeline</h1>
-          <p className="text-muted-foreground mt-1">Hierarchical WBS · Nov 4–5, 2026 · Dynasties of India</p>
+          <h1 className="text-3xl font-bold tracking-tight" style={{fontFamily:'Georgia,serif',color:'#E8C87A'}}>IMPERIUM Master Timeline</h1>
+          <p className="text-muted-foreground mt-1">Hierarchical WBS · Nov 4–5, 2026 · Evolution of Warfare</p>
         </div>
         
         {/* Upper Controls Bar */}

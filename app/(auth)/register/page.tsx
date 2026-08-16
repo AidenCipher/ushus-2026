@@ -105,24 +105,49 @@ export default function RegisterPage() {
 
   if (!allowReg) {
     return (
-      <Card className="glass border-white/10 w-full shadow-2xl max-w-md mx-auto">
+      <Card
+        className="w-full shadow-2xl max-w-md mx-auto"
+        style={{
+          background: "rgba(28, 15, 0, 0.85)",
+          border: "1px solid rgba(201, 168, 76, 0.25)",
+          backdropFilter: "blur(16px)",
+        }}
+      >
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight">Registrations Closed</CardTitle>
-          <CardDescription>
+          <CardTitle
+            className="text-2xl font-bold tracking-tight"
+            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+          >
+            Registrations Closed
+          </CardTitle>
+          <CardDescription style={{ color: "#A89070" }}>
             The registration portal is currently inactive
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center p-6 text-center space-y-4">
-          <div className="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mb-2 border border-amber-500/20">
-            <AlertCircle className="w-8 h-8" />
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mb-2"
+            style={{
+              background: "rgba(201, 168, 76, 0.1)",
+              border: "1px solid rgba(201, 168, 76, 0.3)",
+            }}
+          >
+            <AlertCircle className="w-8 h-8" style={{ color: "#C9A84C" }} />
           </div>
-          <p className="text-sm text-slate-350 leading-relaxed">
-            USHUS 2026 registration has closed or been suspended by the administrators. Please contact the Christ University MBA Fest Organising Committee if you believe this is in error.
+          <p className="text-sm leading-relaxed text-neutral-300">
+            USHUS 2026: IMPERIUM registration has closed or been suspended by the organising committee.
+            Contact the Christ University CUSB Organising Committee if you believe this is in error.
           </p>
         </CardContent>
-        <CardFooter className="flex justify-center border-t border-white/5 pt-6 pb-6">
-          <Link href="/login" className="text-primary hover:underline text-sm font-medium">
-            Sign In with existing account
+        <CardFooter
+          className="flex justify-center pt-6 pb-6 border-t border-amber-500/20"
+        >
+          <Link
+            href="/login"
+            className="text-sm font-medium hover:underline text-amber-400"
+            style={{ fontFamily: "'Cinzel', serif" }}
+          >
+            Sign in with existing account
           </Link>
         </CardFooter>
       </Card>
@@ -131,13 +156,13 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <Card className="glass border-white/10 w-full shadow-2xl">
+      <Card className="glass border-amber-500/30 bg-[#101A36]/90 w-full shadow-2xl">
         <CardContent className="flex flex-col items-center justify-center p-12 text-center space-y-4">
           <div className="w-16 h-16 bg-success/20 text-success rounded-full flex items-center justify-center mb-4">
             <CheckCircle2 className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold">Registration Successful!</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-[#F5ECD7]">Registration Successful!</h2>
+          <p className="text-neutral-300">
             Your account has been verified and created. Redirecting to login...
           </p>
         </CardContent>
@@ -146,11 +171,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="glass border-white/10 w-full shadow-2xl max-w-md mx-auto">
+    <Card
+      className="w-full shadow-2xl max-w-md mx-auto bg-[#101A36]/90 border border-amber-500/30 backdrop-blur-xl"
+    >
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
-        <CardDescription>
-          Enter your details below to register for the fest
+        <CardTitle
+          className="text-2xl font-bold tracking-tight"
+          style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+        >
+          Enter the Arena
+        </CardTitle>
+        <CardDescription className="text-neutral-300">
+          Register your details to compete at USHUS 2026: IMPERIUM
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -252,7 +284,18 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-            <Button className="w-full mt-6 shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:shadow-[0_0_25px_rgba(var(--primary),0.5)] transition-all bg-indigo-600 hover:bg-indigo-700" type="submit" disabled={isLoading}>
+            <Button
+              className="w-full mt-6 transition-all font-bold"
+              type="submit"
+              disabled={isLoading}
+              style={{
+                background: isLoading ? "rgba(201, 168, 76, 0.4)" : "linear-gradient(135deg, #C9A84C, #8B6914)",
+                color: "#1A0A00",
+                fontFamily: "'Cinzel', serif",
+                letterSpacing: "0.06em",
+                boxShadow: isLoading ? "none" : "0 0 20px rgba(201, 168, 76, 0.25)",
+              }}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -265,10 +308,17 @@ export default function RegisterPage() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex flex-col items-center justify-center border-t border-white/5 pt-6 pb-6">
-        <div className="text-sm text-muted-foreground text-center">
+      <CardFooter
+        className="flex flex-col items-center justify-center pt-6 pb-6"
+        style={{ borderTop: "1px solid rgba(201, 168, 76, 0.1)" }}
+      >
+        <div className="text-sm text-center" style={{ color: "#A89070" }}>
           Already have an account?{" "}
-          <Link href="/login" className="text-primary hover:underline font-medium">
+          <Link
+            href="/login"
+            className="font-medium hover:underline"
+            style={{ color: "#C9A84C" }}
+          >
             Sign in
           </Link>
         </div>

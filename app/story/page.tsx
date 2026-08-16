@@ -2,182 +2,246 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Landmark, BookOpen, Quote } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Landmark, BookOpen, Quote, ArrowRight, Shield, Crosshair } from "lucide-react";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { FEST_CONTENT } from "@/lib/content";
 
 export default function StoryPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground py-16 px-4 md:py-24">
-      <div className="max-w-4xl mx-auto space-y-16">
-        
-        {/* Navigation & Header */}
-        <div className="flex justify-between items-center">
-          <Link href="/">
-            <Button variant="ghost" className="text-muted-foreground hover:text-foreground gap-2">
-              <ArrowLeft className="w-4 h-4" /> Back to Home
-            </Button>
-          </Link>
-          <div className="text-sm font-semibold tracking-widest text-primary uppercase">USHUS LEGACY</div>
+    <div className="min-h-screen flex flex-col bg-[#0B132B]" style={{ color: "#F5ECD7" }}>
+      <Navbar />
+
+      <main className="flex-grow pt-32 pb-24 px-4 md:py-24">
+        <div className="max-w-4xl mx-auto space-y-20">
+
+          {/* Navigation & eyebrow */}
+          <div className="flex justify-between items-center">
+            <Link href="/">
+              <button
+                className="flex items-center gap-2 text-sm text-neutral-400 hover:text-amber-400 transition-colors"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to Home
+              </button>
+            </Link>
+            <div
+              className="text-xs font-semibold tracking-widest uppercase text-amber-400"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              USHUS LEGACY
+            </div>
+          </div>
+
+          {/* Hero title */}
+          <div
+            className="text-center space-y-6 pb-16 border-b border-amber-500/20"
+          >
+            <div
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase border border-amber-500/35 bg-amber-500/10 text-amber-300"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              The Evolution of Warfare · IMPERIUM 2026
+            </div>
+            <h1
+              className="text-4xl md:text-6xl font-extrabold tracking-tight text-[#F5ECD7]"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              The Journey of USHUS
+            </h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed text-neutral-300">
+              Originating from the Sanskrit word meaning &quot;dawn,&quot; USHUS marks the inception of new eras,
+              visionary leadership, and elite strategic mastery — &ldquo;Wars Evolve. So Do We.&rdquo;
+            </p>
+          </div>
+
+          {/* Foundation narrative */}
+          <section className="space-y-8">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center border border-amber-500/30 bg-amber-500/10 text-amber-400"
+                >
+                  <Landmark className="w-6 h-6" />
+                </div>
+                <h2
+                  className="text-2xl md:text-3xl font-bold text-[#F5ECD7]"
+                  style={{ fontFamily: "'Cinzel', serif" }}
+                >
+                  Our Foundation at Christ
+                </h2>
+                <div
+                  className="h-1 w-10 rounded bg-gradient-to-r from-amber-400 to-transparent"
+                />
+                <p className="leading-relaxed text-neutral-300">
+                  USHUS is the flagship management festival of the School of Business and Management Studies at Christ
+                  University, Bengaluru Central Campus. A crucible for future executive leaders — USHUS integrates
+                  academic theory with real-time battlefield crisis conditions.
+                </p>
+                <p className="leading-relaxed text-neutral-300">
+                  Over the years, the fest has grown into a premier national gathering, attracting Tier-1 business schools
+                  from across India to compete across ten distinct arenas of management excellence.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { stat: "10+", label: "Years of Legacy", desc: "Forging elite corporate strategists." },
+                  { stat: "100+", label: "Institutions", desc: "Colleges participating across India." },
+                  { stat: "5000+", label: "Alumni", desc: "Graduates holding top global roles." },
+                  { stat: "₹2.41L", label: "Prize Pool", desc: "Total prize bounty for USHUS 2026." },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="p-5 rounded-xl space-y-2 border border-amber-500/20 bg-[#101A36]/80"
+                  >
+                    <div
+                      className="text-3xl font-black text-amber-300"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      {item.stat}
+                    </div>
+                    <div className="text-sm font-semibold text-[#F5ECD7]">
+                      {item.label}
+                    </div>
+                    <p className="text-xs text-neutral-400">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Commander Doctrines */}
+          <section className="space-y-8">
+            <div
+              className="flex items-center gap-3 pb-4 border-b border-amber-500/20"
+            >
+              <BookOpen className="w-6 h-6 text-amber-400" />
+              <h2
+                className="text-2xl font-bold text-[#F5ECD7]"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                IMPERIUM — The Strategic Command Framework
+              </h2>
+            </div>
+            <p className="leading-relaxed text-neutral-300">
+              IMPERIUM draws inspiration from 3,000 years of warfare and executive doctrine. Every competition maps to a legendary commander whose battlefield breakthroughs shaped human civilization. Ten arenas. Ten commanders. One supreme victory.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {FEST_CONTENT.about.themeInspirations.map((insp) => (
+                <div
+                  key={insp.vertical}
+                  className="p-5 rounded-xl space-y-2 border border-amber-500/20 bg-[#101A36]/80"
+                >
+                  <p
+                    className="text-xs font-bold tracking-widest uppercase text-amber-400"
+                    style={{ fontFamily: "'Cinzel', serif" }}
+                  >
+                    {insp.metaphor}
+                  </p>
+                  <p className="text-sm leading-relaxed text-neutral-300">
+                    {insp.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Testimonials */}
+          <section className="space-y-8">
+            <div
+              className="flex items-center gap-3 pb-4 border-b border-amber-500/20"
+            >
+              <Quote className="w-6 h-6 text-amber-400" />
+              <h2
+                className="text-2xl font-bold text-[#F5ECD7]"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Testimonials from the Arena
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              {[
+                {
+                  quote:
+                    "Competing in the Thronium (Best Manager) event at USHUS pushed my decision-making to the absolute limit. The crisis simulations and AI-augmented wargaming rounds set a new standard for MBA competitions.",
+                  name: "Rahul Menon",
+                  college: "IIM Kozhikode",
+                  event: "Thronium Finalist",
+                },
+                {
+                  quote:
+                    "The analytical telemetry and real-time cryptography rounds in Algorium were unlike anything we had seen before. Christ University orchestrates an unforgettable tactical challenge.",
+                  name: "Sneha Reddy",
+                  college: "NMIMS Mumbai",
+                  event: "Algorium Competitor",
+                },
+              ].map((t) => (
+                <div
+                  key={t.name}
+                  className="p-6 rounded-xl flex flex-col justify-between space-y-6 border border-amber-500/20 bg-[#101A36]/80"
+                >
+                  <p className="text-sm italic leading-relaxed text-neutral-300">
+                    &quot;{t.quote}&quot;
+                  </p>
+                  <div
+                    className="flex items-center gap-3 pt-4 border-t border-amber-500/15"
+                  >
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs border border-amber-500/30 bg-amber-500/15 text-amber-300"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-[#F5ECD7]">{t.name}</h4>
+                      <p className="text-[11px] text-neutral-400">
+                        {t.college} · {t.event}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA */}
+          <div
+            className="text-center pt-12 mt-4 space-y-6 border-t border-amber-500/20"
+          >
+            <h2
+              className="text-2xl md:text-3xl font-bold text-[#F5ECD7]"
+              style={{ fontFamily: "'Cinzel', serif" }}
+            >
+              Ready to command your battleground?
+            </h2>
+            <p className="text-sm max-w-md mx-auto text-neutral-300">
+              USHUS 2026: IMPERIUM, November 4–5. Join 600+ competitors from India&apos;s top business schools.
+            </p>
+            <Link href="/register">
+              <button
+                className="h-12 px-10 text-sm font-bold uppercase rounded-md transition-all duration-300 cursor-pointer shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
+                  color: "#050200",
+                  fontFamily: "'Cinzel', serif",
+                  letterSpacing: "0.08em",
+                  boxShadow: "0 0 30px rgba(201, 168, 76, 0.25)",
+                }}
+              >
+                DEPLOY FOR USHUS 2026 <ArrowRight className="inline w-4 h-4 ml-1" />
+              </button>
+            </Link>
+          </div>
+
         </div>
+      </main>
 
-        {/* Hero title */}
-        <div className="text-center space-y-6 border-b border-border pb-16">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-            The Journey of USHUS
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Originating from the Sanskrit word meaning &quot;dawn,&quot; USHUS marks the beginning of new eras, creative collaborations, and elite business leadership.
-          </p>
-        </div>
-
-        {/* Narrative Section */}
-        <section className="space-y-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-                <Landmark className="w-6 h-6" />
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold">Our Foundation at Christ</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                USHUS is the signature management festival of the School of Business and Management Studies at Christ University, Bangalore Central Campus. Designed as a crucible for ambitious management professionals, USHUS integrates academic theory with real-time industry pressure.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Over the years, the fest has evolved from a small localized case competition into a massive national-scale gathering, attracting Tier-1 business schools from across the country to compete across core and niche management verticals.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="bg-card">
-                <CardContent className="p-6 space-y-2">
-                  <div className="text-4xl font-black text-primary">10+</div>
-                  <div className="text-sm font-semibold">Years of Legacy</div>
-                  <p className="text-xs text-muted-foreground">Building business leaders since inception.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardContent className="p-6 space-y-2">
-                  <div className="text-4xl font-black text-primary">100+</div>
-                  <div className="text-sm font-semibold">Institutions</div>
-                  <p className="text-xs text-muted-foreground">Colleges participating from all over India.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardContent className="p-6 space-y-2">
-                  <div className="text-4xl font-black text-primary">5000+</div>
-                  <div className="text-sm font-semibold">Alumni</div>
-                  <p className="text-xs text-muted-foreground">Participants who went on to top corporate roles.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardContent className="p-6 space-y-2">
-                  <div className="text-4xl font-black text-primary">₹15L+</div>
-                  <div className="text-sm font-semibold">Prizes Awarded</div>
-                  <p className="text-xs text-muted-foreground">Recognizing excellence in execution.</p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Historical Chapters */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <BookOpen className="text-primary w-6 h-6" />
-            <h2 className="text-2xl font-bold">Historical Impact</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-card border border-border space-y-4">
-              <h3 className="text-xl font-bold">National Reach</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Focused on the future of business management, USHUS brings together diverse cohorts. We simulate real-world executive environments, allowing participants to experience boardroom dynamics firsthand.
-              </p>
-              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border text-center">
-                <div>
-                  <div className="text-lg font-bold text-foreground">50+</div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Colleges</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-foreground">1,500+</div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Attendees</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-foreground">10+</div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Events</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-card border border-border space-y-4">
-              <h3 className="text-xl font-bold">Industry Relevance</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                By integrating complex cross-domain corporate crisis scenarios, USHUS pushes participants to think holistically. Industry leaders serve as judges to provide real-world critique.
-              </p>
-              <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border text-center">
-                <div>
-                  <div className="text-lg font-bold text-foreground">100%</div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Case-Based</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-foreground">Top</div>
-                  <div className="text-[10px] text-muted-foreground uppercase">Recruiters</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Participant Testimonials */}
-        <section className="space-y-8">
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <Quote className="text-primary w-6 h-6" />
-            <h2 className="text-2xl font-bold">Testimonials from the Arena</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-2xl bg-card border border-border flex flex-col justify-between space-y-6">
-              <p className="text-sm text-muted-foreground italic leading-relaxed">
-                &quot;Competing in the Best Manager event at USHUS was by far the highlight of my MBA. The pressure-test rounds on day two forced me to utilize every finance and leadership skill I had. The campus hospitality was outstanding.&quot;
-              </p>
-              <div className="flex items-center gap-3 border-t border-border pt-4">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">R</div>
-                <div>
-                  <h4 className="text-xs font-bold">Rahul Menon</h4>
-                  <p className="text-[10px] text-muted-foreground">IIM Kozhikode • Best Manager Winner</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-card border border-border flex flex-col justify-between space-y-6">
-              <p className="text-sm text-muted-foreground italic leading-relaxed">
-                &quot;The boardroom dilemma simulation in the HR event felt incredibly real. Being grilled by executive corporate HR heads gave us a mirror into our strategic thinking capability. Incredible learning curve.&quot;
-              </p>
-              <div className="flex items-center gap-3 border-t border-border pt-4">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">S</div>
-                <div>
-                  <h4 className="text-xs font-bold">Sneha Reddy</h4>
-                  <p className="text-[10px] text-muted-foreground">NMIMS Mumbai • HR Finalist</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Call to action */}
-        <div className="text-center pt-16 mt-8 border-t border-border space-y-6">
-          <h2 className="text-2xl font-bold">Ready to write your own chapter?</h2>
-          <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            USHUS 2026 is coming on November 4th and 5th. Join 600+ participants competing for the ultimate management glory.
-          </p>
-          <Link href="/register">
-            <Button size="lg">
-              Register for USHUS 2026
-            </Button>
-          </Link>
-        </div>
-
-      </div>
+      <Footer />
     </div>
   );
 }

@@ -7,9 +7,8 @@ interface LoadingAnimationProps {
   size?: "sm" | "md" | "lg";
 }
 
-// ── VIRENZA Loading Animation ─────────────────────────────────────────────────
-// A spinning royal-seal medallion — concentric rings + rotating spoke marks —
-// replacing the retired constellation orbit animation.
+// ── IMPERIUM Tactical Radar Loading Animation ────────────────────────────────
+// A spinning imperial commander crest — concentric tactical rings & rotating coordinates
 export default function LoadingAnimation({ message = "Loading...", size = "md" }: LoadingAnimationProps) {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const animRef = React.useRef<number | null>(null);
@@ -33,7 +32,7 @@ export default function LoadingAnimation({ message = "Loading...", size = "md" }
     const r = px / 2 - 4;
 
     const draw = () => {
-      ctx.clearRect(0, 0, px, py);
+      ctx.clearRect(0, 0, px, px);
       const a = angleRef.current;
       angleRef.current += 0.022;
 

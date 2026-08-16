@@ -29,16 +29,16 @@ async function main() {
   // ─── Create Event Verticals ─────────────────────────────────────────────────────
   console.log("📁 Creating event verticals...");
   const verticalsData = [
-    { name: "Best Manager", description: "MAURYA - Best Manager", colorCode: "#C8102E" },
-    { name: "Best Management Team", description: "ASHTAPRADHAN - Best Management Team", colorCode: "#A67C00" },
-    { name: "B-Quiz", description: "PALLAVA - B-Quiz", colorCode: "#8B0000" },
-    { name: "Finance", description: "SATAVAHANA - Finance", colorCode: "#B8860B" },
-    { name: "Marketing", description: "MUGHAL - Marketing", colorCode: "#9B2335" },
-    { name: "Business Plan", description: "VIJAYANAGARA - Business Plan", colorCode: "#A0522D" },
-    { name: "HR", description: "GUPTA - HR", colorCode: "#6B0F1A" },
-    { name: "Business Analytics (BA)", description: "CHOLA - Business Analytics (BA)", colorCode: "#8B6914" },
-    { name: "Logistics, Operations & Systems (LOS)", description: "KAKATIYA - Logistics, Operations & Systems (LOS)", colorCode: "#7B5E00" },
-    { name: "Strategy", description: "CHALUKYA - Strategy", colorCode: "#722F37" },
+    { name: "Best Manager", description: "THRONIUM - Napoleon Bonaparte", colorCode: "#C9A84C" },
+    { name: "Best Management Team", description: "VENTURIUM - Dwight D. Eisenhower", colorCode: "#D4AF37" },
+    { name: "HR", description: "SYNERGIUM - George C. Marshall", colorCode: "#4A90E2" },
+    { name: "Marketing", description: "WARKETIUM - Edward Bernays", colorCode: "#E056FD" },
+    { name: "Business Analytics", description: "ALGORIUM - Alan Turing", colorCode: "#00E5FF" },
+    { name: "Finance", description: "AURIUM - Alexander Hamilton", colorCode: "#F1C40F" },
+    { name: "B-Plan", description: "BIZARIUM - Helmuth von Moltke", colorCode: "#2ECC71" },
+    { name: "B-Quiz", description: "COGNITIUM - Sir Francis Walsingham", colorCode: "#E67E22" },
+    { name: "Strategy", description: "VICTORIUM - Sun Tzu", colorCode: "#E74C3C" },
+    { name: "Lean Operations", description: "KAIZENIUM - Alexander the Great", colorCode: "#1ABC9C" },
   ];
 
   const verticals = await Promise.all(
@@ -111,23 +111,23 @@ async function main() {
     },
   });
 
-  // ─── Create Events (10 events corresponding to verticals) ─────────────────────
+  // ─── Create Events (10 IMPERIUM events) ───────────────────────────────────────
   console.log("🎪 Creating events...");
   const baseFestDateStart = new Date("2026-11-04T09:00:00");
   const baseFestDateEnd = new Date("2026-11-05T18:00:00");
   const baseDeadline = new Date("2026-10-25T23:59:59");
 
   const eventData = [
-    { name: "Best Manager", vertical: verticalMap["Best Manager"], head: null, desc: "MAURYA - The ultimate leadership and business acumen test.", venue: "Auditorium A", prize: "₹50,000", max: 50 },
-    { name: "Best Management Team", vertical: verticalMap["Best Management Team"], head: null, desc: "ASHTAPRADHAN - Collaboration challenge testing group strategy.", venue: "Seminar Hall 1", prize: "₹40,000", max: 40 },
-    { name: "B-Quiz", vertical: verticalMap["B-Quiz"], head: null, desc: "PALLAVA - Corporate quiz bowl of ideas.", venue: "Auditorium B", prize: "₹20,000", max: 100 },
-    { name: "Finance", vertical: verticalMap["Finance"], head: null, desc: "SATAVAHANA - Asset valuations and portfolio defense.", venue: "Computer Lab 2", prize: "₹30,000", max: 80 },
-    { name: "Marketing", vertical: verticalMap["Marketing"], head: organiser, desc: "MUGHAL - Disruptive brand campaigns.", venue: "Seminar Hall 2", prize: "₹30,000", max: 80 },
-    { name: "Business Plan", vertical: verticalMap["Business Plan"], head: null, desc: "VIJAYANAGARA - Build a scalable business plan.", venue: "Seminar Hall 3", prize: "₹30,000", max: 60 },
-    { name: "HR", vertical: verticalMap["HR"], head: null, desc: "GUPTA - Negotiations and talent optimization.", venue: "Conference Room A", prize: "₹30,000", max: 60 },
-    { name: "Business Analytics (BA)", vertical: verticalMap["Business Analytics (BA)"], head: null, desc: "CHOLA - Data insights and predictive modeling.", venue: "Computer Lab 3", prize: "₹30,000", max: 80 },
-    { name: "Logistics, Operations & Systems (LOS)", vertical: verticalMap["Logistics, Operations & Systems (LOS)"], head: null, desc: "KAKATIYA - Logistics bottlenecks and lean process design.", venue: "Computer Lab 1", prize: "₹30,000", max: 80 },
-    { name: "Strategy", vertical: verticalMap["Strategy"], head: null, desc: "CHALUKYA - Dynamic strategic execution under pressure.", venue: "Seminar Hall 4", prize: "₹30,000", max: 80 },
+    { name: "Thronium (Best Manager)", vertical: verticalMap["Best Manager"], head: null, desc: "Napoleon Bonaparte — The ultimate leadership test.", venue: "Auditorium A", prize: "₹25,000", prizeFirst: 25000, prizeSecond: null, max: 50 },
+    { name: "Venturium (Best Management Team)", vertical: verticalMap["Best Management Team"], head: null, desc: "Dwight D. Eisenhower — Coalition executive command.", venue: "Seminar Hall 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 40 },
+    { name: "Synergium (HR)", vertical: verticalMap["HR"], head: null, desc: "George C. Marshall — Talent architecture and negotiations.", venue: "Conference Room A", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60 },
+    { name: "Warketium (Marketing)", vertical: verticalMap["Marketing"], head: organiser, desc: "Edward Bernays — Perception engineering and viral PR.", venue: "Seminar Hall 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
+    { name: "Algorium (Business Analytics)", vertical: verticalMap["Business Analytics"], head: null, desc: "Alan Turing — Machine intelligence and cryptography.", venue: "Computer Lab 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
+    { name: "Aurium (Finance)", vertical: verticalMap["Finance"], head: null, desc: "Alexander Hamilton — Sovereign treasury and valuation.", venue: "Computer Lab 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
+    { name: "Bizarium (B-Plan)", vertical: verticalMap["B-Plan"], head: null, desc: "Helmuth von Moltke — Resilient venture architectures.", venue: "Seminar Hall 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60 },
+    { name: "Cognitium (B-Quiz)", vertical: verticalMap["B-Quiz"], head: null, desc: "Sir Francis Walsingham — Corporate intelligence and trivia.", venue: "Auditorium B", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 100 },
+    { name: "Victorium (Strategy)", vertical: verticalMap["Strategy"], head: null, desc: "Sun Tzu — Asymmetric corporate strategy wargaming.", venue: "Seminar Hall 4", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
+    { name: "Kaizenium (Lean Operations)", vertical: verticalMap["Lean Operations"], head: null, desc: "Alexander the Great — Supply chain velocity and lean ops.", venue: "Computer Lab 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
   ];
 
   const events = await Promise.all(
@@ -145,13 +145,16 @@ async function main() {
           maxParticipants: e.max,
           registrationDeadline: baseDeadline,
           prizePool: e.prize,
+          basePrice: 1500,
+          prizeFirst: e.prizeFirst,
+          prizeSecond: e.prizeSecond,
           status: EventStatus.REGISTRATION_OPEN,
         },
       })
     )
   );
 
-  const marketingEvent = events.find(e => e.name === "Marketing")!;
+  const marketingEvent = events.find(e => e.name.includes("Warketium")) || events[3];
 
   // ─── Update organiser with eventId ────────────────────────────────────────
   await prisma.user.update({
@@ -184,7 +187,7 @@ async function main() {
   });
 
   // Also register for Best Manager
-  const bestManagerEvent = events.find(e => e.name === "Best Manager")!;
+  const bestManagerEvent = events.find(e => e.name.includes("Thronium")) || events[0];
   await prisma.registration.create({
     data: {
       userId: participant.id,
@@ -214,43 +217,43 @@ async function main() {
 
   const taskTemplates: SeedTaskTemplate[] = [
     // Best Manager
-    { title: "Design Maurya leadership rounds", vertIdx: 0, evtIdx: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -30, end: -20 },
-    { title: "Onboard judges for Maurya Best Manager", vertIdx: 0, evtIdx: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -15, end: -5 },
+    { title: "Design Thronium Napoleon leadership rounds", vertIdx: 0, evtIdx: 0, status: TaskStatus.COMPLETED, priority: TaskPriority.CRITICAL, progress: 100, start: -30, end: -20 },
+    { title: "Onboard judges for Thronium Best Manager", vertIdx: 0, evtIdx: 0, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 60, start: -15, end: -5 },
     
     // Best Management Team
-    { title: "Draft Ashtapradhan council structure", vertIdx: 1, evtIdx: 1, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: -5, end: 0 },
-    { title: "Reserve Ashtapradhan team rooms", vertIdx: 1, evtIdx: 1, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -25, end: -15 },
+    { title: "Draft Venturium Eisenhower coalition structure", vertIdx: 1, evtIdx: 1, status: TaskStatus.NOT_STARTED, priority: TaskPriority.HIGH, progress: 0, start: -5, end: 0 },
+    { title: "Reserve Venturium team war rooms", vertIdx: 1, evtIdx: 1, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -25, end: -15 },
 
     // B-Quiz
-    { title: "Formulate Pallava B-Quiz questions", vertIdx: 2, evtIdx: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
-    { title: "Onboard Pallava quiz master", vertIdx: 2, evtIdx: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 80, start: -8, end: -2 },
+    { title: "Formulate Cognitium Walsingham quiz questions", vertIdx: 7, evtIdx: 7, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
+    { title: "Onboard Cognitium spymaster quizmaster", vertIdx: 7, evtIdx: 7, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 80, start: -8, end: -2 },
 
     // Finance
-    { title: "Configure Satavahana ledger rules", vertIdx: 3, evtIdx: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -30, end: -15 },
-    { title: "Review Satavahana audit balances", vertIdx: 3, evtIdx: 3, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 90, start: -12, end: -3 },
+    { title: "Configure Aurium Hamilton treasury rules", vertIdx: 5, evtIdx: 5, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -30, end: -15 },
+    { title: "Review Aurium valuation balances", vertIdx: 5, evtIdx: 5, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.CRITICAL, progress: 90, start: -12, end: -3 },
 
     // Marketing
-    { title: "Design Mughal marketing deck", vertIdx: 4, evtIdx: 4, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -22, end: -12 },
-    { title: "Prepare Mughal dynamic pricing campaigns", vertIdx: 4, evtIdx: 4, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 70, start: -10, end: -2 },
+    { title: "Design Warketium Bernays PR campaign deck", vertIdx: 3, evtIdx: 3, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -22, end: -12 },
+    { title: "Prepare Warketium dynamic viral pitch briefs", vertIdx: 3, evtIdx: 3, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 70, start: -10, end: -2 },
 
     // Business Plan
-    { title: "Draft Vijayanagara market criteria", vertIdx: 5, evtIdx: 5, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
-    { title: "Review Vijayanagara pitch submissions", vertIdx: 5, evtIdx: 5, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -10, end: -1 },
+    { title: "Draft Bizarium Moltke market criteria", vertIdx: 6, evtIdx: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -18, end: -8 },
+    { title: "Review Bizarium venture pitch submissions", vertIdx: 6, evtIdx: 6, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 40, start: -10, end: -1 },
 
     // HR
-    { title: "Setup Gupta HR negotiation scripts", vertIdx: 6, evtIdx: 6, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -25, end: -10 },
-    { title: "Review Gupta conflict scenarios", vertIdx: 6, evtIdx: 6, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 30, start: -12, end: -2 },
+    { title: "Setup Synergium Marshall negotiation scripts", vertIdx: 2, evtIdx: 2, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -25, end: -10 },
+    { title: "Review Synergium talent arbitration cases", vertIdx: 2, evtIdx: 2, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.MEDIUM, progress: 30, start: -12, end: -2 },
 
     // Business Analytics (BA)
-    { title: "Design Chola analytics database schema", vertIdx: 7, evtIdx: 7, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
-    { title: "Formulate Chola forecasting queries", vertIdx: 7, evtIdx: 7, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
+    { title: "Design Algorium Turing analytics database schema", vertIdx: 4, evtIdx: 4, status: TaskStatus.NOT_STARTED, priority: TaskPriority.LOW, progress: 0, start: -3, end: -1 },
+    { title: "Formulate Algorium forecasting models", vertIdx: 4, evtIdx: 4, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -20, end: -10 },
 
-    // Logistics, Operations & Systems (LOS)
-    { title: "Plan Kakatiya cascade routing model", vertIdx: 8, evtIdx: 8, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -15, end: -5 },
-    { title: "Test Kakatiya logistics network parameters", vertIdx: 8, evtIdx: 8, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: -1 },
+    // Lean Operations
+    { title: "Plan Kaizenium Alexander logistical corridor", vertIdx: 9, evtIdx: 9, status: TaskStatus.COMPLETED, priority: TaskPriority.MEDIUM, progress: 100, start: -15, end: -5 },
+    { title: "Test Kaizenium supply chain network parameters", vertIdx: 9, evtIdx: 9, status: TaskStatus.IN_PROGRESS, priority: TaskPriority.HIGH, progress: 50, start: -8, end: -1 },
 
     // Strategy
-    { title: "Draft Chalukya strategic positioning case", vertIdx: 9, evtIdx: 9, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -12, end: -4 },
+    { title: "Draft Victorium Sun Tzu strategic positioning wargame", vertIdx: 8, evtIdx: 8, status: TaskStatus.COMPLETED, priority: TaskPriority.HIGH, progress: 100, start: -12, end: -4 },
   ];
 
   // Duplicate to ensure 50+ total tasks

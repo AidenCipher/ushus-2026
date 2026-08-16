@@ -211,6 +211,10 @@ export async function POST(req: Request) {
       }
     }
 
+    // ─── WS2A: Compute Pricing ──────────────────────────────────────────────
+    const { calculatePricing } = await import("@/lib/pricing");
+    const pricing = calculatePricing(data.registrationType ?? "INDIVIDUAL_EVENT", 1);
+
     // ─── WS1.2: TOCTOU fix — transactional capacity check + create ───────────
     let registration;
     try {
@@ -239,6 +243,15 @@ export async function POST(req: Request) {
               externalFormRef: data.externalFormRef ?? null,
               notes: data.notes ?? null,
               status: data.status,
+              registrationType: data.registrationType,
+              contingentId: data.contingentId ?? null,
+              baseAmount: pricing.baseAmount,
+              discountPercent: pricing.discountPercent,
+              finalAmountDue: pricing.finalAmountDue,
+              accommodationRequested: data.accommodationRequested,
+              facultyName: data.facultyName,
+              facultyEmail: data.facultyEmail,
+              facultyPhone: data.facultyPhone,
             },
           });
         },

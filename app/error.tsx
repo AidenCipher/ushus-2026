@@ -15,30 +15,64 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
-      <div className="text-center max-w-md">
-        <div className="mb-6">
-          <span className="text-6xl font-bold text-primary font-display">500</span>
+    <div
+      className="flex min-h-screen flex-col items-center justify-center px-4 relative z-10"
+      style={{ color: "#F5ECD7" }}
+    >
+      <div className="text-center max-w-md space-y-6">
+        {/* Seal-style 500 */}
+        <div
+          className="w-28 h-28 rounded-full mx-auto flex flex-col items-center justify-center"
+          style={{
+            background: "rgba(248, 113, 113, 0.06)",
+            border: "1.5px solid rgba(248, 113, 113, 0.35)",
+            boxShadow: "0 0 30px rgba(248, 113, 113, 0.08)",
+          }}
+        >
+          <span
+            className="text-4xl font-black"
+            style={{ fontFamily: "'Cinzel', serif", color: "#F87171" }}
+          >
+            500
+          </span>
         </div>
-        <h1 className="text-2xl font-bold text-text mb-3">
-          Something went wrong
-        </h1>
-        <p className="text-text-muted mb-8 leading-relaxed">
-          An unexpected error occurred. Our team has been notified.
-          Please try again or contact the organisers if the issue persists.
-        </p>
+
+        <div>
+          <h1
+            className="text-2xl font-bold tracking-tight mb-3"
+            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+          >
+            The Archive is Momentarily Unavailable
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: "#A89070" }}>
+            An unexpected error occurred. The organising committee has been notified. Try again or contact us if
+            the issue persists.
+          </p>
+        </div>
+
         <div className="flex items-center justify-center gap-4">
           <button
             onClick={reset}
-            className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-light focus-visible:outline-2 focus-visible:outline-primary"
+            className="rounded-md px-6 py-3 text-sm font-bold transition-all"
+            style={{
+              background: "linear-gradient(135deg, #C9A84C, #8B6914)",
+              color: "#1A0A00",
+              fontFamily: "'Cinzel', serif",
+            }}
           >
             Try Again
           </button>
           <Link
             href="/"
-            className="rounded-lg border border-border px-6 py-3 text-sm font-semibold text-text transition-colors hover:bg-surface-alt"
+            className="rounded-md border px-6 py-3 text-sm font-semibold transition-all"
+            style={{
+              border: "1px solid rgba(201, 168, 76, 0.35)",
+              color: "#C9A84C",
+              background: "transparent",
+              fontFamily: "'Cinzel', serif",
+            }}
           >
-            Go Home
+            Return Home
           </Link>
         </div>
       </div>

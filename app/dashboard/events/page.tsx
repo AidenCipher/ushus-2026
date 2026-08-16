@@ -82,6 +82,11 @@ export default function EventsDetailsPage() {
   // Registration Form state
   const [teamName, setTeamName] = React.useState("");
   const [teamMembers, setTeamMembers] = React.useState<TeamMemberInput[]>([]);
+  const [facultyName, setFacultyName] = React.useState("");
+  const [facultyEmail, setFacultyEmail] = React.useState("");
+  const [facultyPhone, setFacultyPhone] = React.useState("");
+  const [accommodationRequested, setAccommodationRequested] = React.useState(false);
+  const [registrationType, setRegistrationType] = React.useState<"INDIVIDUAL_EVENT" | "CONTINGENT">("INDIVIDUAL_EVENT");
   const [notes, setNotes] = React.useState("");
   const [regError, setRegError] = React.useState<string | null>(null);
   const [submittingReg, setSubmittingReg] = React.useState(false);
@@ -146,6 +151,11 @@ export default function EventsDetailsPage() {
     e.preventDefault();
     if (!registeringEvent) return;
 
+    if (!facultyName.trim() || !facultyEmail.trim() || !facultyPhone.trim()) {
+      setRegError("Faculty coordinator details (Name, Email, Phone) are mandatory for all registrations.");
+      return;
+    }
+
     setSubmittingReg(true);
     setRegError(null);
 
@@ -159,6 +169,11 @@ export default function EventsDetailsPage() {
         body: JSON.stringify({
           userId: session?.user?.id,
           eventId: registeringEvent.id,
+          registrationType,
+          facultyName: facultyName.trim(),
+          facultyEmail: facultyEmail.trim(),
+          facultyPhone: facultyPhone.trim(),
+          accommodationRequested,
           teamName: teamName || null,
           teamMembers: cleanMembers.length > 0 ? cleanMembers : null,
           notes: notes || null,
@@ -527,10 +542,99 @@ export default function EventsDetailsPage() {
 
             {/* Form Content Scrollable */}
             <form onSubmit={handleRegisterSubmit} className="space-y-4 overflow-y-auto flex-1 pr-1 pb-2">
+              {/* Registration Type Selector */}
+              <div className="space-y-1.5 p-3 rounded-xl bg-white/5 border border-white/10">
+                <label className="text-xs font-bold uppercase tracking-wider text-amber-400">Registration Tier</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRegistrationType("INDIVIDUAL_EVENT")}
+                    className={`p-2.5 rounded-lg border text-left transition-all ${
+                      registrationType === "INDIVIDUAL_EVENT"
+                        ? "bg-amber-500/20 border-amber-500/60 text-amber-200"
+                        : "bg-white/5 border-white/10 text-neutral-400"
+                    }`}
+                  >
+                    <div className="text-xs font-bold">Individual Event</div>
+                    <div className="text-[11px] text-amber-300 font-mono">₹900 <span className="line-through text-neutral-500 text-[10px]">₹1,500</span></div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setRegistrationType("CONTINGENT")}
+                    className={`p-2.5 rounded-lg border text-left transition-all ${
+                      registrationType === "CONTINGENT"
+                        ? "bg-amber-500/20 border-amber-500/60 text-amber-200"
+                        : "bg-white/5 border-white/10 text-neutral-400"
+                    }`}
+                  >
+                    <div className="text-xs font-bold">Full Contingent (10)</div>
+                    <div className="text-[11px] text-amber-300 font-mono">₹7,500 <span className="line-through text-neutral-500 text-[10px]">₹15,000</span></div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Faculty Coordinator Details (MANDATORY) */}
+              <div className="space-y-2.5 p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
+                  <span>Faculty Coordinator</span>
+                  <span className="text-destructive">*</span>
+                </div>
+                <p className="text-[10px] text-neutral-400">
+                  College faculty head contact for verification & official correspondence.
+                </p>
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Faculty Coordinator Name *"
+                    className="bg-background/50 border-white/10 text-xs h-8"
+                    value={facultyName}
+                    onChange={(e) => setFacultyName(e.target.value)}
+                    required
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Faculty Email *"
+                      type="email"
+                      className="bg-background/50 border-white/10 text-xs h-8"
+                      value={facultyEmail}
+                      onChange={(e) => setFacultyEmail(e.target.value)}
+                      required
+                    />
+                    <Input
+                      placeholder="Faculty Phone *"
+                      className="bg-background/50 border-white/10 text-xs h-8"
+                      value={facultyPhone}
+                      onChange={(e) => setFacultyPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Accommodation Opt-In (MANDATORY NOTE) */}
+              <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={accommodationRequested}
+                    onChange={(e) => setAccommodationRequested(e.target.checked)}
+                    className="mt-0.5 rounded border-amber-500/40 text-amber-500 focus:ring-amber-500"
+                  />
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-semibold text-neutral-200">
+                      Request on-campus accommodation
+                    </span>
+                    <p className="text-[10px] text-neutral-400 leading-tight">
+                      <strong>Note:</strong> Accommodation inside Christ University campus is allotted on a strictly <em>first-come-first-served</em> basis and is not guaranteed.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-muted-foreground">Team Name (Required for Group Events)</label>
                 <Input
-                  placeholder="e.g. Finance Avengers"
+                  placeholder="e.g. Tactical Unit Alpha"
                   className="bg-background/50 border-white/10"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
@@ -540,13 +644,13 @@ export default function EventsDetailsPage() {
               {/* Team Members */}
               <div className="space-y-3 pt-2 border-t border-white/5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold uppercase tracking-wider text-indigo-400">Additional Team Members ({teamMembers.length})</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400">Additional Crew Members ({teamMembers.length})</label>
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={handleAddMemberInput}
-                    className="text-xs text-indigo-400 hover:text-indigo-300"
+                    className="text-xs text-amber-400 hover:text-amber-300"
                   >
                     <UserPlus className="w-3.5 h-3.5 mr-1" /> Add Member
                   </Button>
@@ -554,7 +658,7 @@ export default function EventsDetailsPage() {
 
                 {teamMembers.length === 0 ? (
                   <p className="text-[10px] text-muted-foreground bg-white/5 p-3 rounded-lg border border-dashed border-white/10 text-center">
-                    No members added yet. Add team members if registering as a team. Leave empty for individual registrations.
+                    No additional crew members added. Leave empty for individual event registrations.
                   </p>
                 ) : (
                   <div className="space-y-3">
@@ -600,7 +704,7 @@ export default function EventsDetailsPage() {
               </div>
 
               <div className="space-y-1 pt-2 border-t border-white/5">
-                <label className="text-xs font-semibold text-muted-foreground">Notes / Queries (Optional)</label>
+                <label className="text-xs font-semibold text-muted-foreground">Tactical Notes / Clarifications (Optional)</label>
                 <Textarea
                   placeholder="Enter any special requests, dietary preferences, or scheduling clarifications..."
                   className="bg-background/50 border-white/10 min-h-[60px] text-xs"
@@ -613,11 +717,11 @@ export default function EventsDetailsPage() {
               <div className="flex gap-2 pt-4 border-t border-white/10 shrink-0">
                 <Button
                   type="submit"
-                  disabled={submittingReg}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 shadow-md"
+                  disabled={submittingReg || !facultyName.trim() || !facultyEmail.trim() || !facultyPhone.trim()}
+                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-md"
                 >
                   {submittingReg ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Submit Roster & Register
+                  Confirm &amp; Proceed to Payment
                 </Button>
                 <Button
                   type="button"
