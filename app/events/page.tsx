@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -59,17 +60,13 @@ export default function EventsPage() {
                   background: "linear-gradient(135deg, #FFFFFF 0%, #E8C875 40%, #C9A84C 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
                 }}
               >
-                Ten Commanders.
+                Ten Legendary Commanders.
               </span>
             </h1>
-            <p
-              className="mt-3 text-xs md:text-sm max-w-xl mx-auto text-neutral-300"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              Scroll through space and time. Master the doctrine. Claim your theater of victory.
+            <p className="text-neutral-300 max-w-2xl mx-auto mt-4 text-sm md:text-base leading-relaxed">
+              From Napoleon&apos;s blitzkrieg intuition to Turing&apos;s computational intelligence, master the doctrine of your discipline.
             </p>
           </div>
 
@@ -78,15 +75,9 @@ export default function EventsPage() {
         </section>
 
         {/* ================================================================
-            TACTICAL MATRIX GRID — All 10 Arenas
+            ALL EVENTS DIRECTORY GRID
         ================================================================ */}
-        <section
-          className="py-24 px-4 relative z-10 border-t"
-          style={{
-            background: "rgba(10, 17, 40, 0.95)",
-            borderColor: "rgba(201, 168, 76, 0.2)",
-          }}
-        >
+        <section className="py-20 relative z-10 px-4">
           <div className="container mx-auto max-w-6xl">
             {/* Header */}
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
@@ -131,27 +122,41 @@ export default function EventsPage() {
                       (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
                     }}
                   >
-                    {/* Header Strip */}
-                    <div
-                      className="px-6 pt-5 pb-3 flex items-center justify-between border-b border-white/5"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Crosshair className="w-3.5 h-3.5 text-amber-400" />
-                        <div>
-                          <p
-                            className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                            style={{ fontFamily: "'Cinzel', serif" }}
-                          >
-                            {event.leader}
-                          </p>
-                          <p className="text-[11px] text-neutral-300">
-                            {event.doctrine}
-                          </p>
-                        </div>
+                    {/* Visual Commander Portrait Banner */}
+                    <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-black/40">
+                      <Image
+                        src={event.leaderImage}
+                        alt={`${event.leader} - ${event.name}`}
+                        fill
+                        className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#101A36] via-[#101A36]/30 to-transparent" />
+                      
+                      {/* Doctrine Badge */}
+                      <div className="absolute top-3 left-3 px-2.5 py-1 rounded bg-black/75 border border-amber-500/40 text-[10px] font-mono text-amber-300 flex items-center gap-1.5 backdrop-blur-md">
+                        <Crosshair className="w-3 h-3 text-amber-400" />
+                        {event.doctrine}
                       </div>
-                      <span className="px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-[10px] font-mono text-amber-300">
-                        {event.vertical}
-                      </span>
+
+                      {/* Seal Monogram */}
+                      <div className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-mono text-xs font-bold text-amber-300 backdrop-blur-md">
+                        {event.sealLetter}
+                      </div>
+
+                      {/* Commander Name Overlay */}
+                      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
+                        <div>
+                          <p className="text-[11px] font-bold tracking-widest uppercase text-amber-300" style={{ fontFamily: "'Cinzel', serif" }}>
+                            COMMANDER: {event.leader}
+                          </p>
+                          <span className="text-[10px] font-mono text-neutral-300">
+                            {event.vertical}
+                          </span>
+                        </div>
+                        <span className="px-2.5 py-1 rounded bg-amber-500/20 border border-amber-500/40 text-[11px] font-bold text-amber-200 backdrop-blur-md">
+                          {event.prizePool}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="p-6 flex flex-col flex-1 gap-4">
@@ -164,7 +169,7 @@ export default function EventsPage() {
                           {event.name}
                         </h3>
                         <span className="text-[11px] font-mono font-bold text-amber-400 px-2 py-0.5 rounded bg-black/40 border border-amber-500/30">
-                          {event.sealLetter} // {event.codename}
+                          {event.codename}
                         </span>
                       </div>
 
@@ -193,10 +198,12 @@ export default function EventsPage() {
                         <div className="flex items-center gap-2 text-neutral-300">
                           <Trophy className="w-4 h-4 flex-shrink-0 text-amber-400" />
                           <div className="leading-tight">
-                            <span className="text-[10px] text-neutral-400 block">Prize Pool</span>
+                            <span className="text-[10px] text-neutral-400 block">Prize Bounty</span>
                             <strong className="text-amber-200">1st: ₹{event.prizeFirst.toLocaleString()}</strong>
-                            {event.prizeSecond && (
+                            {event.prizeSecond ? (
                               <span className="text-[10px] text-neutral-400 block">2nd: ₹{event.prizeSecond.toLocaleString()}</span>
+                            ) : (
+                              <span className="text-[10px] text-amber-400/90 font-semibold block">Winner: ₹25,000 (Solo Title)</span>
                             )}
                           </div>
                         </div>

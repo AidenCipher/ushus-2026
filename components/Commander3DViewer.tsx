@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   RotateCcw,
@@ -102,30 +103,32 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
     meshGroupRef.current = monumentGroup;
     scene.add(monumentGroup);
 
-    // ── 3D Monument Geometry ──────────────────────────────────────────────
-    // 1. Central Imperial Monolith (Dodecahedron with bevel effect)
-    const monolithGeo = new THREE.IcosahedronGeometry(1.6, 0);
-    const monolithMat = new THREE.MeshStandardMaterial({
-      color: 0xc9a84c,
-      metalness: 0.85,
-      roughness: 0.22,
-      wireframe: false,
-    });
-    const monolith = new THREE.Mesh(monolithGeo, monolithMat);
-    monumentGroup.add(monolith);
+    // ── 3D Monument Geometry with Commander Portrait Hologram ──────────────
+    // 1. Central Double-Sided Commander Portrait Tablet
+    const textureLoader = new THREE.TextureLoader();
+    const commanderTexture = textureLoader.load(event.leaderImage);
+    commanderTexture.colorSpace = THREE.SRGBColorSpace;
 
-    // 2. Wireframe Cage
-    const cageGeo = new THREE.IcosahedronGeometry(1.9, 1);
-    const cageMat = new THREE.MeshStandardMaterial({
-      color: 0xe8c875,
-      metalness: 0.9,
-      roughness: 0.1,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.35,
+    const portraitGeo = new THREE.PlaneGeometry(2.0, 2.6);
+    const portraitMat = new THREE.MeshStandardMaterial({
+      map: commanderTexture,
+      side: THREE.DoubleSide,
+      roughness: 0.25,
+      metalness: 0.1,
     });
-    const cage = new THREE.Mesh(cageGeo, cageMat);
-    monumentGroup.add(cage);
+    const portraitMesh = new THREE.Mesh(portraitGeo, portraitMat);
+    monumentGroup.add(portraitMesh);
+
+    // 2. Ornate Golden Frame around portrait
+    const frameBorderGeo = new THREE.BoxGeometry(2.15, 2.75, 0.06);
+    const frameBorderMat = new THREE.MeshStandardMaterial({
+      color: 0xc9a84c,
+      metalness: 0.9,
+      roughness: 0.15,
+      wireframe: true,
+    });
+    const frameBorderMesh = new THREE.Mesh(frameBorderGeo, frameBorderMat);
+    monumentGroup.add(frameBorderMesh);
 
     // 3. Floating Orbital Rings
     const ringGeo1 = new THREE.TorusGeometry(2.3, 0.035, 16, 100);
@@ -313,23 +316,31 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
       </div>
 
       {/* ── Top-Left Codename Crest Panel ─────────────────────────────────── */}
-      <div className="absolute top-4 left-4 z-30 p-3.5 rounded-xl bg-[#0B132B]/85 border border-amber-500/30 backdrop-blur-md max-w-[260px] space-y-1.5 shadow-xl hidden sm:block">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold font-mono text-xs">
-            {event.sealLetter}
-          </div>
-          <div>
-            <div className="text-[10px] font-mono tracking-widest text-amber-400 uppercase">
-              {event.vertical}
-            </div>
-            <h3 className="text-sm font-bold text-[#F5ECD7] leading-tight" style={{ fontFamily: "'Cinzel', serif" }}>
-              {event.name}
-            </h3>
-          </div>
+      <div className="absolute top-4 left-4 z-30 p-3 rounded-xl bg-[#0B132B]/90 border border-amber-500/30 backdrop-blur-md max-w-[290px] shadow-2xl hidden sm:flex items-center gap-3">
+        <div className="relative w-14 h-16 rounded-lg overflow-hidden border border-amber-500/40 shrink-0 bg-black/40">
+          <Image
+            src={event.leaderImage}
+            alt={event.leader}
+            fill
+            className="object-cover object-top"
+          />
         </div>
-        <p className="text-[11px] text-neutral-300 line-clamp-2">
-          Commander: <strong className="text-amber-300">{event.leader}</strong>
-        </p>
+        <div className="space-y-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="w-5 h-5 rounded bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold font-mono text-[10px]">
+              {event.sealLetter}
+            </span>
+            <span className="text-[10px] font-mono tracking-widest text-amber-400 uppercase truncate">
+              {event.vertical}
+            </span>
+          </div>
+          <h3 className="text-xs font-bold text-[#F5ECD7] truncate" style={{ fontFamily: "'Cinzel', serif" }}>
+            {event.name}
+          </h3>
+          <p className="text-[10px] text-neutral-300 truncate">
+            Commander: <strong className="text-amber-300">{event.leader}</strong>
+          </p>
+        </div>
       </div>
 
       {/* ── Top-Right Viewer Controls ──────────────────────────────────────── */}

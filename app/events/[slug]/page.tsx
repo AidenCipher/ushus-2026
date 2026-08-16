@@ -116,20 +116,37 @@ export default function EventDetailPage() {
 
               {/* Historical Doctrine Foundation */}
               <div
-                className="rounded-xl p-6 space-y-3 border bg-[#101A36]/80 border-amber-500/20 backdrop-blur-md"
+                className="rounded-xl p-6 border bg-[#101A36]/80 border-amber-500/20 backdrop-blur-md flex flex-col sm:flex-row items-center sm:items-start gap-6"
               >
-                <div className="flex items-center gap-2">
-                  <Crosshair className="w-4 h-4 text-amber-400" />
-                  <h2
-                    className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                    style={{ fontFamily: "'Cinzel', serif" }}
-                  >
-                    Historical Command Doctrine ({event.doctrine})
-                  </h2>
+                <div className="relative w-28 h-36 rounded-xl overflow-hidden border border-amber-500/40 shrink-0 bg-black/40 shadow-xl">
+                  <Image
+                    src={event.leaderImage}
+                    alt={event.leader}
+                    fill
+                    className="object-cover object-top"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#101A36] via-transparent to-transparent" />
+                  <div className="absolute bottom-1.5 left-1.5 right-1.5 text-center">
+                    <span className="text-[9px] font-mono font-bold text-amber-300 uppercase tracking-wider block truncate">
+                      {event.leader.split(" ")[0]}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm leading-relaxed text-neutral-300">
-                  {event.historicalFact}
-                </p>
+
+                <div className="space-y-3 flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <Crosshair className="w-4 h-4 text-amber-400" />
+                    <h2
+                      className="text-xs font-bold tracking-widest uppercase text-amber-400"
+                      style={{ fontFamily: "'Cinzel', serif" }}
+                    >
+                      Historical Command Doctrine ({event.doctrine})
+                    </h2>
+                  </div>
+                  <p className="text-sm leading-relaxed text-neutral-300">
+                    {event.historicalFact}
+                  </p>
+                </div>
               </div>
 
               {/* 3-Era Round Structure Details */}
@@ -292,14 +309,14 @@ export default function EventDetailPage() {
                   </span>
                 </div>
                 <div className="p-6 space-y-5">
-                  {/* Prize 1st */}
+                  {/* Prize 1st / Solo Bounty */}
                   <div className="flex items-start gap-3.5">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-400 border border-amber-500/30 bg-amber-500/10">
                       <Trophy className="w-4 h-4" />
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
-                        1st Place Bounty
+                        {event.prizeSecond ? "1st Place Bounty" : "Grand Champion Bounty (Solo Title)"}
                       </p>
                       <p className="text-base font-black text-amber-300">
                         ₹{event.prizeFirst.toLocaleString()}
@@ -308,7 +325,7 @@ export default function EventDetailPage() {
                   </div>
 
                   {/* Prize 2nd */}
-                  {event.prizeSecond && (
+                  {event.prizeSecond ? (
                     <div className="flex items-start gap-3.5">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-amber-300 border border-amber-500/30 bg-amber-500/10">
                         <Trophy className="w-4 h-4" />
@@ -321,6 +338,10 @@ export default function EventDetailPage() {
                           ₹{event.prizeSecond.toLocaleString()}
                         </p>
                       </div>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] font-mono px-3 py-1.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300">
+                      ★ Sole Victor Standard: ₹25,000 Winner Takes All
                     </div>
                   )}
 
