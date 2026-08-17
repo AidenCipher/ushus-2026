@@ -63,7 +63,7 @@ export default function LandingPage() {
               }}
             >
               <Crosshair className="w-3.5 h-3.5" />
-              Evolution of Warfare · CUSB Bengaluru Central
+              Evolution of Warfare · Christ (Deemed to be University) SBM Bengaluru Central Campus
             </div>
 
             {/* Main heading */}
@@ -137,11 +137,11 @@ export default function LandingPage() {
                 {
                   icon: <Calendar className="w-5 h-5 text-amber-400" />,
                   label: "Operational Dates",
-                  value: "November 6–7, 2026",
+                  value: "November 4–5, 2026",
                 },
                 {
                   icon: <MapPin className="w-5 h-5 text-amber-400" />,
-                  label: "Theater Venue",
+                  label: "Venue",
                   value: "CHRIST (Deemed to be University), Bangalore Central Campus",
                 },
                 {
@@ -392,7 +392,7 @@ export default function LandingPage() {
               <div
                 className="text-xs font-mono tracking-widest uppercase mb-2 text-amber-400"
               >
-                NOVEMBER 6–7, 2026 // CHRIST (DEEMED TO BE UNIVERSITY) BENGALURU
+                NOVEMBER 4–5, 2026 // CHRIST (DEEMED TO BE UNIVERSITY) BENGALURU
               </div>
               <h2
                 className="text-3xl md:text-5xl font-bold"

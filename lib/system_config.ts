@@ -16,7 +16,7 @@ const DEFAULT_CONFIG: SystemConfig = {
   maxReg: "50",
   allowReg: true,
   maintenance: false,
-  festStartDate: "2026-11-06",
+  festStartDate: "2026-11-04",
   paymentLink: "",
 };
 

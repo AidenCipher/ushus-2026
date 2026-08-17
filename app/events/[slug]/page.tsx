@@ -407,7 +407,7 @@ export default function EventDetailPage() {
                         Operational Dates
                       </p>
                       <p className="text-sm font-bold text-neutral-100">
-                        November 6–7, 2026
+                        November 4–5, 2026
                       </p>
                     </div>
                   </div>
@@ -419,7 +419,7 @@ export default function EventDetailPage() {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 font-mono">
-                        Theater Venue
+                        Venue
                       </p>
                       <p className="text-sm font-bold text-neutral-100">
                         {FEST_CONTENT.venue}

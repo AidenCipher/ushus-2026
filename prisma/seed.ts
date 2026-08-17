@@ -113,8 +113,8 @@ async function main() {
 
   // ─── Create Events (10 IMPERIUM events) ───────────────────────────────────────
   console.log("🎪 Creating events...");
-  const baseFestDateStart = new Date("2026-11-06T09:00:00");
-  const baseFestDateEnd = new Date("2026-11-07T18:00:00");
+  const baseFestDateStart = new Date("2026-11-04T09:00:00");
+  const baseFestDateEnd = new Date("2026-11-05T18:00:00");
   const baseDeadline = new Date("2026-10-25T23:59:59");
 
   // teamSize: exact competitor slots required at registration.

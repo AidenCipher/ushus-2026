@@ -1,4 +1,4 @@
-// Auto-generated Gantt Master Data — updated from USHUS_Gantt_Master_2026-11-06.xlsx
+// Auto-generated Gantt Master Data — updated from USHUS_Gantt_Master_2026-11-04.xlsx
 export interface RawGanttRow {
   id: string;
   name: string;
@@ -1977,7 +1977,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11",
-    "name": "FEST DAYS — Nov 6 & 7, 2026",
+    "name": "FEST DAYS — Nov 4 & 5, 2026",
     "owner": "All Teams",
     "type": "milestone",
     "parentId": null,
@@ -1989,7 +1989,7 @@ export const GANTT_MASTER_DATA: RawGanttRow[] = [
   },
   {
     "id": "M11.T1",
-    "name": "Day 1 — Nov 6, 2026",
+    "name": "Day 1 — Nov 4, 2026",
     "owner": "All Teams",
     "type": "task",
     "parentId": "M11",

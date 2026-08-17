@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     default: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
     template: "%s | USHUS 2026: IMPERIUM",
   },
-  description: `USHUS 2026: IMPERIUM — 'Wars Evolve. So Do We.' The flagship national MBA Management Fest of the ${INSTITUTION_FULL}. Ten arenas. Ten commanders. November 6–7, 2026.`,
+  description: `USHUS 2026: IMPERIUM — 'Wars Evolve. So Do We.' The flagship national MBA Management Fest of the ${INSTITUTION_FULL}. Ten arenas. Ten commanders. November 4–5, 2026.`,
   keywords: [
     "USHUS",
     "USHUS 2026",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://ushus2026.christuniversity.in",
     title: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
-    description: `USHUS 2026: IMPERIUM — Ten arenas. Ten legendary commanders. November 6–7, 2026. ${INSTITUTION_SHORT}, Bengaluru.`,
+    description: `USHUS 2026: IMPERIUM — Ten arenas. Ten legendary commanders. November 4–5, 2026. ${INSTITUTION_SHORT}, Bengaluru.`,
     siteName: "USHUS 2026: IMPERIUM",
     images: [
       {
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
-    description: `USHUS 2026: IMPERIUM — The flagship MBA Management Fest of the ${INSTITUTION_SHORT}, Bengaluru. November 6–7, 2026.`,
+    description: `USHUS 2026: IMPERIUM — The flagship MBA Management Fest of the ${INSTITUTION_SHORT}, Bengaluru. November 4–5, 2026.`,
     images: ["/og-image.png"],
   },
   robots: {

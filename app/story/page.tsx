@@ -220,7 +220,7 @@ export default function StoryPage() {
               Ready to command your battleground?
             </h2>
             <p className="text-sm max-w-md mx-auto text-neutral-300">
-              USHUS 2026: IMPERIUM, November 6–7. Join 600+ competitors from India&apos;s top business schools.
+              USHUS 2026: IMPERIUM, November 4–5. Join 600+ competitors from India&apos;s top business schools.
             </p>
             <Link href="/register">
               <button
