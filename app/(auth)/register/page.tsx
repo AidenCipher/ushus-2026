@@ -37,7 +37,7 @@ export default function RegisterPage() {
     
     async function checkRegistrations() {
       try {
-        const res = await fetch("/api/v1/admin/config");
+        const res = await fetch("/api/v1/config");
         if (res.ok) {
           const json = await res.json();
           setAllowReg(json.data.allowReg);
@@ -116,7 +116,7 @@ export default function RegisterPage() {
         <CardHeader className="space-y-1 text-center">
           <CardTitle
             className="text-2xl font-bold tracking-tight"
-            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
           >
             Registrations Closed
           </CardTitle>
@@ -136,7 +136,7 @@ export default function RegisterPage() {
           </div>
           <p className="text-sm leading-relaxed text-neutral-300">
             USHUS 2026: IMPERIUM registration has closed or been suspended by the organising committee.
-            Contact the Christ University CUSB Organising Committee if you believe this is in error.
+            Contact the CHRIST (Deemed to be University) CUSB Organising Committee if you believe this is in error.
           </p>
         </CardContent>
         <CardFooter
@@ -145,7 +145,7 @@ export default function RegisterPage() {
           <Link
             href="/login"
             className="text-sm font-medium hover:underline text-amber-400"
-            style={{ fontFamily: "'Cinzel', serif" }}
+            style={{ fontFamily: "var(--font-trajan), serif" }}
           >
             Sign in with existing account
           </Link>
@@ -163,7 +163,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-2xl font-bold text-[#F5ECD7]">Registration Successful!</h2>
           <p className="text-neutral-300">
-            Your account has been verified and created. Redirecting to login...
+            Your account has been created. Redirecting to login...
           </p>
         </CardContent>
       </Card>
@@ -177,7 +177,7 @@ export default function RegisterPage() {
       <CardHeader className="space-y-1 text-center">
         <CardTitle
           className="text-2xl font-bold tracking-tight"
-          style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+          style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
         >
           Enter the Arena
         </CardTitle>
@@ -187,18 +187,9 @@ export default function RegisterPage() {
       </CardHeader>
       <CardContent>
         {error && (
-          <div className="bg-danger/10 border border-danger/20 text-danger p-3 rounded-md flex flex-col gap-2 mb-6 text-sm">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-            {error.includes("already exists") && (
-              <Link href={`/login?email=${encodeURIComponent(form.getValues("email"))}`} className="mt-1">
-                <Button variant="link" className="p-0 h-auto text-primary underline text-xs">
-                  Sign In instead &rarr;
-                </Button>
-              </Link>
-            )}
+          <div className="bg-danger/10 border border-danger/20 text-danger p-3 rounded-md flex items-center gap-2 mb-6 text-sm" role="alert">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
@@ -251,7 +242,7 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>College</FormLabel>
                     <FormControl>
-                      <Input placeholder="Christ University" disabled={isLoading} className="bg-background/50" {...field} />
+                      <Input placeholder="e.g. IIM Bangalore" disabled={isLoading} className="bg-background/50" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -291,7 +282,7 @@ export default function RegisterPage() {
               style={{
                 background: isLoading ? "rgba(201, 168, 76, 0.4)" : "linear-gradient(135deg, #C9A84C, #8B6914)",
                 color: "#1A0A00",
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-trajan), serif",
                 letterSpacing: "0.06em",
                 boxShadow: isLoading ? "none" : "0 0 20px rgba(201, 168, 76, 0.25)",
               }}

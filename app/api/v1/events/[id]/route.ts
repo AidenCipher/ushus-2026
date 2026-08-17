@@ -118,6 +118,7 @@ export async function DELETE(
 
     await prisma.$transaction([
       prisma.teamMember.deleteMany({ where: { eventId: id } }),
+      prisma.payment.deleteMany({ where: { registration: { eventId: id } } }),
       prisma.registration.deleteMany({ where: { eventId: id } }),
       prisma.taskUpdate.deleteMany({
         where: {

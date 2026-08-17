@@ -791,7 +791,7 @@ export default function OrganiserTeamPage() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-muted-foreground">College</label>
-                    <Input placeholder="Christ University" className="bg-background/50 border-white/10" value={volCollege} onChange={(e) => setVolCollege(e.target.value)} />
+                    <Input placeholder="e.g. IIM Bangalore" className="bg-background/50 border-white/10" value={volCollege} onChange={(e) => setVolCollege(e.target.value)} />
                   </div>
                 </div>
 

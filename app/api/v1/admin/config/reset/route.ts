@@ -31,6 +31,7 @@ export async function POST(req: Request) {
       prisma.taskUpdate.deleteMany({}),
       prisma.task.deleteMany({}),
       prisma.teamMember.deleteMany({}),
+      prisma.payment.deleteMany({}),
       prisma.registration.deleteMany({}),
       prisma.calendarEvent.deleteMany({}),
       prisma.announcement.deleteMany({}),

@@ -7,6 +7,11 @@ import { headers } from "next/headers";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { EarlyBirdBanner } from "@/components/EarlyBirdBanner";
+import { trajanPro, inter } from "@/lib/fonts";
+
+const INSTITUTION_FULL =
+  "School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University)";
+const INSTITUTION_SHORT = "CHRIST (Deemed to be University)";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
@@ -14,14 +19,13 @@ export const metadata: Metadata = {
     default: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
     template: "%s | USHUS 2026: IMPERIUM",
   },
-  description:
-    "USHUS 2026: IMPERIUM — 'Wars Evolve. So Do We.' The flagship national MBA Management Fest of Christ University School of Business and Management, Bengaluru Central Campus. Ten arenas. Ten commanders. November 4–5, 2026.",
+  description: `USHUS 2026: IMPERIUM — 'Wars Evolve. So Do We.' The flagship national MBA Management Fest of the ${INSTITUTION_FULL}. Ten arenas. Ten commanders. November 6–7, 2026.`,
   keywords: [
     "USHUS",
     "USHUS 2026",
     "IMPERIUM",
     "MBA Fest",
-    "Christ University",
+    "CHRIST Deemed to be University",
     "Management Fest",
     "Best Manager",
     "Business Analytics",
@@ -30,15 +34,14 @@ export const metadata: Metadata = {
     "B-School Competitions India",
     "Bengaluru MBA Fest",
   ],
-  authors: [{ name: "School of Business and Management, Christ University" }],
-  creator: "Christ University MBA Program",
+  authors: [{ name: INSTITUTION_FULL }],
+  creator: INSTITUTION_FULL,
   openGraph: {
     type: "website",
     locale: "en_IN",
     url: "https://ushus2026.christuniversity.in",
     title: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
-    description:
-      "USHUS 2026: IMPERIUM — Ten arenas. Ten legendary commanders. November 4–5, 2026. Christ University, Bengaluru.",
+    description: `USHUS 2026: IMPERIUM — Ten arenas. Ten legendary commanders. November 6–7, 2026. ${INSTITUTION_SHORT}, Bengaluru.`,
     siteName: "USHUS 2026: IMPERIUM",
     images: [
       {
@@ -52,8 +55,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "USHUS 2026: IMPERIUM — The Evolution of Warfare",
-    description:
-      "USHUS 2026: IMPERIUM — The flagship MBA Management Fest of Christ University, Bengaluru. November 4–5, 2026.",
+    description: `USHUS 2026: IMPERIUM — The flagship MBA Management Fest of the ${INSTITUTION_SHORT}, Bengaluru. November 6–7, 2026.`,
     images: ["/og-image.png"],
   },
   robots: {
@@ -67,7 +69,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const systemConfig = getSystemConfig();
+  const systemConfig = await getSystemConfig();
   const session = await auth();
   const headersList = await headers();
   const pathname = headersList.get("x-pathname") || "";
@@ -81,22 +83,13 @@ export default async function RootLayout({
   const showMaintenance = systemConfig.maintenance && !isAdmin && !isExcludedRoute;
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Cinzel + Inter typography */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${trajanPro.variable} ${inter.variable}`}>
       <body
         className="min-h-screen antialiased bg-[#0B132B] text-[#F5ECD7]"
         style={{
           backgroundColor: "#0B132B",
           color: "#F5ECD7",
-          fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
+          fontFamily: "var(--font-inter), ui-sans-serif, system-ui, sans-serif",
         }}
       >
         <SessionProvider session={session}>
@@ -120,7 +113,7 @@ export default async function RootLayout({
                 <div className="space-y-2">
                   <h1
                     className="text-2xl font-bold tracking-tight text-amber-200"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    style={{ fontFamily: "var(--font-trajan), serif" }}
                   >
                     System Maintenance
                   </h1>
@@ -136,7 +129,7 @@ export default async function RootLayout({
                 <Link
                   href="/login"
                   className="text-xs font-semibold hover:underline text-amber-400"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   Admin / Staff sign in →
                 </Link>

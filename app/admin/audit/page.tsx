@@ -19,7 +19,7 @@ interface AuditLog {
     name: string;
     email: string;
     role: string;
-  };
+  } | null;
 }
 
 interface Pagination {
@@ -114,8 +114,8 @@ export default function AdminAuditPage() {
                       })}
                     </div>
                     <div className="col-span-3 truncate">
-                      <p className="font-medium text-foreground">{log.user.name}</p>
-                      <p className="text-[10px] text-muted-foreground truncate">{log.user.email}</p>
+                      <p className="font-medium text-foreground">{log.user?.name ?? "Deleted user"}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{log.user?.email ?? "—"}</p>
                     </div>
                     <div className="col-span-3">
                       <Badge variant="outline" className={getActionBadgeColor(log.action)}>

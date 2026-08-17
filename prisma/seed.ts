@@ -113,21 +113,23 @@ async function main() {
 
   // ─── Create Events (10 IMPERIUM events) ───────────────────────────────────────
   console.log("🎪 Creating events...");
-  const baseFestDateStart = new Date("2026-11-04T09:00:00");
-  const baseFestDateEnd = new Date("2026-11-05T18:00:00");
+  const baseFestDateStart = new Date("2026-11-06T09:00:00");
+  const baseFestDateEnd = new Date("2026-11-07T18:00:00");
   const baseDeadline = new Date("2026-10-25T23:59:59");
 
+  // teamSize: exact competitor slots required at registration.
+  // Best Manager is solo, Best Management Team is 4-a-side, everything else is 3-a-side.
   const eventData = [
-    { name: "Thronium (Best Manager)", vertical: verticalMap["Best Manager"], head: null, desc: "Napoleon Bonaparte — The ultimate leadership test.", venue: "Auditorium A", prize: "₹25,000", prizeFirst: 25000, prizeSecond: null, max: 50 },
-    { name: "Venturium (Best Management Team)", vertical: verticalMap["Best Management Team"], head: null, desc: "Dwight D. Eisenhower — Coalition executive command.", venue: "Seminar Hall 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 40 },
-    { name: "Synergium (HR)", vertical: verticalMap["HR"], head: null, desc: "George C. Marshall — Talent architecture and negotiations.", venue: "Conference Room A", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60 },
-    { name: "Warketium (Marketing)", vertical: verticalMap["Marketing"], head: organiser, desc: "Edward Bernays — Perception engineering and viral PR.", venue: "Seminar Hall 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
-    { name: "Algorium (Business Analytics)", vertical: verticalMap["Business Analytics"], head: null, desc: "Alan Turing — Machine intelligence and cryptography.", venue: "Computer Lab 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
-    { name: "Aurium (Finance)", vertical: verticalMap["Finance"], head: null, desc: "Alexander Hamilton — Sovereign treasury and valuation.", venue: "Computer Lab 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
-    { name: "Bizarium (B-Plan)", vertical: verticalMap["B-Plan"], head: null, desc: "Helmuth von Moltke — Resilient venture architectures.", venue: "Seminar Hall 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60 },
-    { name: "Cognitium (B-Quiz)", vertical: verticalMap["B-Quiz"], head: null, desc: "Sir Francis Walsingham — Corporate intelligence and trivia.", venue: "Auditorium B", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 100 },
-    { name: "Victorium (Strategy)", vertical: verticalMap["Strategy"], head: null, desc: "Sun Tzu — Asymmetric corporate strategy wargaming.", venue: "Seminar Hall 4", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
-    { name: "Kaizenium (Lean Operations)", vertical: verticalMap["Lean Operations"], head: null, desc: "Alexander the Great — Supply chain velocity and lean ops.", venue: "Computer Lab 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80 },
+    { name: "Thronium (Best Manager)", vertical: verticalMap["Best Manager"], head: null, desc: "Napoleon Bonaparte — The ultimate leadership test.", venue: "Auditorium A", prize: "₹25,000", prizeFirst: 25000, prizeSecond: null, max: 50, teamSize: 1 },
+    { name: "Venturium (Best Management Team)", vertical: verticalMap["Best Management Team"], head: null, desc: "Dwight D. Eisenhower — Coalition executive command.", venue: "Seminar Hall 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 40, teamSize: 4 },
+    { name: "Synergium (HR)", vertical: verticalMap["HR"], head: null, desc: "George C. Marshall — Talent architecture and negotiations.", venue: "Conference Room A", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60, teamSize: 3 },
+    { name: "Warketium (Marketing)", vertical: verticalMap["Marketing"], head: organiser, desc: "Edward Bernays — Perception engineering and viral PR.", venue: "Seminar Hall 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80, teamSize: 3 },
+    { name: "Algorium (Business Analytics)", vertical: verticalMap["Business Analytics"], head: null, desc: "Alan Turing — Machine intelligence and cryptography.", venue: "Computer Lab 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80, teamSize: 3 },
+    { name: "Aurium (Finance)", vertical: verticalMap["Finance"], head: null, desc: "Alexander Hamilton — Sovereign treasury and valuation.", venue: "Computer Lab 2", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80, teamSize: 3 },
+    { name: "Bizarium (B-Plan)", vertical: verticalMap["B-Plan"], head: null, desc: "Helmuth von Moltke — Resilient venture architectures.", venue: "Seminar Hall 3", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 60, teamSize: 3 },
+    { name: "Cognitium (B-Quiz)", vertical: verticalMap["B-Quiz"], head: null, desc: "Sir Francis Walsingham — Corporate intelligence and trivia.", venue: "Auditorium B", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 100, teamSize: 3 },
+    { name: "Victorium (Strategy)", vertical: verticalMap["Strategy"], head: null, desc: "Sun Tzu — Asymmetric corporate strategy wargaming.", venue: "Seminar Hall 4", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80, teamSize: 3 },
+    { name: "Kaizenium (Lean Operations)", vertical: verticalMap["Lean Operations"], head: null, desc: "Alexander the Great — Supply chain velocity and lean ops.", venue: "Computer Lab 1", prize: "₹24,000", prizeFirst: 15000, prizeSecond: 9000, max: 80, teamSize: 3 },
   ];
 
   const events = await Promise.all(
@@ -148,6 +150,7 @@ async function main() {
           basePrice: 1500,
           prizeFirst: e.prizeFirst,
           prizeSecond: e.prizeSecond,
+          teamSize: e.teamSize,
           status: EventStatus.REGISTRATION_OPEN,
         },
       })

@@ -1,39 +1,44 @@
 "use client";
 
+import * as React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Bell, Trophy, AlertCircle } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
+import { formatRelativeTime } from "@/lib/format";
+
+interface AnnouncementData {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  createdBy?: { name: string } | null;
+}
 
 export default function UpdatesPage() {
-  const updates = [
-    {
-      id: 1,
-      title: "Round 1 details for Best Manager published",
-      body: "The case study for Round 1 is now available in your Event Hub. Submissions are due by 5:00 PM today.",
-      time: "5 hours ago",
-      type: "Event",
-      icon: Trophy,
-      urgent: true,
-    },
-    {
-      id: 2,
-      title: "Welcome to USHUS 2026!",
-      body: "Please collect your ID cards from the registration desk at the main entrance. Keep your QR code ready.",
-      time: "1 day ago",
-      type: "General",
-      icon: Bell,
-      urgent: false,
-    },
-    {
-      id: 3,
-      title: "Valedictory Ceremony Venue Change",
-      body: "The closing ceremony will now be held at the Main Auditorium instead of the Open Air Theatre due to weather conditions.",
-      time: "2 days ago",
-      type: "Alert",
-      icon: AlertCircle,
-      urgent: false,
+  const [updates, setUpdates] = React.useState<AnnouncementData[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const res = await fetch("/api/v1/announcements?limit=50");
+        if (!res.ok) throw new Error("Failed to load updates");
+        const json = await res.json();
+        if (!cancelled) setUpdates(json.data || []);
+      } catch {
+        if (!cancelled) setError("Couldn't load updates. Please refresh the page.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
     }
-  ];
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -42,36 +47,48 @@ export default function UpdatesPage() {
         <p className="text-muted-foreground mt-1">Latest announcements and notifications.</p>
       </div>
 
-      <div className="space-y-4">
-        {updates.map((update, i) => (
-          <div
-            key={update.id}
- 
- 
- 
-          >
-            <Card className={`glass border-white/10 ${update.urgent ? 'border-primary/50 bg-primary/5' : ''}`}>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-muted-foreground">
+          <Loader2 className="w-8 h-8 animate-spin" />
+          <p className="text-sm">Loading updates...</p>
+        </div>
+      ) : error ? (
+        <Card className="glass border-danger/30 bg-danger/5">
+          <CardContent className="p-6 text-sm text-danger">{error}</CardContent>
+        </Card>
+      ) : updates.length === 0 ? (
+        <Card className="glass border-white/10">
+          <CardContent className="p-8 text-center text-sm text-muted-foreground">
+            No announcements yet. Check back later!
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {updates.map((update) => (
+            <Card key={update.id} className="glass border-white/10">
               <CardContent className="p-6">
                 <div className="flex gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${update.urgent ? 'bg-primary/20 text-primary' : 'bg-white/10 text-muted-foreground'}`}>
-                    <update.icon className="w-5 h-5" />
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-white/10 text-muted-foreground">
+                    <Bell className="w-5 h-5" />
                   </div>
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <h3 className="font-semibold text-lg">{update.title}</h3>
-                      <div className="flex items-center gap-2">
-                        {update.urgent && <Badge variant="default" className="bg-primary/20 text-primary border-none">Urgent</Badge>}
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">{update.time}</span>
-                      </div>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {formatRelativeTime(update.createdAt)}
+                      </span>
                     </div>
                     <p className="text-muted-foreground text-sm leading-relaxed">{update.body}</p>
+                    {update.createdBy?.name && (
+                      <p className="text-[11px] text-muted-foreground/70">— {update.createdBy.name}</p>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

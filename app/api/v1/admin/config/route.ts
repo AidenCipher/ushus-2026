@@ -1,44 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { hasPermission } from "@/lib/permissions";
+import { getSystemConfig, updateSystemConfig } from "@/lib/system_config";
+import { SystemConfigUpdateSchema } from "@/lib/validations/system-config.schema";
+import { auditFromRequest, AuditActions } from "@/lib/audit";
 import type { Role } from "@prisma/client";
-import * as fs from "fs";
-import * as path from "path";
-
-const CONFIG_FILE_PATH = path.join(process.cwd(), "data", "system_config.json");
-
-// Ensure data directory exists
-function ensureDir() {
-  const dir = path.dirname(CONFIG_FILE_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-}
-
-function loadConfig() {
-  ensureDir();
-  if (fs.existsSync(CONFIG_FILE_PATH)) {
-    try {
-      const data = fs.readFileSync(CONFIG_FILE_PATH, "utf8");
-      return JSON.parse(data);
-    } catch (e) {
-      console.error("Failed to parse config file:", e);
-    }
-  }
-  // Defaults
-  return {
-    phase: "pre-event",
-    maxReg: "50",
-    allowReg: true,
-    maintenance: false,
-    festStartDate: "2026-11-04",
-  };
-}
-
-function saveConfig(config: any) {
-  ensureDir();
-  fs.writeFileSync(CONFIG_FILE_PATH, JSON.stringify(config, null, 2), "utf8");
-}
 
 export async function GET() {
   try {
@@ -47,7 +13,12 @@ export async function GET() {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const config = loadConfig();
+    const userRole = session.user.role as Role;
+    if (!hasPermission(userRole, "ACCESS_ADMIN_SETTINGS")) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
+    const config = await getSystemConfig();
     return NextResponse.json({ success: true, data: config });
   } catch (error) {
     console.error("[System Config GET] Error:", error);
@@ -68,18 +39,23 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const current = loadConfig();
+    const parsed = SystemConfigUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { success: false, error: "Validation failed", details: parsed.error.format() },
+        { status: 400 }
+      );
+    }
 
-    const updated = {
-      ...current,
-      phase: body.phase ?? current.phase,
-      maxReg: String(body.maxReg ?? current.maxReg),
-      allowReg: body.allowReg ?? current.allowReg,
-      maintenance: body.maintenance ?? current.maintenance,
-      festStartDate: body.festStartDate ?? current.festStartDate,
-    };
+    const updated = await updateSystemConfig(parsed.data);
 
-    saveConfig(updated);
+    await auditFromRequest(req.headers, {
+      userId: session.user.id,
+      action: AuditActions.SETTINGS_UPDATED,
+      entityType: "SYSTEM_CONFIG",
+      metadata: parsed.data,
+    });
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     console.error("[System Config POST] Error:", error);

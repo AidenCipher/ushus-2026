@@ -134,3 +134,17 @@ export function getClientIP(headers: Headers): string {
     "unknown"
   );
 }
+
+/**
+ * Escape user-supplied text before interpolating it into an HTML email
+ * template — without this, a crafted subject/message can inject markup
+ * into mail rendered by the recipient's client.
+ */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}

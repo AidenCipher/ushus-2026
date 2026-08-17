@@ -113,7 +113,7 @@ export default function LoadingAnimation({ message = "Loading...", size = "md" }
       {message && (
         <p
           className={`font-semibold tracking-widest uppercase animate-pulse ${textClass}`}
-          style={{ color: "rgba(212, 175, 55, 0.75)", fontFamily: "'Cinzel', Georgia, serif", letterSpacing: "0.18em" }}
+          style={{ color: "rgba(212, 175, 55, 0.75)", fontFamily: "var(--font-trajan), Georgia, serif", letterSpacing: "0.18em" }}
         >
           {message}
         </p>

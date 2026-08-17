@@ -2,13 +2,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Trophy, FileText, Download, Clock, AlertCircle, Loader2, CreditCard, Sparkles, MapPin, Users, HelpCircle, ArrowRight, UserPlus, Trash2, X, CheckCircle2, ExternalLink } from "lucide-react";
+import { Trophy, Download, Clock, AlertCircle, Loader2, Sparkles, MapPin, Users, ArrowRight, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import * as React from "react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
+import { getVerticalLogo } from "@/lib/logos";
 
 interface RegistrationData {
   id: string;
@@ -27,7 +26,6 @@ interface RegistrationData {
       colorCode: string;
     };
   };
-  // WS2: payment status for participant
   payment?: {
     paymentStatus: "NOT_SUBMITTED" | "SUBMITTED" | "VERIFIED" | "REJECTED";
     transactionRef?: string;
@@ -43,6 +41,7 @@ interface EventData {
   status: string;
   prizePool: string | null;
   maxParticipants: number | null;
+  teamSize: number;
   venue: string | null;
   vertical: {
     id: string;
@@ -51,185 +50,36 @@ interface EventData {
   };
 }
 
-interface TeamMemberInput {
-  name: string;
-  email: string;
-  phone: string;
-}
-
 export default function EventsDetailsPage() {
-  const { data: session } = useSession();
-
-  // Data loading states
   const [registrations, setRegistrations] = React.useState<RegistrationData[]>([]);
   const [allEvents, setAllEvents] = React.useState<EventData[]>([]);
   const [loading, setLoading] = React.useState(true);
 
-  // Dialog / Modal states
-  const [registeringEvent, setRegisteringEvent] = React.useState<EventData | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = React.useState(false);
-  const [paymentEventName, setPaymentEventName] = React.useState("");
-  const [paymentRegistrationId, setPaymentRegistrationId] = React.useState<string | null>(null);
-
-  // WS2: payment submission state
-  const [paymentLink, setPaymentLink] = React.useState("");
-  const [transactionRef, setTransactionRef] = React.useState("");
-  const [paymentScreenshotUrl, setPaymentScreenshotUrl] = React.useState("");
-  const [submittingPayment, setSubmittingPayment] = React.useState(false);
-  const [paymentError, setPaymentError] = React.useState<string | null>(null);
-  const [paymentSuccess, setPaymentSuccess] = React.useState(false);
-
-  // Registration Form state
-  const [teamName, setTeamName] = React.useState("");
-  const [teamMembers, setTeamMembers] = React.useState<TeamMemberInput[]>([]);
-  const [facultyName, setFacultyName] = React.useState("");
-  const [facultyEmail, setFacultyEmail] = React.useState("");
-  const [facultyPhone, setFacultyPhone] = React.useState("");
-  const [accommodationRequested, setAccommodationRequested] = React.useState(false);
-  const [registrationType, setRegistrationType] = React.useState<"INDIVIDUAL_EVENT" | "CONTINGENT">("INDIVIDUAL_EVENT");
-  const [notes, setNotes] = React.useState("");
-  const [regError, setRegError] = React.useState<string | null>(null);
-  const [submittingReg, setSubmittingReg] = React.useState(false);
-
-  const fetchRegistryData = React.useCallback(async () => {
-    try {
-      const [regRes, eventRes, configRes] = await Promise.all([
-        fetch("/api/v1/registrations"),
-        fetch("/api/v1/events"),
-        fetch("/api/v1/config"),
-      ]);
-
-      if (regRes.ok) {
-        const json = await regRes.json();
-        setRegistrations(json.data || []);
+  React.useEffect(() => {
+    async function fetchRegistryData() {
+      try {
+        const [regRes, eventRes] = await Promise.all([
+          fetch("/api/v1/registrations"),
+          fetch("/api/v1/events"),
+        ]);
+        if (regRes.ok) {
+          const json = await regRes.json();
+          setRegistrations(json.data || []);
+        }
+        if (eventRes.ok) {
+          const json = await eventRes.json();
+          setAllEvents(json.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to load participant event records:", error);
+      } finally {
+        setLoading(false);
       }
-
-      if (eventRes.ok) {
-        const json = await eventRes.json();
-        setAllEvents(json.data || []);
-      }
-
-      if (configRes.ok) {
-        const json = await configRes.json();
-        setPaymentLink(json.data?.paymentLink || "");
-      }
-    } catch (error) {
-      console.error("Failed to load participant event records:", error);
-    } finally {
-      setLoading(false);
     }
+    fetchRegistryData();
   }, []);
 
-  React.useEffect(() => {
-    fetchRegistryData();
-  }, [fetchRegistryData]);
-
-  // Check if participant is registered for event ID
-  const isRegistered = (eventId: string) => {
-    return registrations.some((reg) => reg.event.id === eventId);
-  };
-
-  const getRegistrationDetails = (eventId: string) => {
-    return registrations.find((reg) => reg.event.id === eventId);
-  };
-
-  const handleAddMemberInput = () => {
-    setTeamMembers([...teamMembers, { name: "", email: "", phone: "" }]);
-  };
-
-  const handleRemoveMemberInput = (index: number) => {
-    setTeamMembers(teamMembers.filter((_, i) => i !== index));
-  };
-
-  const handleMemberChange = (index: number, field: keyof TeamMemberInput, value: string) => {
-    const updated = [...teamMembers];
-    updated[index][field] = value;
-    setTeamMembers(updated);
-  };
-
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!registeringEvent) return;
-
-    if (!facultyName.trim() || !facultyEmail.trim() || !facultyPhone.trim()) {
-      setRegError("Faculty coordinator details (Name, Email, Phone) are mandatory for all registrations.");
-      return;
-    }
-
-    setSubmittingReg(true);
-    setRegError(null);
-
-    // Filter out blank team members
-    const cleanMembers = teamMembers.filter((m) => m.name && m.email && m.phone);
-
-    try {
-      const res = await fetch("/api/v1/registrations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: session?.user?.id,
-          eventId: registeringEvent.id,
-          registrationType,
-          facultyName: facultyName.trim(),
-          facultyEmail: facultyEmail.trim(),
-          facultyPhone: facultyPhone.trim(),
-          accommodationRequested,
-          teamName: teamName || null,
-          teamMembers: cleanMembers.length > 0 ? cleanMembers : null,
-          notes: notes || null,
-        }),
-      });
-
-      const json = await res.json();
-
-      if (res.ok) {
-        setPaymentEventName(registeringEvent.name);
-        setPaymentRegistrationId(json.data?.id ?? null);
-        setRegisteringEvent(null);
-        setTeamName("");
-        setTeamMembers([]);
-        setNotes("");
-        setTransactionRef("");
-        setPaymentScreenshotUrl("");
-        setPaymentSuccess(false);
-        setPaymentError(null);
-        setShowPaymentModal(true);
-        await fetchRegistryData();
-      } else {
-        setRegError(json.error || "Failed to submit registration. Check details.");
-      }
-    } catch {
-      setRegError("Network error. Please try again later.");
-    } finally {
-      setSubmittingReg(false);
-    }
-  };
-
-  // WS2: Submit payment reference
-  const handlePaymentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!paymentRegistrationId || !transactionRef.trim()) return;
-    setSubmittingPayment(true);
-    setPaymentError(null);
-    try {
-      const res = await fetch(`/api/v1/registrations/${paymentRegistrationId}/payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          transactionRef: transactionRef.trim(),
-          paymentScreenshotUrl: paymentScreenshotUrl.trim() || null,
-        }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Failed to submit payment");
-      setPaymentSuccess(true);
-      await fetchRegistryData();
-    } catch (err: any) {
-      setPaymentError(err.message);
-    } finally {
-      setSubmittingPayment(false);
-    }
-  };
+  const isRegistered = (eventId: string) => registrations.some((reg) => reg.event.id === eventId);
 
   if (loading) {
     return (
@@ -244,9 +94,7 @@ export default function EventsDetailsPage() {
   const groupedEvents: Record<string, EventData[]> = {};
   allEvents.forEach((evt) => {
     const key = evt.vertical.name;
-    if (!groupedEvents[key]) {
-      groupedEvents[key] = [];
-    }
+    if (!groupedEvents[key]) groupedEvents[key] = [];
     groupedEvents[key].push(evt);
   });
 
@@ -259,6 +107,28 @@ export default function EventsDetailsPage() {
           Explore all USHUS 2026 competitions, check your registered events, download rulebooks, and manage your team status.
         </p>
       </div>
+
+      {/* Contingent entry point */}
+      <Card className="glass border-amber-500/30 bg-amber-500/5 relative overflow-hidden">
+        <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-11 h-11 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0">
+              <Shield className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">Registering a full college delegation?</h3>
+              <p className="text-sm text-muted-foreground max-w-xl mt-0.5">
+                Register your college&apos;s teams for every event in one guided flow, then pay once for the whole contingent.
+              </p>
+            </div>
+          </div>
+          <Link href="/dashboard/register/contingent">
+            <Button className="bg-amber-500 hover:bg-amber-600 text-black font-bold shrink-0">
+              Register Full Contingent <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
 
       {/* SECTION 1: YOUR ACTIVE REGISTRATIONS */}
       <div className="space-y-6">
@@ -282,122 +152,100 @@ export default function EventsDetailsPage() {
         ) : (
           <div className="grid gap-6">
             {registrations.map((reg) => (
-              <div
-                key={reg.id}
-              >
-                <Card className="glass border-indigo-500/20 relative overflow-hidden shadow-lg hover:shadow-indigo-500/5 transition-all">
-                  <div
-                    className="absolute top-0 left-0 w-1.5 h-full"
-                    style={{ backgroundColor: reg.event.vertical.colorCode }}
-                  />
-                  <CardHeader className="pl-6 pb-2">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant="outline"
-                            style={{ borderColor: reg.event.vertical.colorCode, color: reg.event.vertical.colorCode }}
-                          >
-                            {reg.event.vertical.name}
+              <Card key={reg.id} className="glass border-indigo-500/20 relative overflow-hidden shadow-lg hover:shadow-indigo-500/5 transition-all">
+                <div className="absolute top-0 left-0 w-1.5 h-full" style={{ backgroundColor: reg.event.vertical.colorCode }} />
+                <CardHeader className="pl-6 pb-2">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" style={{ borderColor: reg.event.vertical.colorCode, color: reg.event.vertical.colorCode }}>
+                          {reg.event.vertical.name}
+                        </Badge>
+                        <Badge variant="outline" className="border-success/50 text-success bg-success/10 font-bold uppercase tracking-wider text-[10px]">
+                          {reg.status}
+                        </Badge>
+                        {reg.payment && (
+                          <Badge variant="outline" className="text-[10px] uppercase tracking-wider">
+                            Payment: {reg.payment.paymentStatus.replace(/_/g, " ")}
                           </Badge>
-                          <Badge variant="outline" className="border-success/50 text-success bg-success/10 font-bold uppercase tracking-wider text-[10px]">
-                            {reg.status}
-                          </Badge>
-                        </div>
-                        <CardTitle className="text-2xl mt-1 font-bold">{reg.event.name}</CardTitle>
+                        )}
                       </div>
-                      {reg.event.prizePool && (
-                        <div className="text-right bg-white/5 p-2 rounded-lg border border-white/5">
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Prize Pool</p>
-                          <p className="text-lg font-bold text-indigo-400">{reg.event.prizePool}</p>
-                        </div>
-                      )}
+                      <CardTitle className="text-2xl mt-1 font-bold">{reg.event.name}</CardTitle>
                     </div>
-                    {reg.event.description && (
-                      <CardDescription className="text-sm mt-2 text-foreground/80 leading-relaxed max-w-3xl">
-                        {reg.event.description}
-                      </CardDescription>
+                    {reg.event.prizePool && (
+                      <div className="text-right bg-white/5 p-2 rounded-lg border border-white/5">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Prize Pool</p>
+                        <p className="text-lg font-bold text-indigo-400">{reg.event.prizePool}</p>
+                      </div>
                     )}
-                  </CardHeader>
-                  <CardContent className="pl-6 pt-2 space-y-4">
-                    {/* Team roster information */}
-                    <div className="p-4 bg-[#0c101d]/60 border border-white/5 rounded-xl space-y-3">
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5" /> Team Registration Information
-                      </h4>
-                      <div className="grid sm:grid-cols-2 gap-3 text-xs">
-                        <div>
-                          <span className="text-muted-foreground">Team Roster Type:</span>{" "}
-                          <span className="font-semibold">{reg.teamName ? "Group / Team Competition" : "Individual Entry"}</span>
-                        </div>
-                        {reg.teamName && (
-                          <div>
-                            <span className="text-muted-foreground">Team Name:</span>{" "}
-                            <span className="font-bold text-foreground">{reg.teamName}</span>
-                          </div>
-                        )}
-                        {Array.isArray(reg.teamMembers) && reg.teamMembers.length > 0 && (
-                          <div className="sm:col-span-2 space-y-1.5 pt-2 border-t border-white/5 mt-2">
-                            <span className="text-muted-foreground">Registered Team Members:</span>
-                            <div className="flex flex-wrap gap-2">
-                              {reg.teamMembers.map((member: any, i: number) => (
-                                <Badge key={i} variant="secondary" className="bg-white/10 hover:bg-white/15 py-1 px-2 text-xs">
-                                  {member.name} ({member.email})
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                  </div>
+                  {reg.event.description && (
+                    <CardDescription className="text-sm mt-2 text-foreground/80 leading-relaxed max-w-3xl">
+                      {reg.event.description}
+                    </CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent className="pl-6 pt-2 space-y-4">
+                  <div className="p-4 bg-[#0c101d]/60 border border-white/5 rounded-xl space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-indigo-400 flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5" /> Registered Competitors
+                    </h4>
+                    {Array.isArray(reg.teamMembers) && reg.teamMembers.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {reg.teamMembers.map((member: any, i: number) => (
+                          <Badge key={i} variant="secondary" className="bg-white/10 hover:bg-white/15 py-1 px-2 text-xs">
+                            {member.name} ({member.registerNumber ?? member.email})
+                          </Badge>
+                        ))}
                       </div>
-                    </div>
+                    )}
+                  </div>
 
-                    {/* Resources */}
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {reg.event.rulesDocumentUrl ? (
-                        <Card className="glass border-white/5 bg-white/5 p-4 flex flex-col justify-between gap-4">
-                          <div>
-                            <h5 className="font-semibold text-sm">Official Rulebook & Format</h5>
-                            <p className="text-xs text-muted-foreground mt-1">Read the complete details on rules, timeline and rounds formatting.</p>
-                          </div>
-                          <a href={reg.event.rulesDocumentUrl} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" className="w-full border-white/10 text-xs">
-                              <Download className="w-4 h-4 mr-2" /> Download Document
-                            </Button>
-                          </a>
-                        </Card>
-                      ) : (
-                        <Card className="glass border-white/5 bg-white/5 p-4 flex flex-col justify-between gap-3">
-                          <div>
-                            <h5 className="font-semibold text-sm">Rulebook Pending</h5>
-                            <p className="text-xs text-muted-foreground mt-1">The detailed rulebook for this vertical will be uploaded by the coordinators soon.</p>
-                          </div>
-                          <Button variant="outline" className="w-full border-white/15" disabled>
-                            <AlertCircle className="w-4 h-4 mr-2" /> Rules details TBD
-                          </Button>
-                        </Card>
-                      )}
-
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {reg.event.rulesDocumentUrl ? (
                       <Card className="glass border-white/5 bg-white/5 p-4 flex flex-col justify-between gap-4">
                         <div>
-                          <h5 className="font-semibold text-sm">Coordinators & Support</h5>
-                          <p className="text-xs text-muted-foreground mt-1">Need clarifications? Access contact directories directly.</p>
+                          <h5 className="font-semibold text-sm">Official Rulebook & Format</h5>
+                          <p className="text-xs text-muted-foreground mt-1">Read the complete details on rules, timeline and rounds formatting.</p>
                         </div>
-                        <Link href="/dashboard/contacts">
-                          <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-xs shadow-md">
-                            View Support Contacts
+                        <a href={reg.event.rulesDocumentUrl} target="_blank" rel="noopener noreferrer">
+                          <Button variant="outline" className="w-full border-white/10 text-xs">
+                            <Download className="w-4 h-4 mr-2" /> Download Document
                           </Button>
-                        </Link>
+                        </a>
                       </Card>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                    ) : (
+                      <Card className="glass border-white/5 bg-white/5 p-4 flex flex-col justify-between gap-3">
+                        <div>
+                          <h5 className="font-semibold text-sm">Rulebook Pending</h5>
+                          <p className="text-xs text-muted-foreground mt-1">The detailed rulebook for this vertical will be uploaded by the coordinators soon.</p>
+                        </div>
+                        <Button variant="outline" className="w-full border-white/15" disabled>
+                          <AlertCircle className="w-4 h-4 mr-2" /> Rules details TBD
+                        </Button>
+                      </Card>
+                    )}
+
+                    <Card className="glass border-white/5 bg-white/5 p-4 flex flex-col justify-between gap-4">
+                      <div>
+                        <h5 className="font-semibold text-sm">Coordinators & Support</h5>
+                        <p className="text-xs text-muted-foreground mt-1">Need clarifications? Access contact directories directly.</p>
+                      </div>
+                      <Link href="/dashboard/contacts">
+                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-xs shadow-md">
+                          View Support Contacts
+                        </Button>
+                      </Link>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
       </div>
 
-      {/* SECTION 2: EXPLORE ALL FESS COMPETITIONS */}
+      {/* SECTION 2: EXPLORE ALL COMPETITIONS */}
       <div className="space-y-8">
         <div className="flex items-center gap-2 border-b border-white/5 pb-2">
           <Sparkles className="w-5 h-5 text-indigo-400" />
@@ -407,29 +255,29 @@ export default function EventsDetailsPage() {
         {Object.keys(groupedEvents).map((verticalName) => {
           const eventsList = groupedEvents[verticalName];
           const colorCode = eventsList[0]?.vertical?.colorCode || "#6366f1";
+          const crest = getVerticalLogo({ name: verticalName });
 
           return (
             <div key={verticalName} className="space-y-4">
-              <h3
-                className="text-base font-bold uppercase tracking-wider flex items-center gap-2"
-                style={{ color: colorCode }}
-              >
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colorCode }} />
+              <h3 className="text-base font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: colorCode }}>
+                {crest ? (
+                  <span className="w-6 h-6 rounded-full overflow-hidden border border-white/10 shrink-0 bg-black/30">
+                    <Image src={crest.src} alt="" width={crest.width} height={crest.height} className="w-full h-full object-contain p-0.5" />
+                  </span>
+                ) : (
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colorCode }} />
+                )}
                 {verticalName}
               </h3>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {eventsList.map((evt) => {
-                  const reg = getRegistrationDetails(evt.id);
-                  const isReg = !!reg;
+                  const isReg = isRegistered(evt.id);
                   const isRegistrationClosed = evt.status !== "REGISTRATION_OPEN";
 
                   return (
                     <Card key={evt.id} className="glass border-white/10 overflow-hidden flex flex-col justify-between hover:border-indigo-500/20 transition-all duration-200 shadow-md relative">
-                      <div
-                        className="absolute top-0 left-0 w-full h-1"
-                        style={{ backgroundColor: colorCode }}
-                      />
+                      <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: colorCode }} />
                       <CardHeader className="pb-2">
                         <div className="flex justify-between items-start gap-2">
                           <Badge variant="outline" style={{ borderColor: colorCode, color: colorCode }}>
@@ -465,39 +313,26 @@ export default function EventsDetailsPage() {
                             <Trophy className="w-3.5 h-3.5 text-indigo-400" /> {evt.prizePool || "₹ -"}
                           </span>
                           <span className="flex items-center gap-1.5 col-span-2">
-                            <Users className="w-3.5 h-3.5 text-indigo-400" /> Capacity: {evt.maxParticipants || "Unlimited"}
+                            <Users className="w-3.5 h-3.5 text-indigo-400" />
+                            {evt.teamSize === 1 ? "Solo event" : `Team of ${evt.teamSize}`}
                           </span>
                         </div>
 
                         {isReg ? (
-                          <Button
-                            variant="secondary"
-                            className="w-full text-xs font-semibold bg-white/5 text-muted-foreground border border-white/5 cursor-default hover:bg-white/5"
-                          >
+                          <Button variant="secondary" className="w-full text-xs font-semibold bg-white/5 text-muted-foreground border border-white/5 cursor-default hover:bg-white/5">
                             Registered & Secured
                           </Button>
                         ) : isRegistrationClosed ? (
-                          <Button
-                            variant="outline"
-                            className="w-full text-xs text-muted-foreground border-white/10"
-                            disabled
-                          >
+                          <Button variant="outline" className="w-full text-xs text-muted-foreground border-white/10" disabled>
                             Registrations Closed
                           </Button>
                         ) : (
-                          <Button
-                            onClick={() => {
-                              setRegisteringEvent(evt);
-                              setTeamName("");
-                              setTeamMembers([]);
-                              setNotes("");
-                              setRegError(null);
-                            }}
-                            className="w-full text-xs bg-indigo-600 hover:bg-indigo-700 shadow-md group"
-                          >
-                            Register for Competition
-                            <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
-                          </Button>
+                          <Link href={`/dashboard/register/event/${evt.id}`}>
+                            <Button className="w-full text-xs bg-indigo-600 hover:bg-indigo-700 shadow-md group">
+                              Register for Competition
+                              <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                          </Link>
                         )}
                       </CardContent>
                     </Card>
@@ -508,362 +343,6 @@ export default function EventsDetailsPage() {
           );
         })}
       </div>
-
-      {/* Registration Modals */}
-      {registeringEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            onClick={() => setRegisteringEvent(null)}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          />
-          <div
-            className="bg-[#0b0f19] border border-white/10 rounded-2xl w-full max-w-lg p-6 overflow-hidden relative z-10 space-y-4 shadow-2xl max-h-[85vh] flex flex-col"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-white/10 shrink-0">
-              <div>
-                <h3 className="text-xl font-bold tracking-tight">Register for Event</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">{registeringEvent.name} ({registeringEvent.vertical.name})</p>
-              </div>
-              <button
-                onClick={() => setRegisteringEvent(null)}
-                className="p-1.5 rounded-full hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {regError && (
-              <div className="bg-danger/10 border border-danger/20 text-danger text-xs p-3 rounded-md flex items-center gap-2 shrink-0">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{regError}</span>
-              </div>
-            )}
-
-            {/* Form Content Scrollable */}
-            <form onSubmit={handleRegisterSubmit} className="space-y-4 overflow-y-auto flex-1 pr-1 pb-2">
-              {/* Registration Type Selector */}
-              <div className="space-y-1.5 p-3 rounded-xl bg-white/5 border border-white/10">
-                <label className="text-xs font-bold uppercase tracking-wider text-amber-400">Registration Tier</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setRegistrationType("INDIVIDUAL_EVENT")}
-                    className={`p-2.5 rounded-lg border text-left transition-all ${
-                      registrationType === "INDIVIDUAL_EVENT"
-                        ? "bg-amber-500/20 border-amber-500/60 text-amber-200"
-                        : "bg-white/5 border-white/10 text-neutral-400"
-                    }`}
-                  >
-                    <div className="text-xs font-bold">Individual Event</div>
-                    <div className="text-[11px] text-amber-300 font-mono">₹900 <span className="line-through text-neutral-500 text-[10px]">₹1,500</span></div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setRegistrationType("CONTINGENT")}
-                    className={`p-2.5 rounded-lg border text-left transition-all ${
-                      registrationType === "CONTINGENT"
-                        ? "bg-amber-500/20 border-amber-500/60 text-amber-200"
-                        : "bg-white/5 border-white/10 text-neutral-400"
-                    }`}
-                  >
-                    <div className="text-xs font-bold">Full Contingent (10)</div>
-                    <div className="text-[11px] text-amber-300 font-mono">₹7,500 <span className="line-through text-neutral-500 text-[10px]">₹15,000</span></div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Faculty Coordinator Details (MANDATORY) */}
-              <div className="space-y-2.5 p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20">
-                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400">
-                  <span>Faculty Coordinator</span>
-                  <span className="text-destructive">*</span>
-                </div>
-                <p className="text-[10px] text-neutral-400">
-                  College faculty head contact for verification & official correspondence.
-                </p>
-                <div className="space-y-2">
-                  <Input
-                    placeholder="Faculty Coordinator Name *"
-                    className="bg-background/50 border-white/10 text-xs h-8"
-                    value={facultyName}
-                    onChange={(e) => setFacultyName(e.target.value)}
-                    required
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Faculty Email *"
-                      type="email"
-                      className="bg-background/50 border-white/10 text-xs h-8"
-                      value={facultyEmail}
-                      onChange={(e) => setFacultyEmail(e.target.value)}
-                      required
-                    />
-                    <Input
-                      placeholder="Faculty Phone *"
-                      className="bg-background/50 border-white/10 text-xs h-8"
-                      value={facultyPhone}
-                      onChange={(e) => setFacultyPhone(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Accommodation Opt-In (MANDATORY NOTE) */}
-              <div className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                <label className="flex items-start gap-2.5 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={accommodationRequested}
-                    onChange={(e) => setAccommodationRequested(e.target.checked)}
-                    className="mt-0.5 rounded border-amber-500/40 text-amber-500 focus:ring-amber-500"
-                  />
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-semibold text-neutral-200">
-                      Request on-campus accommodation
-                    </span>
-                    <p className="text-[10px] text-neutral-400 leading-tight">
-                      <strong>Note:</strong> Accommodation inside Christ University campus is allotted on a strictly <em>first-come-first-served</em> basis and is not guaranteed.
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-muted-foreground">Team Name (Required for Group Events)</label>
-                <Input
-                  placeholder="e.g. Tactical Unit Alpha"
-                  className="bg-background/50 border-white/10"
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                />
-              </div>
-
-              {/* Team Members */}
-              <div className="space-y-3 pt-2 border-t border-white/5">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold uppercase tracking-wider text-amber-400">Additional Crew Members ({teamMembers.length})</label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleAddMemberInput}
-                    className="text-xs text-amber-400 hover:text-amber-300"
-                  >
-                    <UserPlus className="w-3.5 h-3.5 mr-1" /> Add Member
-                  </Button>
-                </div>
-
-                {teamMembers.length === 0 ? (
-                  <p className="text-[10px] text-muted-foreground bg-white/5 p-3 rounded-lg border border-dashed border-white/10 text-center">
-                    No additional crew members added. Leave empty for individual event registrations.
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {teamMembers.map((member, index) => (
-                      <div key={index} className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-2 relative">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMemberInput(index)}
-                          className="absolute top-2 right-2 text-muted-foreground hover:text-danger p-1 rounded hover:bg-white/5"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-
-                        <p className="text-[10px] font-bold text-muted-foreground">MEMBER #{index + 1}</p>
-                        <div className="grid grid-cols-3 gap-2">
-                          <Input
-                            placeholder="Name"
-                            className="bg-background/50 border-white/10 text-xs h-8"
-                            value={member.name}
-                            onChange={(e) => handleMemberChange(index, "name", e.target.value)}
-                            required
-                          />
-                          <Input
-                            placeholder="Email"
-                            type="email"
-                            className="bg-background/50 border-white/10 text-xs h-8"
-                            value={member.email}
-                            onChange={(e) => handleMemberChange(index, "email", e.target.value)}
-                            required
-                          />
-                          <Input
-                            placeholder="Phone"
-                            className="bg-background/50 border-white/10 text-xs h-8"
-                            value={member.phone}
-                            onChange={(e) => handleMemberChange(index, "phone", e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1 pt-2 border-t border-white/5">
-                <label className="text-xs font-semibold text-muted-foreground">Tactical Notes / Clarifications (Optional)</label>
-                <Textarea
-                  placeholder="Enter any special requests, dietary preferences, or scheduling clarifications..."
-                  className="bg-background/50 border-white/10 min-h-[60px] text-xs"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
-              </div>
-
-              {/* Footer Buttons */}
-              <div className="flex gap-2 pt-4 border-t border-white/10 shrink-0">
-                <Button
-                  type="submit"
-                  disabled={submittingReg || !facultyName.trim() || !facultyEmail.trim() || !facultyPhone.trim()}
-                  className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-md"
-                >
-                  {submittingReg ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Confirm &amp; Proceed to Payment
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-white/10"
-                  onClick={() => setRegisteringEvent(null)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* WS2: Payment Submission Modal */}
-      {showPaymentModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            onClick={() => setShowPaymentModal(false)}
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-          />
-          <div className="bg-background border border-border rounded-xl w-full max-w-md p-6 relative z-10 shadow-2xl space-y-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-bold">Submit Payment</h3>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  Registration for <strong>{paymentEventName}</strong>
-                </p>
-              </div>
-              <button
-                onClick={() => setShowPaymentModal(false)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {paymentSuccess ? (
-              <div className="text-center space-y-4 py-4">
-                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto" />
-                <div>
-                  <p className="font-semibold">Payment details submitted!</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Our team will verify your payment and confirm your registration. You will receive an email once it is processed.
-                  </p>
-                </div>
-                <Button
-                  id="btn-close-payment-modal"
-                  onClick={() => setShowPaymentModal(false)}
-                  className="w-full"
-                >
-                  Close
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={handlePaymentSubmit} className="space-y-4">
-                {/* Step 1: Pay via the college payment link */}
-                {paymentLink ? (
-                  <div className="bg-muted/30 border border-border rounded-lg p-4 space-y-2">
-                    <p className="text-sm font-semibold">Step 1 — Complete the Payment</p>
-                    <p className="text-xs text-muted-foreground">
-                      Use the official Christ University payment portal to pay the registration fee.
-                    </p>
-                    <a
-                      href={paymentLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      id="btn-pay-now"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary underline"
-                    >
-                      Open Payment Portal <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                ) : (
-                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-                    <p className="text-xs text-amber-500">
-                      The payment portal link has not been configured yet. Please check back soon or contact the organisers.
-                    </p>
-                  </div>
-                )}
-
-                {/* Step 2: Submit transaction reference */}
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold">Step 2 — Submit Transaction Reference</p>
-                  <p className="text-xs text-muted-foreground">
-                    After completing payment, enter the transaction / UTR reference number below.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium" htmlFor="input-transaction-ref">
-                    Transaction Reference <span className="text-destructive">*</span>
-                  </label>
-                  <Input
-                    id="input-transaction-ref"
-                    placeholder="e.g. UPI/TXN/123456789"
-                    value={transactionRef}
-                    onChange={(e) => setTransactionRef(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium" htmlFor="input-screenshot-url">
-                    Screenshot URL <span className="text-muted-foreground">(optional)</span>
-                  </label>
-                  <Input
-                    id="input-screenshot-url"
-                    placeholder="Supabase / Google Drive link to screenshot"
-                    value={paymentScreenshotUrl}
-                    onChange={(e) => setPaymentScreenshotUrl(e.target.value)}
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Upload your payment screenshot to Supabase Storage or Google Drive and paste the link.
-                  </p>
-                </div>
-
-                {paymentError && (
-                  <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded p-2">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    {paymentError}
-                  </div>
-                )}
-
-                <Button
-                  id="btn-submit-payment"
-                  type="submit"
-                  className="w-full"
-                  disabled={!transactionRef.trim() || submittingPayment}
-                >
-                  {submittingPayment ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
-                  ) : (
-                    <>Submit Payment Details</>
-                  )}
-                </Button>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

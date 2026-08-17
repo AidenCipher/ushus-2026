@@ -334,7 +334,7 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
               {event.vertical}
             </span>
           </div>
-          <h3 className="text-xs font-bold text-[#F5ECD7] truncate" style={{ fontFamily: "'Cinzel', serif" }}>
+          <h3 className="text-xs font-bold text-[#F5ECD7] truncate" style={{ fontFamily: "var(--font-trajan), serif" }}>
             {event.name}
           </h3>
           <p className="text-[10px] text-neutral-300 truncate">
@@ -515,7 +515,7 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
           <Link href={`/events/${event.name.toLowerCase()}`}>
             <button
               className="h-10 px-4 rounded-lg text-xs font-bold tracking-wider uppercase border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 transition-all cursor-pointer"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               Full Briefing
             </button>
@@ -526,7 +526,7 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
               style={{
                 background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                 color: "#050200",
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-trajan), serif",
                 boxShadow: "0 0 25px rgba(201, 168, 76, 0.35)",
               }}
             >

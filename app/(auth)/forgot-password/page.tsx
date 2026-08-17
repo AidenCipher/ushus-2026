@@ -38,11 +38,16 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      // In a real implementation, this would hit an API route to generate a token and send an email
-      // await fetch("/api/v1/auth/forgot-password", { method: "POST", body: JSON.stringify(values) });
-      
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await fetch("/api/v1/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      // The API always responds success (no account enumeration), so the UI
+      // shows the same "check your email" state regardless of the outcome.
+      setIsSubmitted(true);
+    } catch {
+      // Network failure — still show the generic state; nothing sensitive to leak.
       setIsSubmitted(true);
     } finally {
       setIsLoading(false);

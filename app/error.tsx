@@ -31,7 +31,7 @@ export default function Error({
         >
           <span
             className="text-4xl font-black"
-            style={{ fontFamily: "'Cinzel', serif", color: "#F87171" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#F87171" }}
           >
             500
           </span>
@@ -40,7 +40,7 @@ export default function Error({
         <div>
           <h1
             className="text-2xl font-bold tracking-tight mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
           >
             The Archive is Momentarily Unavailable
           </h1>
@@ -57,7 +57,7 @@ export default function Error({
             style={{
               background: "linear-gradient(135deg, #C9A84C, #8B6914)",
               color: "#1A0A00",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Try Again
@@ -69,7 +69,7 @@ export default function Error({
               border: "1px solid rgba(201, 168, 76, 0.35)",
               color: "#C9A84C",
               background: "transparent",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Return Home

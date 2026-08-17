@@ -5,6 +5,7 @@ import { hash } from "bcryptjs";
 import { Role } from "@prisma/client";
 import { getSystemConfig } from "@/lib/system_config";
 import { rateLimit, rateLimitResponse, RateLimits } from "@/lib/rate-limit";
+import { auditFromRequest } from "@/lib/audit";
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
       return rateLimitResponse(rl.retryAfterSeconds);
     }
 
-    const config = getSystemConfig();
+    const config = await getSystemConfig();
     if (!config.allowReg) {
       return NextResponse.json(
         { success: false, error: "Registrations are currently closed." },
@@ -42,8 +43,9 @@ export async function POST(req: Request) {
     });
 
     if (existingUser) {
+      // Deliberately generic — do not confirm which emails are registered.
       return NextResponse.json(
-        { success: false, error: "Account with this email already exists" },
+        { success: false, error: "Registration failed. Please check your details and try again, or sign in if you already have an account." },
         { status: 409 }
       );
     }
@@ -69,14 +71,11 @@ export async function POST(req: Request) {
     });
 
     // We do NOT require a session to register, but we log the audit against the system
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id, // They performed the action themselves
-        action: "USER_REGISTERED",
-        entityType: "USER",
-        entityId: user.id,
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
-      },
+    await auditFromRequest(req.headers, {
+      userId: user.id, // They performed the action themselves
+      action: "USER_REGISTERED",
+      entityType: "USER",
+      entityId: user.id,
     });
 
     return NextResponse.json({ success: true, data: user }, { status: 201 });

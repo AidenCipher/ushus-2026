@@ -1,5 +1,4 @@
-import * as fs from "fs";
-import * as path from "path";
+import { prisma } from "@/lib/db";
 
 export interface SystemConfig {
   phase: string;
@@ -7,26 +6,68 @@ export interface SystemConfig {
   allowReg: boolean;
   maintenance: boolean;
   festStartDate: string;
-  paymentLink: string; // WS2: URL for the college payment portal
+  paymentLink: string; // URL for the college payment portal
 }
 
-const CONFIG_FILE_PATH = path.join(process.cwd(), "data", "system_config.json");
+const SINGLETON_ID = "singleton";
 
-export function getSystemConfig(): SystemConfig {
-  try {
-    if (fs.existsSync(CONFIG_FILE_PATH)) {
-      const data = fs.readFileSync(CONFIG_FILE_PATH, "utf8");
-      return JSON.parse(data);
-    }
-  } catch (e) {
-    console.error("Failed to parse config file:", e);
-  }
+const DEFAULT_CONFIG: SystemConfig = {
+  phase: "pre-event",
+  maxReg: "50",
+  allowReg: true,
+  maintenance: false,
+  festStartDate: "2026-11-06",
+  paymentLink: "",
+};
+
+/**
+ * Fields safe to expose to unauthenticated visitors (e.g. the register page's
+ * "is registration open" check, or the payment-link lookup on the events page).
+ * Never include operational fields like `maxReg`/`phase` here.
+ */
+export type PublicSystemConfig = Pick<SystemConfig, "allowReg" | "maintenance" | "paymentLink">;
+
+export async function getSystemConfig(): Promise<SystemConfig> {
+  const row = await prisma.systemConfig.upsert({
+    where: { id: SINGLETON_ID },
+    update: {},
+    create: { id: SINGLETON_ID, ...DEFAULT_CONFIG },
+  });
+
   return {
-    phase: "pre-event",
-    maxReg: "50",
-    allowReg: true,
-    maintenance: false,
-    festStartDate: "2026-11-04",
-    paymentLink: "", // WS2: Set this to the college payment portal URL
+    phase: row.phase,
+    maxReg: row.maxReg,
+    allowReg: row.allowReg,
+    maintenance: row.maintenance,
+    festStartDate: row.festStartDate,
+    paymentLink: row.paymentLink,
+  };
+}
+
+export async function getPublicSystemConfig(): Promise<PublicSystemConfig> {
+  const config = await getSystemConfig();
+  return {
+    allowReg: config.allowReg,
+    maintenance: config.maintenance,
+    paymentLink: config.paymentLink,
+  };
+}
+
+export async function updateSystemConfig(
+  patch: Partial<SystemConfig>
+): Promise<SystemConfig> {
+  const row = await prisma.systemConfig.upsert({
+    where: { id: SINGLETON_ID },
+    update: patch,
+    create: { id: SINGLETON_ID, ...DEFAULT_CONFIG, ...patch },
+  });
+
+  return {
+    phase: row.phase,
+    maxReg: row.maxReg,
+    allowReg: row.allowReg,
+    maintenance: row.maintenance,
+    festStartDate: row.festStartDate,
+    paymentLink: row.paymentLink,
   };
 }

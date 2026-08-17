@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Instagram, Linkedin, Twitter, Shield } from "lucide-react";
+import Image from "next/image";
+import { Instagram, Linkedin, Twitter } from "lucide-react";
+import { CHRIST_CREST } from "@/lib/logos";
 
 export function Footer() {
   return (
@@ -23,32 +25,22 @@ export function Footer() {
           {/* ── Brand Column ────────────────────────────────────────────── */}
           <div className="col-span-1 md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center border"
-                style={{
-                  background: "rgba(201, 168, 76, 0.12)",
-                  borderColor: "rgba(201, 168, 76, 0.4)",
-                }}
+              <Image
+                src={CHRIST_CREST.src}
+                alt="CHRIST (Deemed to be University)"
+                width={CHRIST_CREST.width}
+                height={CHRIST_CREST.height}
+                className="h-8 w-auto"
+              />
+              <span
+                className="text-lg font-black tracking-wide text-amber-400"
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
-                <Shield className="w-5 h-5 text-amber-400" />
-              </div>
-              <div className="flex flex-col leading-none">
-                <span
-                  className="text-xs font-semibold tracking-[0.2em] uppercase text-neutral-400"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  CHRIST UNIVERSITY
-                </span>
-                <span
-                  className="text-lg font-black tracking-wide text-amber-400"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  USHUS 2026: IMPERIUM
-                </span>
-              </div>
+                USHUS 2026: IMPERIUM
+              </span>
             </div>
             <p className="max-w-sm leading-relaxed text-xs text-neutral-300">
-              The flagship national-level MBA management fest hosted by School of Business and Management, Christ University, Bangalore Central Campus.
+              The flagship national-level MBA management fest hosted by the School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
               Ten arenas. Ten commanders.
               <br />
               <strong className="text-amber-400 mt-1 inline-block">Wars Evolve. So Do We.</strong>
@@ -70,7 +62,7 @@ export function Footer() {
           <div>
             <h3
               className="font-semibold mb-5 text-sm tracking-[0.15em] uppercase text-amber-400"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               Navigation
             </h3>
@@ -97,7 +89,7 @@ export function Footer() {
           <div>
             <h3
               className="font-semibold mb-5 text-sm tracking-[0.15em] uppercase text-amber-400"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               Featured Arenas
             </h3>
@@ -137,7 +129,7 @@ export function Footer() {
           className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-neutral-400 border-t"
           style={{ borderColor: "rgba(201, 168, 76, 0.15)" }}
         >
-          <p>© 2026 USHUS: IMPERIUM · School of Business and Management, Christ University, Bengaluru.</p>
+          <p>© 2026 USHUS: IMPERIUM · School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).</p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-amber-400 transition-colors">
               Privacy Policy

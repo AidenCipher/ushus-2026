@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { EventCinematicShowcase } from "@/components/EventCinematicShowcase";
 import { Commander3DViewer } from "@/components/Commander3DViewer";
+import { getLogoByCodename } from "@/lib/logos";
 
 export default function EventsPage() {
   const events = FEST_CONTENT.events;
@@ -45,14 +46,14 @@ export default function EventsPage() {
                 background: "rgba(201, 168, 76, 0.12)",
                 borderColor: "rgba(201, 168, 76, 0.35)",
                 color: "#C9A84C",
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-trajan), serif",
               }}
             >
               USHUS 2026: IMPERIUM // THE THEATERS OF WAR
             </div>
             <h1
               className="text-4xl md:text-6xl font-extrabold tracking-tight block"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               <span style={{ color: "#F5ECD7" }}>Ten Arenas.</span>{" "}
               <span
@@ -86,7 +87,7 @@ export default function EventsPage() {
               </div>
               <h2
                 className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
               >
                 Choose Your Battleground
               </h2>
@@ -103,6 +104,7 @@ export default function EventsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {events.map((event) => {
                 const slug = event.name.toLowerCase().split(" ")[0].replace(/[^a-z0-9]/g, "");
+                const crest = getLogoByCodename(event.codename);
 
                 return (
                   <div
@@ -138,15 +140,25 @@ export default function EventsPage() {
                         {event.doctrine}
                       </div>
 
-                      {/* Seal Monogram */}
-                      <div className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center font-mono text-xs font-bold text-amber-300 backdrop-blur-md">
-                        {event.sealLetter}
+                      {/* Seal Monogram — crest badge where we have artwork, else the letter seal */}
+                      <div className="absolute top-3 right-3 w-11 h-11 rounded-lg bg-black/50 border border-amber-500/40 flex items-center justify-center backdrop-blur-md overflow-hidden">
+                        {crest ? (
+                          <Image
+                            src={crest.src}
+                            alt={`${event.codename} crest`}
+                            width={crest.width}
+                            height={crest.height}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        ) : (
+                          <span className="font-mono text-xs font-bold text-amber-300">{event.sealLetter}</span>
+                        )}
                       </div>
 
                       {/* Commander Name Overlay */}
                       <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
                         <div>
-                          <p className="text-[11px] font-bold tracking-widest uppercase text-amber-300" style={{ fontFamily: "'Cinzel', serif" }}>
+                          <p className="text-[11px] font-bold tracking-widest uppercase text-amber-300" style={{ fontFamily: "var(--font-trajan), serif" }}>
                             COMMANDER: {event.leader}
                           </p>
                           <span className="text-[10px] font-mono text-neutral-300">
@@ -164,7 +176,7 @@ export default function EventsPage() {
                       <div className="flex items-center justify-between">
                         <h3
                           className="text-2xl md:text-3xl font-black tracking-wide"
-                          style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+                          style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
                         >
                           {event.name}
                         </h3>
@@ -245,7 +257,7 @@ export default function EventsPage() {
                         <button
                           onClick={() => setSelected3DEvent(event)}
                           className="h-10 px-3 rounded-md text-xs font-semibold tracking-wider transition-all border border-amber-500/40 text-amber-300 hover:bg-amber-500/15 flex items-center gap-1.5 cursor-pointer"
-                          style={{ fontFamily: "'Cinzel', serif" }}
+                          style={{ fontFamily: "var(--font-trajan), serif" }}
                         >
                           <Eye className="w-3.5 h-3.5" /> 3D View
                         </button>
@@ -253,7 +265,7 @@ export default function EventsPage() {
                         <Link href={`/events/${slug}`} className="flex-1">
                           <button
                             className="w-full h-10 rounded-md text-xs font-semibold tracking-wider transition-all border border-white/15 text-neutral-200 hover:bg-white/5 cursor-pointer"
-                            style={{ fontFamily: "'Cinzel', serif" }}
+                            style={{ fontFamily: "var(--font-trajan), serif" }}
                           >
                             Protocols
                           </button>
@@ -265,7 +277,7 @@ export default function EventsPage() {
                             style={{
                               background: "linear-gradient(135deg, #E8C875, #C9A84C)",
                               color: "#050200",
-                              fontFamily: "'Cinzel', serif",
+                              fontFamily: "var(--font-trajan), serif",
                             }}
                           >
                             Deploy <ArrowRight className="w-3 h-3" />
@@ -286,7 +298,7 @@ export default function EventsPage() {
                   style={{
                     background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                     color: "#050200",
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                     boxShadow: "0 0 35px rgba(201, 168, 76, 0.3)",
                   }}
                 >

@@ -13,6 +13,7 @@ export const EventCreateSchema = z.object({
   registrationDeadline: z.coerce.date().optional().nullable(),
   rulesDocumentUrl: z.string().url().optional().nullable(),
   prizePool: z.string().max(100).optional().nullable(),
+  teamSize: z.number().int().min(1).max(20).default(3),
   status: z.nativeEnum(EventStatus).default(EventStatus.UPCOMING),
 });
 
@@ -28,6 +29,7 @@ export const EventUpdateSchema = z.object({
   registrationDeadline: z.coerce.date().optional().nullable(),
   rulesDocumentUrl: z.string().url().optional().nullable(),
   prizePool: z.string().max(100).optional().nullable(),
+  teamSize: z.number().int().min(1).max(20).optional(),
   status: z.nativeEnum(EventStatus).optional(),
 });
 

@@ -21,6 +21,16 @@ import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
 import NotificationBell from "@/components/shared/NotificationBell";
 
+function getPageTitle(pathname: string): string {
+  if (pathname === "/dashboard") return "Overview";
+  if (pathname.startsWith("/dashboard/register/contingent")) return "Register Contingent";
+  if (pathname.startsWith("/dashboard/register/event/")) return "Register for Event";
+  const match = sidebarLinks.find((link) => link.href === pathname);
+  if (match) return match.name;
+  const last = pathname.split("/").pop() ?? "";
+  return last.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 const sidebarLinks = [
   { name: "My Registration", href: "/dashboard", icon: LayoutDashboard },
   { name: "Event Details", href: "/dashboard/events", icon: Trophy },
@@ -126,8 +136,8 @@ export default function DashboardLayout({
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-semibold capitalize hidden sm:block">
-              {pathname.split("/").pop() === "dashboard" ? "Overview" : pathname.split("/").pop()}
+            <h1 className="text-xl font-semibold hidden sm:block">
+              {getPageTitle(pathname)}
             </h1>
           </div>
 

@@ -181,6 +181,7 @@ export async function DELETE(
 
     await prisma.$transaction([
       prisma.teamMember.deleteMany({ where: { userId: id } }),
+      prisma.payment.deleteMany({ where: { registration: { userId: id } } }),
       prisma.registration.deleteMany({ where: { userId: id } }),
       prisma.taskUpdate.deleteMany({ where: { updatedById: id } }),
       prisma.taskUpdate.deleteMany({ where: { approvedById: id } }),
@@ -188,7 +189,8 @@ export async function DELETE(
       prisma.notification.deleteMany({ where: { senderId: id } }),
       prisma.calendarEvent.deleteMany({ where: { createdById: id } }),
       prisma.announcement.deleteMany({ where: { createdById: id } }),
-      prisma.auditLog.deleteMany({ where: { userId: id } }),
+      // AuditLog rows are intentionally NOT deleted — userId is nullable with
+      // onDelete: SetNull, so the audit trail survives account deletion.
       prisma.task.updateMany({
         where: { assignedToId: id },
         data: { assignedToId: null }

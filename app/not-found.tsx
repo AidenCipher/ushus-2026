@@ -19,7 +19,7 @@ export default function NotFound() {
         >
           <span
             className="text-4xl font-black"
-            style={{ fontFamily: "'Cinzel', serif", color: "#C9A84C" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#C9A84C" }}
           >
             404
           </span>
@@ -28,7 +28,7 @@ export default function NotFound() {
         <div>
           <h1
             className="text-2xl font-bold tracking-tight mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
           >
             Sector Coordinates Not Found
           </h1>
@@ -44,7 +44,7 @@ export default function NotFound() {
             style={{
               background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
               color: "#050200",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Return to Bridge
@@ -56,7 +56,7 @@ export default function NotFound() {
               borderColor: "rgba(201, 168, 76, 0.35)",
               color: "#C9A84C",
               background: "transparent",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Browse Arenas

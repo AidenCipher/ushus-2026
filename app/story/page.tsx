@@ -20,14 +20,14 @@ export default function StoryPage() {
             <Link href="/">
               <button
                 className="flex items-center gap-2 text-sm text-neutral-400 hover:text-amber-400 transition-colors"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Home
               </button>
             </Link>
             <div
               className="text-xs font-semibold tracking-widest uppercase text-amber-400"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               USHUS LEGACY
             </div>
@@ -39,13 +39,13 @@ export default function StoryPage() {
           >
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase border border-amber-500/35 bg-amber-500/10 text-amber-300"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               The Evolution of Warfare · IMPERIUM 2026
             </div>
             <h1
               className="text-4xl md:text-6xl font-extrabold tracking-tight text-[#F5ECD7]"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               The Journey of USHUS
             </h1>
@@ -66,17 +66,17 @@ export default function StoryPage() {
                 </div>
                 <h2
                   className="text-2xl md:text-3xl font-bold text-[#F5ECD7]"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
-                  Our Foundation at Christ
+                  Our Foundation
                 </h2>
                 <div
                   className="h-1 w-10 rounded bg-gradient-to-r from-amber-400 to-transparent"
                 />
                 <p className="leading-relaxed text-neutral-300">
-                  USHUS is the flagship management festival of the School of Business and Management Studies at Christ
-                  University, Bengaluru Central Campus. A crucible for future executive leaders — USHUS integrates
-                  academic theory with real-time battlefield crisis conditions.
+                  USHUS is the flagship management festival of the School of Business and Management (MBA),
+                  Bangalore Central Campus, CHRIST (Deemed to be University). A crucible for future executive
+                  leaders — USHUS integrates academic theory with real-time battlefield crisis conditions.
                 </p>
                 <p className="leading-relaxed text-neutral-300">
                   Over the years, the fest has grown into a premier national gathering, attracting Tier-1 business schools
@@ -97,7 +97,7 @@ export default function StoryPage() {
                   >
                     <div
                       className="text-3xl font-black text-amber-300"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       {item.stat}
                     </div>
@@ -121,7 +121,7 @@ export default function StoryPage() {
               <BookOpen className="w-6 h-6 text-amber-400" />
               <h2
                 className="text-2xl font-bold text-[#F5ECD7]"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 IMPERIUM — The Strategic Command Framework
               </h2>
@@ -138,7 +138,7 @@ export default function StoryPage() {
                 >
                   <p
                     className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    style={{ fontFamily: "var(--font-trajan), serif" }}
                   >
                     {insp.metaphor}
                   </p>
@@ -158,7 +158,7 @@ export default function StoryPage() {
               <Quote className="w-6 h-6 text-amber-400" />
               <h2
                 className="text-2xl font-bold text-[#F5ECD7]"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 Testimonials from the Arena
               </h2>
@@ -175,7 +175,7 @@ export default function StoryPage() {
                 },
                 {
                   quote:
-                    "The analytical telemetry and real-time cryptography rounds in Algorium were unlike anything we had seen before. Christ University orchestrates an unforgettable tactical challenge.",
+                    "The analytical telemetry and real-time cryptography rounds in Algorium were unlike anything we had seen before. CHRIST (Deemed to be University) orchestrates an unforgettable tactical challenge.",
                   name: "Sneha Reddy",
                   college: "NMIMS Mumbai",
                   event: "Algorium Competitor",
@@ -193,7 +193,7 @@ export default function StoryPage() {
                   >
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs border border-amber-500/30 bg-amber-500/15 text-amber-300"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       {t.name.charAt(0)}
                     </div>
@@ -215,12 +215,12 @@ export default function StoryPage() {
           >
             <h2
               className="text-2xl md:text-3xl font-bold text-[#F5ECD7]"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               Ready to command your battleground?
             </h2>
             <p className="text-sm max-w-md mx-auto text-neutral-300">
-              USHUS 2026: IMPERIUM, November 4–5. Join 600+ competitors from India&apos;s top business schools.
+              USHUS 2026: IMPERIUM, November 6–7. Join 600+ competitors from India&apos;s top business schools.
             </p>
             <Link href="/register">
               <button
@@ -228,7 +228,7 @@ export default function StoryPage() {
                 style={{
                   background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                   color: "#050200",
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "var(--font-trajan), serif",
                   letterSpacing: "0.08em",
                   boxShadow: "0 0 30px rgba(201, 168, 76, 0.25)",
                 }}

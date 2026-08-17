@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { LoginSchema } from "@/lib/validations/auth.schema";
 import type { Role } from "@prisma/client";
 import { RateLimits } from "@/lib/rate-limit";
+import { getClientIP } from "@/lib/utils";
 
 /**
  * Extend NextAuth types to include custom fields in the session
@@ -49,7 +50,6 @@ async function checkRateLimit(ip: string): Promise<{
   remainingAttempts: number;
   retryAfterSeconds: number;
 }> {
-  const windowMs = 15 * 60 * 1000; // 15 minutes
   const maxAttempts = RateLimits.LOGIN; // configurable via RATE_LIMIT_LOGIN env var
 
   // Clean up expired entries
@@ -123,9 +123,8 @@ export const authConfig: NextAuthConfig = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        clientIp: { label: "Client IP", type: "text" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         // Validate input
         const parsed = LoginSchema.safeParse(credentials);
         if (!parsed.success) {
@@ -133,8 +132,8 @@ export const authConfig: NextAuthConfig = {
         }
 
         const { email, password } = parsed.data;
-        const clientIp =
-          (credentials?.clientIp as string | undefined) || "unknown";
+        // Derived server-side from request headers — never trust a client-supplied IP.
+        const clientIp = getClientIP(request.headers);
 
         // Rate limit check
         const rateLimit = await checkRateLimit(clientIp);

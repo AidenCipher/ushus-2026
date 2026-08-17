@@ -179,6 +179,9 @@ model Event {
   basePrice            Int         @default(1500) // WS2A
   prizeFirst           Int         @default(15000) // WS2A
   prizeSecond          Int?        @default(9000)  // WS2A (nullable for Vanguard/single winner)
+  // Exact number of competitor slots the registration form must collect —
+  // not a capacity cap (see maxParticipants). E.g. Best Manager = 1, BMT = 4.
+  teamSize             Int         @default(3)
   status               EventStatus @default(UPCOMING)
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
@@ -364,8 +367,9 @@ model Announcement {
 
 model AuditLog {
   id         String   @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  // Nullable + SetNull: deleting a user must not destroy their audit trail.
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   action     String
   entityType String?
   entityId   String?
@@ -386,4 +390,19 @@ model RateLimitEntry {
 
   @@index([key, expiresAt])
   @@map("rate_limit_entries")
+}
+
+// Single-row system configuration — replaces the old local-JSON-file store,
+// which was unreliable on serverless hosting and unsafe under concurrent writes.
+model SystemConfig {
+  id             String   @id @default("singleton")
+  phase          String   @default("pre-event")
+  maxReg         String   @default("50")
+  allowReg       Boolean  @default(true)
+  maintenance    Boolean  @default(false)
+  festStartDate  String   @default("2026-11-06")
+  paymentLink    String   @default("")
+  updatedAt      DateTime @updatedAt
+
+  @@map("system_config")
 }

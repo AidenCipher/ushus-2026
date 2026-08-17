@@ -2,10 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X, Shield, Crosshair, Sparkles } from "lucide-react";
+import { Menu, X, Crosshair, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
+import { CHRIST_CREST } from "@/lib/logos";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -110,30 +112,21 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         {/* ── Logo ─────────────────────────────────────────────────────────── */}
-        <Link href="/" className="flex items-center gap-3 group relative z-50">
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300 border"
-            style={{
-              background: "rgba(201, 168, 76, 0.12)",
-              borderColor: "rgba(201, 168, 76, 0.45)",
-            }}
+        <Link href="/" className="flex items-center gap-2.5 group relative z-50">
+          <Image
+            src={CHRIST_CREST.src}
+            alt="CHRIST (Deemed to be University)"
+            width={CHRIST_CREST.width}
+            height={CHRIST_CREST.height}
+            className="h-9 w-auto group-hover:scale-105 transition-transform duration-300"
+            priority
+          />
+          <span
+            className="font-black text-lg tracking-wider leading-tight text-amber-400"
+            style={{ fontFamily: "var(--font-trajan), serif" }}
           >
-            <Shield className="w-5 h-5 text-amber-400" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span
-              className="font-bold text-[10px] tracking-[0.25em] uppercase text-neutral-400"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              CHRIST UNIVERSITY
-            </span>
-            <span
-              className="font-black text-lg tracking-wider leading-tight text-amber-400"
-              style={{ fontFamily: "'Cinzel', serif" }}
-            >
-              USHUS 2026
-            </span>
-          </div>
+            USHUS 2026
+          </span>
         </Link>
 
         {/* ── Desktop Nav ───────────────────────────────────────────────────── */}
@@ -147,7 +140,7 @@ export function Navbar() {
                 onClick={(e) => handleScrollClick(e, link.href)}
                 className="text-sm font-semibold transition-colors relative group tracking-wide text-neutral-300 hover:text-amber-300"
                 style={{
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "var(--font-trajan), serif",
                   color: active ? "#C9A84C" : undefined,
                   letterSpacing: "0.08em",
                 }}
@@ -169,7 +162,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 className="text-sm text-neutral-300 hover:text-amber-300 hover:bg-transparent"
-                style={{ fontFamily: "'Cinzel', serif", letterSpacing: "0.05em" }}
+                style={{ fontFamily: "var(--font-trajan), serif", letterSpacing: "0.05em" }}
               >
                 Sign In
               </Button>
@@ -180,7 +173,7 @@ export function Navbar() {
                 style={{
                   background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                   color: "#050200",
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "var(--font-trajan), serif",
                   boxShadow: "0 0 20px rgba(201, 168, 76, 0.25)",
                 }}
               >
@@ -220,7 +213,7 @@ export function Navbar() {
                   }}
                   className="text-base font-medium p-2.5 rounded-md transition-colors"
                   style={{
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                     color: active ? "#C9A84C" : "#F5ECD7",
                     background: active ? "rgba(201, 168, 76, 0.1)" : "transparent",
                     border: active ? "1px solid rgba(201, 168, 76, 0.25)" : "1px solid transparent",
@@ -236,7 +229,7 @@ export function Navbar() {
               <Link href="/login" onClick={() => setIsOpen(false)}>
                 <button
                   className="w-full h-10 rounded-md text-sm font-semibold transition-all border border-amber-500/40 text-amber-400 bg-transparent"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   Sign In
                 </button>
@@ -247,7 +240,7 @@ export function Navbar() {
                   style={{
                     background: "linear-gradient(135deg, #E8C875, #C9A84C)",
                     color: "#050200",
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                   }}
                 >
                   Register Now

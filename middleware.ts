@@ -64,7 +64,13 @@ export default auth((req) => {
 
   // ─── Protected API routes ───────────────────────────────────────────────
   if (pathname.startsWith("/api/v1")) {
-    const isPublicRoute = pathname === "/api/v1/auth/register";
+    const PUBLIC_API_ROUTES = [
+      "/api/v1/auth/register",
+      "/api/v1/auth/forgot-password",
+      "/api/v1/auth/reset-password",
+      "/api/v1/config",
+    ];
+    const isPublicRoute = PUBLIC_API_ROUTES.includes(pathname);
     if (!isPublicRoute) {
       if (!session?.user) {
         return NextResponse.json(
@@ -81,11 +87,11 @@ export default auth((req) => {
     }
   }
 
-  // ─── Cron routes — verify CRON_SECRET ───────────────────────────────────
+  // ─── Cron routes — verify CRON_SECRET (fail closed if unset) ────────────
   if (pathname.startsWith("/api/cron")) {
     const authHeader = req.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
         { success: false, error: "Unauthorized", code: 401 },
         { status: 401 }
@@ -108,7 +114,7 @@ export default auth((req) => {
 
   // ─── WS1.3: Content-Security-Policy ──────────────────────────────
   // Sources audited from the codebase:
-  //   - Fonts: fonts.googleapis.com, fonts.gstatic.com (globals.css @import)
+  //   - Fonts: self-hosted via next/font (lib/fonts.ts) — no external font host
   //   - WebSocket: wss://*.pusher.com (pusher-js client)
   //   - API calls: *.pusher.com, *.supabase.co
   //   - Images: *.supabase.co (payment screenshots, profile pictures)
@@ -118,8 +124,8 @@ export default auth((req) => {
   const csp = [
     `default-src 'self'`,
     isDev ? `script-src 'self' 'unsafe-inline' 'unsafe-eval'` : `script-src 'self' 'unsafe-inline'`,
-    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
-    `font-src 'self' https://fonts.gstatic.com`,
+    `style-src 'self' 'unsafe-inline'`,
+    `font-src 'self'`,
     `img-src 'self' data: https://*.supabase.co https://images.unsplash.com`,
     `connect-src 'self' https://*.pusher.com wss://*.pusher.com https://*.supabase.co`,
     `frame-ancestors 'none'`,

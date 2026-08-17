@@ -48,13 +48,13 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             <div className="flex flex-col leading-none">
               <span
                 className="text-xs font-semibold tracking-[0.18em] uppercase"
-                style={{ color: "#A89070", fontFamily: "'Cinzel', serif" }}
+                style={{ color: "#A89070", fontFamily: "var(--font-trajan), serif" }}
               >
                 USHUS 2026
               </span>
               <span
                 className="text-lg font-black tracking-wide"
-                style={{ color: "#C9A84C", fontFamily: "'Cinzel', serif" }}
+                style={{ color: "#C9A84C", fontFamily: "var(--font-trajan), serif" }}
               >
                 IMPERIUM
               </span>
@@ -65,7 +65,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {children}
 
         <div className="mt-8 text-center text-xs" style={{ color: "#4A3820" }}>
-          <p>© 2025–2026 Christ University, Bengaluru. All rights reserved.</p>
+          <p>© 2025–2026 CHRIST (Deemed to be University), Bengaluru. All rights reserved.</p>
         </div>
       </div>
     </div>

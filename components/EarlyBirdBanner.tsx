@@ -63,7 +63,7 @@ export function EarlyBirdBanner() {
         <Link
           href="/register"
           className="inline-flex items-center gap-1 font-bold text-xs uppercase tracking-wider text-amber-400 hover:text-amber-300 transition-colors underline underline-offset-4"
-          style={{ fontFamily: "'Cinzel', serif" }}
+          style={{ fontFamily: "var(--font-trajan), serif" }}
         >
           Claim Rate <ArrowRight className="w-3.5 h-3.5" />
         </Link>

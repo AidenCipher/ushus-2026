@@ -48,7 +48,7 @@ export async function GET(req: Request) {
         { verticalId: session.user.verticalId || undefined }
       ];
     } else if (userRole === "PARTICIPANT") {
-      const config = getSystemConfig();
+      const config = await getSystemConfig();
       const festStart = new Date(config.festStartDate);
       festStart.setHours(0, 0, 0, 0);
       const festEnd = new Date(festStart);

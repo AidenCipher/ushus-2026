@@ -20,7 +20,7 @@ export default function VenuePage() {
     <div className="space-y-6 max-w-5xl">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Venue & Maps</h1>
-        <p className="text-muted-foreground mt-1">Navigate Christ University Hosur Road Campus with ease.</p>
+        <p className="text-muted-foreground mt-1">Navigate the CHRIST (Deemed to be University) Bangalore Central Campus with ease.</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
@@ -43,7 +43,7 @@ export default function VenuePage() {
                     allowFullScreen={true} 
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Christ University Hosur Road Campus Map"
+                    title="CHRIST (Deemed to be University) Bangalore Central Campus Map"
                     className="absolute inset-0"
                   />
                 </CardContent>
@@ -134,7 +134,7 @@ export default function VenuePage() {
               <CardTitle className="text-sm font-bold text-amber-500">Security Note</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-amber-500/90 leading-relaxed">
-              Always wear your USHUS 2026 lanyard and ID card visible at all times. Christ University Security reserves the right to ask for proof of registration/ID anywhere on campus.
+              Always wear your USHUS 2026 lanyard and ID card visible at all times. Campus security reserves the right to ask for proof of registration/ID anywhere on the CHRIST (Deemed to be University) campus.
             </CardContent>
           </Card>
         </div>

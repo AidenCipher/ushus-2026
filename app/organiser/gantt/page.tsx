@@ -53,7 +53,7 @@ interface GanttNode {
 
 // Memory calculation engine for predecessors with dynamic duration scaling based on fest start date shifts
 function calculateGanttDates(rows: RawGanttRow[], festStartDate: Date): RawGanttRow[] {
-  const baselineFestDate = new Date("2026-11-04");
+  const baselineFestDate = new Date("2026-11-06");
   const deltaDays = differenceInDays(festStartDate, baselineFestDate);
 
   // Deep clone to avoid mutating the original GANTT_MASTER_DATA in-place
@@ -243,11 +243,11 @@ export default function GanttPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
 
   // Master Fest Start Date configuration
-  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-04"));
+  const [festStartDate, setFestStartDate] = React.useState<Date>(new Date("2026-11-06"));
   const [ganttRows, setGanttRows] = React.useState<any[]>(GANTT_MASTER_DATA);
 
   // Active view window and filter state
-  const [focusDate, setFocusDate] = React.useState<Date>(new Date("2026-11-04"));
+  const [focusDate, setFocusDate] = React.useState<Date>(new Date("2026-11-06"));
   const [filterByDateRange, setFilterByDateRange] = React.useState<boolean>(false);
 
   // Sync focus date with master start date changes
@@ -890,7 +890,7 @@ export default function GanttPage() {
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 shrink-0">
         <div>
           <h1 className="text-3xl font-bold tracking-tight" style={{fontFamily:'Georgia,serif',color:'#E8C87A'}}>IMPERIUM Master Timeline</h1>
-          <p className="text-muted-foreground mt-1">Hierarchical WBS · Nov 4–5, 2026 · Evolution of Warfare</p>
+          <p className="text-muted-foreground mt-1">Hierarchical WBS · Nov 6–7, 2026 · Evolution of Warfare</p>
         </div>
         
         {/* Upper Controls Bar */}

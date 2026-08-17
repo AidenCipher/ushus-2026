@@ -24,14 +24,14 @@ export default function ForbiddenPage() {
           <div className="mb-2">
             <span
               className="text-4xl font-bold"
-              style={{ fontFamily: "'Cinzel', serif", color: "#F87171" }}
+              style={{ fontFamily: "var(--font-trajan), serif", color: "#F87171" }}
             >
               403
             </span>
           </div>
           <h1
             className="text-2xl font-bold tracking-tight mb-3"
-            style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+            style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
           >
             Access Restricted
           </h1>
@@ -48,7 +48,7 @@ export default function ForbiddenPage() {
             style={{
               background: "linear-gradient(135deg, #C9A84C, #8B6914)",
               color: "#1A0A00",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Return Home
@@ -60,7 +60,7 @@ export default function ForbiddenPage() {
               border: "1px solid rgba(201, 168, 76, 0.35)",
               color: "#C9A84C",
               background: "transparent",
-              fontFamily: "'Cinzel', serif",
+              fontFamily: "var(--font-trajan), serif",
             }}
           >
             Sign In Again

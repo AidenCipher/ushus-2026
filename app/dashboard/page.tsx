@@ -18,6 +18,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import * as React from "react";
 import { generateConfirmationPDF } from "@/lib/pdf";
+import { formatRelativeTime } from "@/lib/format";
 import LoadingAnimation from "@/components/shared/LoadingAnimation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -192,19 +193,6 @@ export default function DashboardOverview() {
     setTeamMembers(prev => prev.filter((_, i) => i !== idx));
   };
 
-  function formatRelativeTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
-  }
-
   function formatEventDate(dateStr: string | null): string {
     if (!dateStr) return "TBD";
     return new Date(dateStr).toLocaleDateString("en-IN", {
@@ -327,7 +315,7 @@ export default function DashboardOverview() {
                   <div>
                     <h4 className="text-sm font-medium text-primary">Need confirmation printout?</h4>
                     <p className="text-xs text-primary/80 mt-1 leading-relaxed">
-                      Download the confirmation receipt PDF, print it out, and present it at Christ University entrance for easy entry.
+                      Download the confirmation receipt PDF, print it out, and present it at the campus entrance for easy entry.
                     </p>
                   </div>
                 </div>
@@ -432,9 +420,9 @@ export default function DashboardOverview() {
               <CardContent className="p-4 sm:p-5 flex gap-4 items-start relative z-10">
                 <Trophy className="w-8 h-8 text-indigo-400 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-bold text-sm text-foreground">Christ University, Hosur Road Campus</h3>
+                  <h3 className="font-bold text-sm text-foreground">CHRIST (Deemed to be University), Bangalore Central Campus</h3>
                   <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Hosted by the **Christ University School of Business and Management**. All events comply with national MBA fest standards. Accommodation, refreshments, and competitive case materials are provided on request for verified registrants.
+                    Hosted by the <strong>School of Business and Management (MBA)</strong>. All events comply with national MBA fest standards. Accommodation, refreshments, and competitive case materials are provided on request for verified registrants.
                   </p>
                 </div>
               </CardContent>
@@ -459,15 +447,15 @@ export default function DashboardOverview() {
                       <div>
                         <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Guidelines & Details</h4>
                         <p className="text-sm text-foreground mt-1 leading-relaxed">
-                          {selectedEvent.description || "Detailed rules are shared upon confirmation by Christ MBA coordinators."}
+                          {selectedEvent.description || "Detailed rules are shared upon confirmation by the event coordinators."}
                         </p>
                       </div>
                       <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5 text-xs text-muted-foreground">
                         <div>
-                          <span className="font-semibold text-foreground">Venue:</span> {selectedEvent.venue || "Christ Main Campus"}
+                          <span className="font-semibold text-foreground">Venue:</span> {selectedEvent.venue || "Bangalore Central Campus"}
                         </div>
                         <div>
-                          <span className="font-semibold text-foreground">Coordinator:</span> {selectedEvent.eventHead?.name || "Christ Coordinator"}
+                          <span className="font-semibold text-foreground">Coordinator:</span> {selectedEvent.eventHead?.name || "To be announced"}
                         </div>
                       </div>
                     </div>

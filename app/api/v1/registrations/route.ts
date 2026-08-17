@@ -120,93 +120,48 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Primary user not found" }, { status: 404 });
     }
 
-    // ─── WS1.1: Targeted indexed duplicate-check queries ─────────────────────
-    // Build lists of emails and phones to check
-    const emailsToCheck: string[] = [primaryUser.email.toLowerCase()];
-    const phonesToCheck: string[] = [];
-    if (primaryUser.phone) phonesToCheck.push(normalisePhone(primaryUser.phone));
-
-    if (data.teamMembers && Array.isArray(data.teamMembers)) {
-      for (const member of data.teamMembers) {
-        emailsToCheck.push(member.email.toLowerCase());
-        if (member.phone) phonesToCheck.push(normalisePhone(member.phone));
-      }
-    }
-
-    // Check primary-user conflicts via indexed relation query (one DB round-trip)
-    const primaryUserConflict = await prisma.registration.findFirst({
-      where: {
-        eventId: { not: data.eventId },
-        user: {
-          OR: [
-            { email: { in: emailsToCheck } },
-            ...(phonesToCheck.length > 0 ? [{ phone: { in: phonesToCheck } }] : []),
-          ],
-        },
-      },
-      include: {
-        event: { select: { name: true } },
-        user: { select: { name: true, email: true, phone: true } },
-      },
-    });
-
-    if (primaryUserConflict) {
-      const conflictUser = primaryUserConflict.user;
-      const matchedEmail = emailsToCheck.find(
-        (e) => e === conflictUser.email.toLowerCase()
-      );
+    // Every competitor slot for this event must be filled — no more, no fewer.
+    if (data.teamMembers.length !== event.teamSize) {
       return NextResponse.json({
         success: false,
-        error: `Registration blocked: "${conflictUser.name}" (${matchedEmail ? `email: ${conflictUser.email}` : `phone: ${conflictUser.phone}`}) is already registered for another event: "${primaryUserConflict.event.name}".`,
-      }, { status: 409 });
+        error: `This event requires exactly ${event.teamSize} competitor${event.teamSize === 1 ? "" : "s"}. You submitted ${data.teamMembers.length}.`,
+      }, { status: 400 });
     }
 
-    // Check team-member-in-JSON cross-event conflicts:
-    // Fetch only registrations for OTHER events where the primary user appears
-    // as a team-member JSON entry (email match). This is a narrower scan than
-    // the original full-table fetch — scoped to other events only, and we only
-    // fetch what we need (teamMembers JSON + event name).
-    if (data.teamMembers && data.teamMembers.length > 0) {
-      const otherRegsWithTeamMembers = await prisma.registration.findMany({
-        where: {
-          eventId: { not: data.eventId },
-          teamMembers: { not: Prisma.JsonNull },
-        },
-        select: {
-          teamMembers: true,
-          event: { select: { name: true } },
-        },
-      });
+    // Same-event roster conflict: a student can compete in multiple different
+    // events, but can't appear on two different teams for the SAME event.
+    const registerNumbersToCheck = data.teamMembers.map((m) => m.registerNumber.trim().toLowerCase());
+    const emailsToCheck = data.teamMembers.map((m) => m.email.toLowerCase());
+    const phonesToCheck = data.teamMembers.map((m) => normalisePhone(m.phone));
 
-      for (const reg of otherRegsWithTeamMembers) {
-        if (!reg.teamMembers || !Array.isArray(reg.teamMembers)) continue;
-        const membersList = reg.teamMembers as Array<{
-          name?: string;
-          email?: string;
-          phone?: string;
-        }>;
+    const siblingRegsForEvent = await prisma.registration.findMany({
+      where: { eventId: data.eventId, teamMembers: { not: Prisma.JsonNull } },
+      select: { teamMembers: true },
+    });
 
-        for (const m of membersList) {
-          const mEmail = m.email ? m.email.toLowerCase() : "";
-          const mPhone = m.phone ? normalisePhone(m.phone) : "";
+    for (const reg of siblingRegsForEvent) {
+      if (!reg.teamMembers || !Array.isArray(reg.teamMembers)) continue;
+      const membersList = reg.teamMembers as Array<{
+        name?: string;
+        registerNumber?: string;
+        email?: string;
+        phone?: string;
+      }>;
 
-          const emailMatch = mEmail && emailsToCheck.includes(mEmail);
-          const phoneMatch = mPhone && phonesToCheck.includes(mPhone);
+      for (const m of membersList) {
+        const mRegNo = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
+        const mEmail = m.email ? m.email.toLowerCase() : "";
+        const mPhone = m.phone ? normalisePhone(m.phone) : "";
 
-          if (emailMatch || phoneMatch) {
-            const checkName = emailMatch
-              ? data.teamMembers.find(
-                  (tm) => tm.email.toLowerCase() === mEmail
-                )?.name ?? primaryUser.name
-              : data.teamMembers.find(
-                  (tm) => normalisePhone(tm.phone) === mPhone
-                )?.name ?? primaryUser.name;
+        const regNoMatch = mRegNo && registerNumbersToCheck.includes(mRegNo);
+        const emailMatch = mEmail && emailsToCheck.includes(mEmail);
+        const phoneMatch = mPhone && phonesToCheck.includes(mPhone);
 
-            return NextResponse.json({
-              success: false,
-              error: `Registration blocked: "${checkName}" (${emailMatch ? `email: ${mEmail}` : `phone: ${m.phone}`}) is already registered as a team member in another event: "${reg.event.name}".`,
-            }, { status: 409 });
-          }
+        if (regNoMatch || emailMatch || phoneMatch) {
+          return NextResponse.json({
+            success: false,
+            error: `Registration blocked: "${m.name ?? "A competitor"}" is already on another team registered for this event.`,
+          }, { status: 409 });
         }
       }
     }
@@ -239,16 +194,19 @@ export async function POST(req: Request) {
               userId: data.userId,
               eventId: data.eventId,
               teamName: data.teamName ?? null,
-              teamMembers: data.teamMembers as any ?? null,
+              teamMembers: data.teamMembers as any,
               externalFormRef: data.externalFormRef ?? null,
               notes: data.notes ?? null,
-              status: data.status,
+              // Status is never client-controlled — every registration starts
+              // PENDING; transitions only happen via payment verification.
+              status: "PENDING",
               registrationType: data.registrationType,
               contingentId: data.contingentId ?? null,
               baseAmount: pricing.baseAmount,
               discountPercent: pricing.discountPercent,
               finalAmountDue: pricing.finalAmountDue,
-              accommodationRequested: data.accommodationRequested,
+              // Derived from the roster, not trusted from a separate client field.
+              accommodationRequested: data.teamMembers.some((m) => m.accommodationRequested),
               facultyName: data.facultyName,
               facultyEmail: data.facultyEmail,
               facultyPhone: data.facultyPhone,

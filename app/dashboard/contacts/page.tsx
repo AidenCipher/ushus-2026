@@ -81,7 +81,7 @@ export default function ContactsPage() {
                 <CardTitle className="text-sm font-semibold">Campus Medical Room</CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground leading-relaxed">
-                The Christ University Central Campus medical room is located in the basement of Block I (next to the main gym). First aid and emergency care is staffed during fest hours.
+                The CHRIST (Deemed to be University) Bangalore Central Campus medical room is located in the basement of Block I (next to the main gym). First aid and emergency care is staffed during fest hours.
               </CardContent>
             </Card>
           </div>

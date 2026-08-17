@@ -1,11 +1,13 @@
 import { Resend } from "resend";
 import { isFeatureEnabled } from "@/lib/features.config";
+import { escapeHtml } from "@/lib/utils";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
 const EMAIL_FROM = process.env.EMAIL_FROM || "noreply@ushus2026.com";
+const SUPPORT_INBOX = process.env.SUPPORT_EMAIL || "ushus@fest.christuniversity.in";
 
 interface SendEmailParams {
   to: string;
@@ -79,7 +81,7 @@ export async function sendPasswordResetEmail(
           </p>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
-            © 2026 USHUS — Christ University, Bangalore. All rights reserved.
+            © 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus. All rights reserved.
           </p>
         </div>
       </body>
@@ -126,7 +128,7 @@ export async function sendTaskAssignmentEmail(
           </div>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
-            © 2026 USHUS — Christ University, Bangalore.
+            © 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus.
           </p>
         </div>
       </body>
@@ -174,7 +176,7 @@ export async function sendTaskReminderEmail(
           </div>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
-            © 2026 USHUS — Christ University, Bangalore.
+            © 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus.
           </p>
         </div>
       </body>
@@ -227,7 +229,7 @@ export async function sendPaymentSubmittedEmail(
           </div>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
-            © 2026 USHUS — Christ University, Bangalore Central Campus.
+            © 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus.
           </p>
         </div>
       </body>
@@ -285,8 +287,49 @@ export async function sendPaymentOutcomeEmail(
           </div>
           <hr style="border: none; border-top: 1px solid #E5E7EB; margin: 24px 0;">
           <p style="color: #9CA3AF; font-size: 12px; text-align: center;">
-            © 2026 USHUS — Christ University, Bangalore Central Campus.
+            © 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus.
           </p>
+        </div>
+      </body>
+      </html>
+    `,
+  });
+}
+
+/**
+ * Forward a participant's support request to the organising team, with
+ * their name/email included so the team can reply directly.
+ */
+export async function sendSupportRequestEmail(
+  fromName: string,
+  fromEmail: string,
+  subject: string,
+  message: string
+): Promise<boolean> {
+  const safeName = escapeHtml(fromName);
+  const safeEmail = escapeHtml(fromEmail);
+  const safeSubject = escapeHtml(subject);
+  const safeMessage = escapeHtml(message);
+
+  return sendEmail({
+    to: SUPPORT_INBOX,
+    subject: `[USHUS Support] ${safeSubject}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="utf-8"></head>
+      <body style="font-family: 'Inter', -apple-system, sans-serif; background-color: #f8f9fa; padding: 40px 20px;">
+        <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="color: #003580; font-size: 24px; margin: 0;">USHUS 2026</h1>
+            <p style="color: #6C757D; font-size: 14px; margin-top: 4px;">Support Request</p>
+          </div>
+          <div style="background-color: #F0F9FF; border-left: 4px solid #003580; padding: 16px; border-radius: 4px; margin-bottom: 24px;">
+            <p style="color: #6C757D; font-size: 13px; margin: 0 0 4px 0;">From</p>
+            <p style="color: #1A1A2E; font-weight: 700; margin: 0;">${safeName} &lt;${safeEmail}&gt;</p>
+          </div>
+          <h2 style="color: #1A1A2E; font-size: 18px;">${safeSubject}</h2>
+          <p style="color: #4a4a4a; line-height: 1.6; white-space: pre-wrap;">${safeMessage}</p>
         </div>
       </body>
       </html>

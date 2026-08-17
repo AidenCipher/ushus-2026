@@ -1,13 +1,47 @@
 "use client";
 
+import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, MessageSquare, Phone } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2, Mail, MessageSquare, Phone } from "lucide-react";
 
 export default function SupportPage() {
+  const [subject, setSubject] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [sending, setSending] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [sent, setSent] = React.useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSending(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/v1/support", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, message }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to send your message. Please try again.");
+      } else {
+        setSent(true);
+        setSubject("");
+        setMessage("");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
@@ -23,20 +57,59 @@ export default function SupportPage() {
               <CardDescription>We typically respond within 2-3 hours during working hours.</CardDescription>
             </CardHeader>
             <CardContent>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input id="subject" placeholder="What do you need help with?" className="bg-background/50" />
+              {sent ? (
+                <div className="flex flex-col items-center gap-3 py-8 text-center">
+                  <CheckCircle2 className="w-10 h-10 text-success" />
+                  <p className="font-medium">Message sent</p>
+                  <p className="text-sm text-muted-foreground">We'll reply to your registered email address.</p>
+                  <Button variant="outline" size="sm" onClick={() => setSent(false)}>
+                    Send another message
+                  </Button>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea id="message" placeholder="Describe your issue in detail..." className="bg-background/50 min-h-[150px]" />
-                </div>
-                <Button type="submit" className="w-full sm:w-auto">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Send Message
-                </Button>
-              </form>
+              ) : (
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                  {error && (
+                    <div className="bg-danger/10 border border-danger/20 text-danger text-sm p-3 rounded-md flex items-center gap-2" role="alert">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Subject</Label>
+                    <Input
+                      id="subject"
+                      placeholder="What do you need help with?"
+                      className="bg-background/50"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      required
+                      minLength={3}
+                      disabled={sending}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      placeholder="Describe your issue in detail..."
+                      className="bg-background/50 min-h-[150px]"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
+                      minLength={10}
+                      disabled={sending}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full sm:w-auto" disabled={sending}>
+                    {sending ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                    )}
+                    {sending ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              )}
             </CardContent>
           </Card>
         </div>

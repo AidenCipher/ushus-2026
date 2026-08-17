@@ -25,7 +25,7 @@ export default function AccommodationPage() {
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Accommodation</h1>
-        <p className="text-muted-foreground mt-1">Curated lodging options near Christ University Hosur Road Campus.</p>
+        <p className="text-muted-foreground mt-1">Curated lodging options near the CHRIST (Deemed to be University) Bangalore Central Campus.</p>
       </div>
 
       {/* Advisory notice */}
@@ -51,7 +51,7 @@ export default function AccommodationPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-xs text-slate-300 leading-relaxed">
-            Christ University provides lodging facilities for outstation participants directly inside the campus. Stays are arranged at the campus hostels subject to availability.
+            CHRIST (Deemed to be University) provides lodging facilities for outstation participants directly inside the campus. Stays are arranged at the campus hostels subject to availability.
           </p>
           <div className="flex flex-wrap items-center gap-4 bg-white/5 border border-white/5 p-3 rounded-lg text-xs justify-between">
             <div>
@@ -199,7 +199,7 @@ export default function AccommodationPage() {
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground leading-relaxed space-y-2">
             <p>
-              There are numerous student hostel and PG chains located in the immediate vicinity of Christ University (SG Palya and Koramangala 1st Block).
+              There are numerous student hostel and PG chains located in the immediate vicinity of the CHRIST (Deemed to be University) campus (SG Palya and Koramangala 1st Block).
             </p>
             <ul className="list-disc pl-4 space-y-1">
               <li><strong>Stanza Living:</strong> Premium co-living options near Dairy Circle.</li>

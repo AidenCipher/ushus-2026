@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { RegistrationUpdateSchema } from "@/lib/validations/registration.schema";
 import { hasPermission } from "@/lib/permissions";
+import { auditFromRequest } from "@/lib/audit";
 import type { Role } from "@prisma/client";
 
 export async function PATCH(
@@ -58,15 +59,11 @@ export async function PATCH(
       },
     });
 
-    // Audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: "UPDATE_REGISTRATION",
-        entityType: "REGISTRATION",
-        entityId: updated.id,
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
-      },
+    await auditFromRequest(req.headers, {
+      userId: session.user.id,
+      action: "UPDATE_REGISTRATION",
+      entityType: "REGISTRATION",
+      entityId: updated.id,
     });
 
     return NextResponse.json({ success: true, data: updated });
@@ -105,19 +102,16 @@ export async function DELETE(
        return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.registration.delete({
-      where: { id },
-    });
+    await prisma.$transaction([
+      prisma.payment.deleteMany({ where: { registrationId: id } }),
+      prisma.registration.delete({ where: { id } }),
+    ]);
 
-    // Audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: session.user.id,
-        action: "DELETE_REGISTRATION",
-        entityType: "REGISTRATION",
-        entityId: id,
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
-      },
+    await auditFromRequest(req.headers, {
+      userId: session.user.id,
+      action: "DELETE_REGISTRATION",
+      entityType: "REGISTRATION",
+      entityId: id,
     });
 
     return NextResponse.json({ success: true, data: null });

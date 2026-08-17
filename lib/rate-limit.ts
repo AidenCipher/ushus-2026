@@ -29,6 +29,7 @@ export const RateLimits = {
   REGISTER: parseInt(process.env.RATE_LIMIT_REGISTER ?? "10", 10),
   LOGIN: parseInt(process.env.RATE_LIMIT_LOGIN ?? "5", 10),
   REGISTRATION_POST: parseInt(process.env.RATE_LIMIT_REG_POST ?? "20", 10),
+  FORGOT_PASSWORD: parseInt(process.env.RATE_LIMIT_FORGOT_PASSWORD ?? "5", 10),
 } as const;
 
 /**

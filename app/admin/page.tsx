@@ -20,6 +20,7 @@ export default function AdminSettingsPage() {
   const [maxReg, setMaxReg] = React.useState("50");
   const [allowReg, setAllowReg] = React.useState(true);
   const [maintenance, setMaintenance] = React.useState(false);
+  const [paymentLink, setPaymentLink] = React.useState("");
 
   const [purging, setPurging] = React.useState(false);
   const [resetting, setResetting] = React.useState(false);
@@ -36,6 +37,7 @@ export default function AdminSettingsPage() {
             setMaxReg(String(json.data.maxReg));
             setAllowReg(json.data.allowReg);
             setMaintenance(json.data.maintenance);
+            setPaymentLink(json.data.paymentLink || "");
           }
         }
       } catch (err) {
@@ -60,6 +62,7 @@ export default function AdminSettingsPage() {
           maxReg: Number(maxReg),
           allowReg,
           maintenance,
+          paymentLink,
         }),
       });
       const json = await res.json();
@@ -177,11 +180,24 @@ export default function AdminSettingsPage() {
             </div>
             <div className="space-y-2">
               <Label>Max Registrations per Vertical</Label>
-              <Input 
-                type="number" 
-                className="bg-background/50 border-white/10" 
+              <Input
+                type="number"
+                className="bg-background/50 border-white/10"
                 value={maxReg}
                 onChange={(e) => setMaxReg(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label>Payment Portal Link</Label>
+              <p className="text-xs text-muted-foreground">
+                The official CHRIST (Deemed to be University) payment portal URL. Participants are sent here to pay after registering.
+              </p>
+              <Input
+                type="url"
+                placeholder="https://payments.christuniversity.in/..."
+                className="bg-background/50 border-white/10"
+                value={paymentLink}
+                onChange={(e) => setPaymentLink(e.target.value)}
               />
             </div>
           </div>

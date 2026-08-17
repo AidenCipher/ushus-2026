@@ -157,7 +157,7 @@ export function generateConfirmationPDF(
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(9);
   doc.text(
-    "© 2026 USHUS — Christ University, Bangalore Central Campus. All rights reserved.",
+    "© 2026 USHUS — CHRIST (Deemed to be University), Bangalore Central Campus. All rights reserved.",
     pageWidth / 2,
     yPos + 5,
     { align: "center" }

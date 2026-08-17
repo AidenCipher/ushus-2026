@@ -7,6 +7,8 @@ import Link from "next/link";
 import { ArrowRight, Calendar, MapPin, Users, ChevronRight, Crosshair, Shield, Cpu } from "lucide-react";
 import { FEST_CONTENT } from "@/lib/content";
 import { EventShowcasePreview } from "@/components/EventCinematicShowcase";
+import { getLogoByCodename } from "@/lib/logos";
+import Image from "next/image";
 
 // ── Brand pillars ─────────────────────────────────────────────────────────────
 const BRAND_PILLARS = [
@@ -57,7 +59,7 @@ export default function LandingPage() {
                 background: "rgba(201, 168, 76, 0.1)",
                 borderColor: "rgba(201, 168, 76, 0.35)",
                 color: "#C9A84C",
-                fontFamily: "'Cinzel', serif",
+                fontFamily: "var(--font-trajan), serif",
               }}
             >
               <Crosshair className="w-3.5 h-3.5" />
@@ -68,14 +70,14 @@ export default function LandingPage() {
             <div className="space-y-2">
               <p
                 className="text-base md:text-lg tracking-[0.25em] uppercase font-semibold text-amber-400"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 USHUS 2026
               </p>
               <h1
                 className="text-6xl md:text-8xl font-black tracking-tight leading-none"
                 style={{
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "var(--font-trajan), serif",
                   background: "linear-gradient(135deg, #FFFFFF 0%, #E8C875 35%, #C9A84C 70%, #8B6914 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -86,7 +88,7 @@ export default function LandingPage() {
               </h1>
               <p
                 className="text-lg md:text-xl tracking-widest uppercase font-medium text-neutral-300"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 {FEST_CONTENT.tagline}
               </p>
@@ -108,7 +110,7 @@ export default function LandingPage() {
                   style={{
                     background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                     color: "#050200",
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                     boxShadow: "0 0 30px rgba(201, 168, 76, 0.35)",
                   }}
                 >
@@ -119,7 +121,7 @@ export default function LandingPage() {
                 <button
                   className="w-full sm:w-auto h-12 px-8 text-sm font-semibold tracking-wider rounded-md transition-all duration-300 border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 cursor-pointer"
                   style={{
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                   }}
                 >
                   ENTER 3D SHOWCASE
@@ -135,12 +137,12 @@ export default function LandingPage() {
                 {
                   icon: <Calendar className="w-5 h-5 text-amber-400" />,
                   label: "Operational Dates",
-                  value: "November 4–5, 2026",
+                  value: "November 6–7, 2026",
                 },
                 {
                   icon: <MapPin className="w-5 h-5 text-amber-400" />,
                   label: "Theater Venue",
-                  value: "Christ University Central Campus",
+                  value: "CHRIST (Deemed to be University), Bangalore Central Campus",
                 },
                 {
                   icon: <Users className="w-5 h-5 text-amber-400" />,
@@ -193,7 +195,7 @@ export default function LandingPage() {
                 <div className="text-center">
                   <p
                     className="text-sm font-bold tracking-widest uppercase mb-1 text-amber-400"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    style={{ fontFamily: "var(--font-trajan), serif" }}
                   >
                     {pillar.name}
                   </p>
@@ -207,17 +209,76 @@ export default function LandingPage() {
         </div>
 
         {/* ================================================================
+            TEN ARENAS — Crest Grid
+        ================================================================ */}
+        <section className="py-20 px-4 border-t border-amber-500/10">
+          <div className="container mx-auto max-w-5xl">
+            <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
+              <div className="text-xs font-mono tracking-widest uppercase text-amber-400">
+                {"// TEN ARENAS OF IMPERIUM"}
+              </div>
+              <h2
+                className="text-3xl md:text-5xl font-bold"
+                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
+              >
+                Choose Your Theater
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-10">
+              {events.map((event) => {
+                const crest = getLogoByCodename(event.codename);
+                return (
+                  <Link
+                    key={event.codename}
+                    href={`/events/${event.name.toLowerCase().split(" ")[0].replace(/[^a-z0-9]/g, "")}`}
+                    className="flex flex-col items-center text-center gap-2 group"
+                  >
+                    <div
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center overflow-hidden border-2 transition-transform duration-300 group-hover:scale-105"
+                      style={{
+                        borderColor: "rgba(201, 168, 76, 0.4)",
+                        background: "rgba(16, 26, 54, 0.9)",
+                        boxShadow: "0 0 20px rgba(201, 168, 76, 0.1)",
+                      }}
+                    >
+                      {crest ? (
+                        <Image
+                          src={crest.src}
+                          alt={`${event.codename} crest`}
+                          width={crest.width}
+                          height={crest.height}
+                          className="w-full h-full object-contain p-2"
+                        />
+                      ) : (
+                        <span className="text-xs font-mono font-bold text-amber-300">{event.sealLetter}</span>
+                      )}
+                    </div>
+                    <span
+                      className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-neutral-300 group-hover:text-amber-400 transition-colors"
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
+                    >
+                      {event.vertical}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ================================================================
             FEATURED COMMANDERS — 3D Motion Preview Section
         ================================================================ */}
         <section className="py-28 px-4">
           <div className="container mx-auto max-w-6xl space-y-12">
             <div className="text-center max-w-2xl mx-auto space-y-3">
               <div className="text-xs font-mono tracking-widest uppercase text-amber-400">
-                // COMMAND ARCHIVE PREVIEW
+                {"// COMMAND ARCHIVE PREVIEW"}
               </div>
               <h2
                 className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
               >
                 Featured Theaters of War
               </h2>
@@ -233,7 +294,7 @@ export default function LandingPage() {
               <Link href="/events">
                 <button
                   className="h-12 px-8 text-sm font-semibold tracking-wider rounded-md transition-all duration-300 border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 cursor-pointer"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   EXPLORE ALL 10 COMMANDERS IN 3D →
                 </button>
@@ -252,11 +313,11 @@ export default function LandingPage() {
                 <div
                   className="inline-block text-xs font-mono tracking-widest uppercase text-amber-400"
                 >
-                  // ABOUT IMPERIUM
+                  {"// ABOUT IMPERIUM"}
                 </div>
                 <h2
                   className="text-3xl md:text-4xl font-bold"
-                  style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+                  style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
                 >
                   The Evolution of Warfare &amp; Executive Command
                 </h2>
@@ -265,7 +326,7 @@ export default function LandingPage() {
                   style={{ background: "linear-gradient(90deg, #C9A84C, transparent)" }}
                 />
                 <p className="text-sm md:text-base leading-relaxed text-neutral-300">
-                  USHUS is the flagship annual MBA Management Fest of Christ University&apos;s School of Business and Management Studies, Bengaluru Central Campus. Born from the Sanskrit word meaning &ldquo;dawn,&rdquo; USHUS represents the inception of visionary leadership.
+                  USHUS is the flagship annual MBA Management Fest of the School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University). Born from the Sanskrit word meaning &ldquo;dawn,&rdquo; USHUS represents the inception of visionary leadership.
                 </p>
                 <p className="text-sm md:text-base leading-relaxed text-neutral-300">
                   <strong className="text-amber-400">IMPERIUM</strong> draws from three millennia of strategic warfare. From the Phalanx of Alexander to the Enigma decryption of Alan Turing, we translate history&apos;s greatest battlefield breakthroughs into high-stakes modern management challenges.
@@ -273,7 +334,7 @@ export default function LandingPage() {
                 <Link href="/events" className="inline-block pt-2">
                   <button
                     className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-amber-400 hover:text-amber-300 transition-colors"
-                    style={{ fontFamily: "'Cinzel', serif" }}
+                    style={{ fontFamily: "var(--font-trajan), serif" }}
                   >
                     DEPLOY TO ARENAS
                     <ChevronRight className="w-4 h-4" />
@@ -300,7 +361,7 @@ export default function LandingPage() {
                     <div>
                       <p
                         className="text-xs font-bold tracking-widest uppercase mb-0.5 text-amber-400"
-                        style={{ fontFamily: "'Cinzel', serif" }}
+                        style={{ fontFamily: "var(--font-trajan), serif" }}
                       >
                         {insp.metaphor}
                       </p>
@@ -331,11 +392,11 @@ export default function LandingPage() {
               <div
                 className="text-xs font-mono tracking-widest uppercase mb-2 text-amber-400"
               >
-                NOVEMBER 4–5, 2026 // CHRIST UNIVERSITY BENGALURU
+                NOVEMBER 6–7, 2026 // CHRIST (DEEMED TO BE UNIVERSITY) BENGALURU
               </div>
               <h2
                 className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "'Cinzel', serif", color: "#F5ECD7" }}
+                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
               >
                 The command bridge awaits your orders.
               </h2>
@@ -348,7 +409,7 @@ export default function LandingPage() {
                   style={{
                     background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                     color: "#050200",
-                    fontFamily: "'Cinzel', serif",
+                    fontFamily: "var(--font-trajan), serif",
                     boxShadow: "0 0 40px rgba(201, 168, 76, 0.35)",
                   }}
                 >

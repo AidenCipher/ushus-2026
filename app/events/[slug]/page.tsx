@@ -8,6 +8,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FEST_CONTENT } from "@/lib/content";
 import { Commander3DViewer } from "@/components/Commander3DViewer";
+import { getLogoByCodename } from "@/lib/logos";
 import {
   ArrowLeft,
   Trophy,
@@ -56,7 +57,7 @@ export default function EventDetailPage() {
             </div>
             <h1
               className="text-3xl font-bold tracking-tight mb-4 text-[#F5ECD7]"
-              style={{ fontFamily: "'Cinzel', serif" }}
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
               Arena Not Found
             </h1>
@@ -67,7 +68,7 @@ export default function EventDetailPage() {
               <Link href="/events">
                 <button
                   className="w-full h-11 rounded-md text-sm font-bold bg-amber-500 text-black hover:bg-amber-400"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   Browse All Arenas
                 </button>
@@ -75,7 +76,7 @@ export default function EventDetailPage() {
               <Link href="/">
                 <button
                   className="w-full h-11 rounded-md text-sm font-semibold border border-amber-500/40 text-amber-400 bg-transparent hover:bg-amber-500/10"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   Back to Command Bridge
                 </button>
@@ -87,6 +88,8 @@ export default function EventDetailPage() {
       </div>
     );
   }
+
+  const crest = getLogoByCodename(event.codename);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0B132B]" style={{ color: "#F5ECD7" }}>
@@ -104,6 +107,21 @@ export default function EventDetailPage() {
               RETURN TO ARENAS MATRIX
             </span>
           </Link>
+
+          {/* Event title + crest */}
+          <div className="flex items-center gap-4">
+            {crest && (
+              <div className="w-14 h-14 rounded-lg bg-black/40 border border-amber-500/40 flex items-center justify-center overflow-hidden shrink-0">
+                <Image src={crest.src} alt={`${event.codename} crest`} width={crest.width} height={crest.height} className="w-full h-full object-contain p-1" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black tracking-wide" style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}>
+                {event.name}
+              </h1>
+              <span className="text-xs font-mono font-bold text-amber-400">{event.codename} — {event.vertical}</span>
+            </div>
+          </div>
 
           {/* ── Top Section: 3D Commander Viewer Canvas ────────────────────────── */}
           <div className="w-full">
@@ -138,7 +156,7 @@ export default function EventDetailPage() {
                     <Crosshair className="w-4 h-4 text-amber-400" />
                     <h2
                       className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       Historical Command Doctrine ({event.doctrine})
                     </h2>
@@ -158,7 +176,7 @@ export default function EventDetailPage() {
                     <Layers className="w-5 h-5 text-amber-400" />
                     <h2
                       className="text-lg font-bold text-[#F5ECD7]"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       3-Era Gauntlet &amp; Round Breakdown
                     </h2>
@@ -244,7 +262,7 @@ export default function EventDetailPage() {
                     <Zap className="w-4 h-4 text-amber-400" />
                     <span
                       className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       AI Tactical Lens
                     </span>
@@ -260,7 +278,7 @@ export default function EventDetailPage() {
                     <Leaf className="w-4 h-4 text-emerald-400" />
                     <span
                       className="text-xs font-bold tracking-widest uppercase text-emerald-400"
-                      style={{ fontFamily: "'Cinzel', serif" }}
+                      style={{ fontFamily: "var(--font-trajan), serif" }}
                     >
                       Long-Horizon Statecraft
                     </span>
@@ -277,7 +295,7 @@ export default function EventDetailPage() {
               >
                 <h2
                   className="text-lg font-bold flex items-center gap-2.5 text-neutral-100"
-                  style={{ fontFamily: "'Cinzel', serif" }}
+                  style={{ fontFamily: "var(--font-trajan), serif" }}
                 >
                   <FileText className="w-5 h-5 text-amber-400" />
                   Rules of Engagement
@@ -389,7 +407,7 @@ export default function EventDetailPage() {
                         Operational Dates
                       </p>
                       <p className="text-sm font-bold text-neutral-100">
-                        November 4–5, 2026
+                        November 6–7, 2026
                       </p>
                     </div>
                   </div>
@@ -414,7 +432,7 @@ export default function EventDetailPage() {
                 <div className="p-4 mx-6 mb-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-neutral-300 flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   <span>
-                    <strong>Accommodation:</strong> First-come-first-served inside Christ University campus, subject to availability.
+                    <strong>Accommodation:</strong> First-come-first-served inside the CHRIST (Deemed to be University) campus, subject to availability.
                   </span>
                 </div>
 
@@ -426,7 +444,7 @@ export default function EventDetailPage() {
                       style={{
                         background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                         color: "#050200",
-                        fontFamily: "'Cinzel', serif",
+                        fontFamily: "var(--font-trajan), serif",
                         boxShadow: "0 0 25px rgba(201, 168, 76, 0.3)",
                       }}
                     >

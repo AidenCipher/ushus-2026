@@ -73,10 +73,10 @@ export function EventCinematicShowcase() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold tracking-widest uppercase text-amber-400" style={{ fontFamily: "'Cinzel', serif" }}>
+                <p className="text-sm font-semibold tracking-widest uppercase text-amber-400" style={{ fontFamily: "var(--font-trajan), serif" }}>
                   {currentEvent.leader} &middot; {currentEvent.doctrine}
                 </p>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F5ECD7] mt-1" style={{ fontFamily: "'Cinzel', serif" }}>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F5ECD7] mt-1" style={{ fontFamily: "var(--font-trajan), serif" }}>
                   {currentEvent.name}
                 </h2>
               </div>
@@ -152,7 +152,7 @@ export function EventCinematicShowcase() {
                     style={{
                       background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                       color: "#050200",
-                      fontFamily: "'Cinzel', serif",
+                      fontFamily: "var(--font-trajan), serif",
                     }}
                   >
                     ENTER ARENA <ArrowRight className="w-3.5 h-3.5" />
@@ -196,13 +196,13 @@ export function EventShowcasePreview() {
             <div>
               <p
                 className="text-xs font-bold tracking-widest uppercase text-amber-400"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 {event.leader}
               </p>
               <h3
                 className="text-2xl font-bold tracking-wide text-neutral-100 mt-0.5"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 {event.name}
               </h3>
@@ -217,7 +217,7 @@ export function EventShowcasePreview() {
               <Link
                 href={`/events/${event.slug}`}
                 className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors uppercase tracking-wider"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                style={{ fontFamily: "var(--font-trajan), serif" }}
               >
                 Deploy <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>

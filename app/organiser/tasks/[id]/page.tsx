@@ -194,6 +194,8 @@ export default function TaskDetailPage() {
   // Approval state
   const [rejectingId, setRejectingId] = React.useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = React.useState("");
+  const [processingUpdateId, setProcessingUpdateId] = React.useState<string | null>(null);
+  const [approvalError, setApprovalError] = React.useState<string | null>(null);
 
   const fetchTask = React.useCallback(async () => {
     try {
@@ -242,8 +244,11 @@ export default function TaskDetailPage() {
   }
 
   async function handleApproval(updateId: string, action: "APPROVED" | "REJECTED") {
+    if (processingUpdateId) return; // one approval action in flight at a time
+    setProcessingUpdateId(updateId);
+    setApprovalError(null);
     try {
-      await fetch(`/api/v1/tasks/${taskId}/updates/${updateId}`, {
+      const res = await fetch(`/api/v1/tasks/${taskId}/updates/${updateId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -251,11 +256,18 @@ export default function TaskDetailPage() {
           rejectionReason: action === "REJECTED" ? rejectionReason : undefined,
         }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to process approval");
+      }
       setRejectingId(null);
       setRejectionReason("");
       await fetchTask();
     } catch (err) {
       console.error("Failed to process approval:", err);
+      setApprovalError(err instanceof Error ? err.message : "Failed to process approval");
+    } finally {
+      setProcessingUpdateId(null);
     }
   }
 
@@ -641,23 +653,31 @@ export default function TaskDetailPage() {
                                 onChange={(e) => setRejectionReason(e.target.value)}
                                 className="bg-background/50 border-white/10 text-sm min-h-[60px]"
                               />
+                              {approvalError && (
+                                <p className="text-xs text-danger" role="alert">{approvalError}</p>
+                              )}
                               <div className="flex gap-2">
-                                <Button size="sm" variant="destructive" onClick={() => handleApproval(update.id, "REJECTED")} disabled={!rejectionReason}>
-                                  Confirm Reject
+                                <Button size="sm" variant="destructive" onClick={() => handleApproval(update.id, "REJECTED")} disabled={!rejectionReason || processingUpdateId === update.id}>
+                                  {processingUpdateId === update.id ? "Rejecting..." : "Confirm Reject"}
                                 </Button>
-                                <Button size="sm" variant="ghost" onClick={() => { setRejectingId(null); setRejectionReason(""); }}>
+                                <Button size="sm" variant="ghost" onClick={() => { setRejectingId(null); setRejectionReason(""); }} disabled={processingUpdateId === update.id}>
                                   Cancel
                                 </Button>
                               </div>
                             </div>
                           ) : (
-                            <div className="flex gap-2">
-                              <Button size="sm" className="bg-success hover:bg-success/80" onClick={() => handleApproval(update.id, "APPROVED")}>
-                                <CheckCircle2 className="w-3 h-3 mr-1" /> Approve
-                              </Button>
-                              <Button size="sm" variant="outline" className="border-danger/50 text-danger hover:bg-danger/10" onClick={() => setRejectingId(update.id)}>
-                                <XCircle className="w-3 h-3 mr-1" /> Reject
-                              </Button>
+                            <div className="space-y-2">
+                              {approvalError && (
+                                <p className="text-xs text-danger" role="alert">{approvalError}</p>
+                              )}
+                              <div className="flex gap-2">
+                                <Button size="sm" className="bg-success hover:bg-success/80" onClick={() => handleApproval(update.id, "APPROVED")} disabled={processingUpdateId === update.id}>
+                                  <CheckCircle2 className="w-3 h-3 mr-1" /> {processingUpdateId === update.id ? "Approving..." : "Approve"}
+                                </Button>
+                                <Button size="sm" variant="outline" className="border-danger/50 text-danger hover:bg-danger/10" onClick={() => setRejectingId(update.id)} disabled={processingUpdateId === update.id}>
+                                  <XCircle className="w-3 h-3 mr-1" /> Reject
+                                </Button>
+                              </div>
                             </div>
                           )}
                         </div>

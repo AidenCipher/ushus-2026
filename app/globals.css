@@ -1,6 +1,4 @@
-/* ─── Google Fonts ──────────────────────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700&family=Inter:wght@300;400;500;600;700;800&display=swap");
-
+/* Trajan Pro (display) + Inter (body) are self-hosted via next/font — see lib/fonts.ts */
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -60,8 +58,9 @@
   --color-info: #38BDF8;
 
   /* ─── Typography ────────────────────────────────────────────────────────── */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Cinzel', 'Georgia', serif;
+  /* --font-trajan / --font-inter are set by next/font in app/layout.tsx via lib/fonts.ts */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-trajan), 'Georgia', serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* ─── Radius ────────────────────────────────────────────────────────────── */
