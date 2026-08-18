@@ -75,3 +75,48 @@ export const ContingentCreateSchema = z.object({
 export type RegistrationCreateInput = z.infer<typeof RegistrationCreateSchema>;
 export type RegistrationUpdateInput = z.infer<typeof RegistrationUpdateSchema>;
 export type ContingentCreateInput = z.infer<typeof ContingentCreateSchema>;
+
+// ─── Public (unauthenticated) combined account + registration flow ─────────
+// A first-time visitor doesn't have an account yet — clicking "Register" on
+// a specific event or the contingent offer collects the login credentials
+// and the full roster in one submit, rather than gating the roster/payment
+// step behind a separate signup-then-login detour.
+
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+const PublicAccountFieldsSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").regex(/^[A-Za-z\s.]+$/, "Name can only contain alphabetic characters, spaces, and dots"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters").regex(PASSWORD_REGEX, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"),
+  confirmPassword: z.string(),
+  phone: z.string().min(10, "Phone number must be at least 10 digits").regex(PHONE_REGEX, "Invalid phone format"),
+  college: z.string().min(2, "College name must be at least 2 characters"),
+});
+
+export const PublicEventRegistrationSchema = PublicAccountFieldsSchema.extend({
+  eventId: z.string().uuid("Invalid event ID"),
+  teamName: z.string().max(100).optional().nullable(),
+  teamMembers: z.array(TeamMemberInfoSchema).min(1, "At least one competitor is required"),
+  facultyName: z.string().min(2, "Faculty coordinator name is required"),
+  facultyEmail: z.string().email("Valid faculty coordinator email is required"),
+  facultyPhone: z.string().min(10, "Faculty coordinator phone must be at least 10 digits").regex(PHONE_REGEX, "Invalid faculty phone format"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+export const PublicContingentRegistrationSchema = PublicAccountFieldsSchema.extend({
+  contingentId: z.string().min(1, "Missing contingent ID"),
+  collegeName: z.string().min(2, "College name is required").max(200),
+  city: z.string().min(1, "City is required").max(100),
+  facultyName: z.string().min(2, "Faculty coordinator name is required"),
+  facultyEmail: z.string().email("Valid faculty coordinator email is required"),
+  facultyPhone: z.string().min(10, "Faculty coordinator phone must be at least 10 digits").regex(PHONE_REGEX, "Invalid faculty phone format"),
+  entries: z.array(ContingentEntrySchema).min(1, "At least one event is required"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+export type PublicEventRegistrationInput = z.infer<typeof PublicEventRegistrationSchema>;
+export type PublicContingentRegistrationInput = z.infer<typeof PublicContingentRegistrationSchema>;

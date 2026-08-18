@@ -5,6 +5,7 @@ import { RegistrationCreateSchema } from "@/lib/validations/registration.schema"
 import { hasPermission } from "@/lib/permissions";
 import { rateLimit, rateLimitResponse, RateLimits } from "@/lib/rate-limit";
 import { auditFromRequest } from "@/lib/audit";
+import { findRosterConflict, CapacityError } from "@/lib/registration-checks";
 import { Prisma } from "@prisma/client";
 import type { Role } from "@prisma/client";
 
@@ -130,40 +131,9 @@ export async function POST(req: Request) {
 
     // Same-event roster conflict: a student can compete in multiple different
     // events, but can't appear on two different teams for the SAME event.
-    const registerNumbersToCheck = data.teamMembers.map((m) => m.registerNumber.trim().toLowerCase());
-    const emailsToCheck = data.teamMembers.map((m) => m.email.toLowerCase());
-    const phonesToCheck = data.teamMembers.map((m) => normalisePhone(m.phone));
-
-    const siblingRegsForEvent = await prisma.registration.findMany({
-      where: { eventId: data.eventId, teamMembers: { not: Prisma.JsonNull } },
-      select: { teamMembers: true },
-    });
-
-    for (const reg of siblingRegsForEvent) {
-      if (!reg.teamMembers || !Array.isArray(reg.teamMembers)) continue;
-      const membersList = reg.teamMembers as Array<{
-        name?: string;
-        registerNumber?: string;
-        email?: string;
-        phone?: string;
-      }>;
-
-      for (const m of membersList) {
-        const mRegNo = m.registerNumber ? m.registerNumber.trim().toLowerCase() : "";
-        const mEmail = m.email ? m.email.toLowerCase() : "";
-        const mPhone = m.phone ? normalisePhone(m.phone) : "";
-
-        const regNoMatch = mRegNo && registerNumbersToCheck.includes(mRegNo);
-        const emailMatch = mEmail && emailsToCheck.includes(mEmail);
-        const phoneMatch = mPhone && phonesToCheck.includes(mPhone);
-
-        if (regNoMatch || emailMatch || phoneMatch) {
-          return NextResponse.json({
-            success: false,
-            error: `Registration blocked: "${m.name ?? "A competitor"}" is already on another team registered for this event.`,
-          }, { status: 409 });
-        }
-      }
+    const rosterConflict = await findRosterConflict(data.eventId, data.teamMembers);
+    if (rosterConflict) {
+      return NextResponse.json({ success: false, error: `Registration blocked: ${rosterConflict}` }, { status: 409 });
     }
 
     // ─── WS2A: Compute Pricing ──────────────────────────────────────────────
@@ -244,15 +214,3 @@ export async function POST(req: Request) {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function normalisePhone(p: string): string {
-  return p.replace(/[\s\-()+]/g, "");
-}
-
-class CapacityError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "CapacityError";
-  }
-}

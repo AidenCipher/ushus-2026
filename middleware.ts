@@ -69,8 +69,16 @@ export default auth((req) => {
       "/api/v1/auth/forgot-password",
       "/api/v1/auth/reset-password",
       "/api/v1/config",
+      "/api/v1/public-registrations/event",
+      "/api/v1/public-registrations/contingent",
     ];
-    const isPublicRoute = PUBLIC_API_ROUTES.includes(pathname);
+    // /api/v1/events and /api/v1/events/[id] are intentionally public for GET
+    // (anonymous visitors browsing/registering) — each route handler still
+    // enforces its own auth+permission check internally for POST/PATCH/DELETE.
+    const isPublicRoute =
+      PUBLIC_API_ROUTES.includes(pathname) ||
+      pathname === "/api/v1/events" ||
+      /^\/api\/v1\/events\/[^/]+$/.test(pathname);
     if (!isPublicRoute) {
       if (!session?.user) {
         return NextResponse.json(
