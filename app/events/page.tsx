@@ -24,9 +24,11 @@ import {
 import { EventCinematicShowcase } from "@/components/EventCinematicShowcase";
 import { Commander3DViewer } from "@/components/Commander3DViewer";
 import { getLogoByCodename } from "@/lib/logos";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function EventsPage() {
   const events = FEST_CONTENT.events;
+  const { registerCtaHref } = useAuth();
   const [selected3DEvent, setSelected3DEvent] = React.useState<EventInfo | null>(null);
 
   return (
@@ -211,11 +213,11 @@ export default function EventsPage() {
                           <Trophy className="w-4 h-4 flex-shrink-0 text-amber-400" />
                           <div className="leading-tight">
                             <span className="text-[10px] text-neutral-400 block">Prize Bounty</span>
-                            <strong className="text-amber-200">1st: ₹{event.prizeFirst.toLocaleString()}</strong>
-                            {event.prizeSecond ? (
+                            <strong className="text-amber-200">
+                              {event.prizeSecond ? "1st: " : "Winner: "}₹{event.prizeFirst.toLocaleString()}
+                            </strong>
+                            {event.prizeSecond && (
                               <span className="text-[10px] text-neutral-400 block">2nd: ₹{event.prizeSecond.toLocaleString()}</span>
-                            ) : (
-                              <span className="text-[10px] text-amber-400/90 font-semibold block">Winner: ₹25,000 (Solo Title)</span>
                             )}
                           </div>
                         </div>
@@ -271,7 +273,7 @@ export default function EventsPage() {
                           </button>
                         </Link>
 
-                        <Link href="/register">
+                        <Link href={registerCtaHref}>
                           <button
                             className="h-10 px-4 rounded-md text-xs font-bold tracking-wider uppercase transition-all flex items-center gap-1 cursor-pointer"
                             style={{
@@ -292,7 +294,7 @@ export default function EventsPage() {
 
             {/* Bottom CTA */}
             <div className="mt-16 text-center space-y-4">
-              <Link href="/register">
+              <Link href={registerCtaHref}>
                 <button
                   className="h-14 px-10 text-sm font-bold tracking-widest uppercase rounded-md transition-all duration-300 cursor-pointer"
                   style={{

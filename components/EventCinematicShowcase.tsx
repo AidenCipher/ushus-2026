@@ -105,10 +105,10 @@ export function EventCinematicShowcase() {
                 </div>
                 <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs col-span-2 sm:col-span-1">
                   <div className="text-neutral-400 flex items-center gap-1 mb-1">
-                    <Trophy className="w-3.5 h-3.5 text-amber-400" /> 1st Place
+                    <Trophy className="w-3.5 h-3.5 text-amber-400" /> {currentEvent.prizeSecond ? "1st Place" : "Winner"}
                   </div>
                   <div className="font-semibold text-amber-300">
-                    {currentEvent.name === "Vanguard (Best Manager)" ? "₹25,000" : "₹15,000"}
+                    ₹{currentEvent.prizeFirst.toLocaleString()}
                   </div>
                 </div>
               </div>

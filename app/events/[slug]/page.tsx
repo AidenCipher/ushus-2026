@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { FEST_CONTENT } from "@/lib/content";
 import { Commander3DViewer } from "@/components/Commander3DViewer";
 import { getLogoByCodename } from "@/lib/logos";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft,
   Trophy,
@@ -31,6 +32,7 @@ import {
 export default function EventDetailPage() {
   const params = useParams();
   const slug = (params?.slug as string) || "";
+  const { registerCtaHref } = useAuth();
 
   // Match event by slug, short name, or codename
   const event = React.useMemo(() => {
@@ -438,7 +440,7 @@ export default function EventDetailPage() {
 
                 {/* Action CTA */}
                 <div className="p-6 border-t border-amber-500/20 space-y-3">
-                  <Link href="/register" className="block w-full">
+                  <Link href={registerCtaHref} className="block w-full">
                     <button
                       className="w-full h-12 rounded-md text-xs font-bold tracking-widest uppercase transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                       style={{

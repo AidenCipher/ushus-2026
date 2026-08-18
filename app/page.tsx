@@ -9,6 +9,7 @@ import { FEST_CONTENT } from "@/lib/content";
 import { EventShowcasePreview } from "@/components/EventCinematicShowcase";
 import { getLogoByCodename } from "@/lib/logos";
 import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
 
 // ── Brand pillars ─────────────────────────────────────────────────────────────
 const BRAND_PILLARS = [
@@ -28,6 +29,7 @@ const BRAND_PILLARS = [
 
 export default function LandingPage() {
   const events = FEST_CONTENT.events;
+  const { registerCtaHref } = useAuth();
 
   return (
     <div
@@ -104,7 +106,7 @@ export default function LandingPage() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/register" className="w-full sm:w-auto">
+              <Link href={registerCtaHref} className="w-full sm:w-auto">
                 <button
                   className="w-full sm:w-auto h-12 px-8 text-sm font-bold tracking-widest uppercase rounded-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                   style={{
@@ -403,7 +405,7 @@ export default function LandingPage() {
               <p className="text-sm md:text-base max-w-xl mx-auto leading-relaxed text-neutral-300">
                 Registrations close {FEST_CONTENT.registrationDeadline}. Claim your place among India&apos;s most formidable management strategists. Lead. Prevail. Conquer.
               </p>
-              <Link href="/register" className="inline-block">
+              <Link href={registerCtaHref} className="inline-block">
                 <button
                   className="h-14 px-10 text-sm font-bold tracking-widest uppercase rounded-md transition-all duration-300 cursor-pointer"
                   style={{

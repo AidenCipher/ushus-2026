@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X, Crosshair, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import { CHRIST_CREST } from "@/lib/logos";
+import { useAuth } from "@/hooks/useAuth";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,6 +19,7 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const { registerCtaHref } = useAuth();
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const [activeSection, setActiveSection] = React.useState("home");
@@ -167,7 +169,7 @@ export function Navbar() {
                 Sign In
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href={registerCtaHref}>
               <button
                 className="h-10 px-5 text-xs font-bold tracking-wider uppercase rounded-md transition-all duration-300 flex items-center gap-1.5 cursor-pointer shadow-lg"
                 style={{
@@ -234,7 +236,7 @@ export function Navbar() {
                   Sign In
                 </button>
               </Link>
-              <Link href="/register" onClick={() => setIsOpen(false)}>
+              <Link href={registerCtaHref} onClick={() => setIsOpen(false)}>
                 <button
                   className="w-full h-10 rounded-md text-sm font-bold tracking-wider uppercase transition-all"
                   style={{

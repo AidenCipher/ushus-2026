@@ -6,8 +6,10 @@ import { ArrowLeft, Landmark, BookOpen, Quote, ArrowRight, Shield, Crosshair } f
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FEST_CONTENT } from "@/lib/content";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function StoryPage() {
+  const { registerCtaHref } = useAuth();
   return (
     <div className="min-h-screen flex flex-col bg-[#0B132B]" style={{ color: "#F5ECD7" }}>
       <Navbar />
@@ -222,7 +224,7 @@ export default function StoryPage() {
             <p className="text-sm max-w-md mx-auto text-neutral-300">
               USHUS 2026: IMPERIUM, November 4–5. Join 600+ competitors from India&apos;s top business schools.
             </p>
-            <Link href="/register">
+            <Link href={registerCtaHref}>
               <button
                 className="h-12 px-10 text-sm font-bold uppercase rounded-md transition-all duration-300 cursor-pointer shadow-lg"
                 style={{

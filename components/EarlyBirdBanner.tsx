@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight, X, Clock } from "lucide-react";
 import { EARLY_BIRD_DEADLINE, isEarlyBird } from "@/lib/pricing";
+import { useAuth } from "@/hooks/useAuth";
 
 export function EarlyBirdBanner() {
+  const { registerCtaHref } = useAuth();
   const [dismissed, setDismissed] = useState(false);
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; mins: number } | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -61,7 +63,7 @@ export function EarlyBirdBanner() {
         </div>
 
         <Link
-          href="/register"
+          href={registerCtaHref}
           className="inline-flex items-center gap-1 font-bold text-xs uppercase tracking-wider text-amber-400 hover:text-amber-300 transition-colors underline underline-offset-4"
           style={{ fontFamily: "var(--font-trajan), serif" }}
         >

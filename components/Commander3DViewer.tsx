@@ -27,6 +27,7 @@ import {
 import * as THREE from "three";
 import { EventInfo } from "@/lib/content";
 import { calculatePricing } from "@/lib/pricing";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Commander3DViewerProps {
   event: EventInfo;
@@ -34,6 +35,7 @@ interface Commander3DViewerProps {
 }
 
 export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
+  const { registerCtaHref } = useAuth();
   const mountRef = useRef<HTMLDivElement>(null);
   const [autoRotate, setAutoRotate] = useState(true);
   const [activeEra, setActiveEra] = useState<number>(1);
@@ -472,7 +474,7 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
           <div className="px-3 py-1.5 rounded-lg bg-[#0B132B]/90 border border-amber-500/30 backdrop-blur-md flex items-center gap-2 flex-shrink-0">
             <Trophy className="w-3.5 h-3.5 text-amber-400" />
             <div className="text-left leading-none">
-              <span className="text-[9px] text-neutral-400 uppercase font-mono block">1st Place</span>
+              <span className="text-[9px] text-neutral-400 uppercase font-mono block">{event.prizeSecond ? "1st Place" : "Winner"}</span>
               <strong className="text-xs text-amber-200">₹{event.prizeFirst.toLocaleString()}</strong>
             </div>
           </div>
@@ -520,7 +522,7 @@ export function Commander3DViewer({ event, onClose }: Commander3DViewerProps) {
               Full Briefing
             </button>
           </Link>
-          <Link href="/register">
+          <Link href={registerCtaHref}>
             <button
               className="h-10 px-6 rounded-lg text-xs font-bold tracking-wider uppercase transition-all flex items-center gap-2 cursor-pointer shadow-lg"
               style={{

@@ -49,6 +49,12 @@ export function useAuth() {
     }
   }, [user?.role, router]);
 
+  // Where a "Register" / "Deploy Crew" CTA should point: an already
+  // signed-in visitor should land back in their dashboard to pick an
+  // event, not be sent to create a second account.
+  const dashboardPath = user?.role ? getDashboardPath(user.role) : "/register";
+  const registerCtaHref = isAuthenticated ? dashboardPath : "/register";
+
   return {
     user,
     session,
@@ -64,5 +70,7 @@ export function useAuth() {
     canApprove,
     logout,
     goToDashboard,
+    dashboardPath,
+    registerCtaHref,
   };
 }
