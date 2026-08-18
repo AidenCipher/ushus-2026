@@ -11,7 +11,6 @@ import {
   Trophy,
   Users,
   Calendar,
-  MapPin,
   Shield,
   Crosshair,
   CreditCard,
@@ -236,14 +235,6 @@ export default function EventsPage() {
                             <span className="text-[10px] text-neutral-400 block">Fee per Entry</span>
                             <span className="line-through text-neutral-400 text-[10px] mr-1">₹1,500</span>
                             <strong className="text-amber-300 text-xs">₹900 (Early Bird)</strong>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 text-neutral-300">
-                          <MapPin className="w-4 h-4 flex-shrink-0 text-amber-400" />
-                          <div className="leading-tight">
-                            <span className="text-[10px] text-neutral-400 block">Venue</span>
-                            <strong className="text-amber-200">Central Campus</strong>
                           </div>
                         </div>
                       </div>

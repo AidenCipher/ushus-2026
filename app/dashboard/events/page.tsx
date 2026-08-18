@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Download, Clock, AlertCircle, Loader2, Sparkles, MapPin, Users, ArrowRight, Shield } from "lucide-react";
+import { Trophy, Download, Clock, AlertCircle, Loader2, Sparkles, Users, ArrowRight, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import * as React from "react";
 import Link from "next/link";
@@ -307,12 +307,9 @@ export default function EventsDetailsPage() {
                       <CardContent className="space-y-4 pt-2">
                         <div className="grid grid-cols-2 gap-2 text-[10px] text-muted-foreground border-t border-white/5 pt-3">
                           <span className="flex items-center gap-1.5">
-                            <MapPin className="w-3.5 h-3.5 text-indigo-400" /> {evt.venue || "TBD"}
-                          </span>
-                          <span className="flex items-center gap-1.5">
                             <Trophy className="w-3.5 h-3.5 text-indigo-400" /> {evt.prizePool || "₹ -"}
                           </span>
-                          <span className="flex items-center gap-1.5 col-span-2">
+                          <span className="flex items-center gap-1.5">
                             <Users className="w-3.5 h-3.5 text-indigo-400" />
                             {evt.teamSize === 1 ? "Solo event" : `Team of ${evt.teamSize}`}
                           </span>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { getVerticalLogo } from "@/lib/logos";
-import { Loader2, AlertCircle, Shield, ArrowRight, MapPin, Trophy, Users } from "lucide-react";
+import { Loader2, AlertCircle, Shield, ArrowRight, Trophy, Users } from "lucide-react";
 import Image from "next/image";
 
 interface EventData {
@@ -136,9 +136,8 @@ export default function RegisterEntryPage() {
                           </div>
                           <h3 className="font-bold text-base leading-snug">{evt.name}</h3>
                           <div className="grid grid-cols-2 gap-2 text-[10px] text-neutral-400 mt-auto pt-2 border-t border-white/5">
-                            <span className="flex items-center gap-1.5"><MapPin className="w-3 h-3 text-amber-400" /> {evt.venue || "TBD"}</span>
                             <span className="flex items-center gap-1.5"><Trophy className="w-3 h-3 text-amber-400" /> {evt.prizePool || "₹ -"}</span>
-                            <span className="flex items-center gap-1.5 col-span-2">
+                            <span className="flex items-center gap-1.5">
                               <Users className="w-3 h-3 text-amber-400" /> {evt.teamSize === 1 ? "Solo event" : `Team of ${evt.teamSize}`}
                             </span>
                           </div>
