@@ -4,18 +4,18 @@ import { trajanPro, inter } from "@/lib/fonts";
 
 const INSTITUTION_FULL =
   "School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University)";
-const TAGLINE = "One Battlefield, Endless Possibilities";
+const TAGLINE = "The Evolution of Warfare";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: "USHUS 2026",
-  description: `USHUS 2026 — ${TAGLINE}. The flagship national MBA Management Fest of the ${INSTITUTION_FULL}.`,
+  title: "USHUS '26 · IMPERIUM",
+  description: `USHUS '26 IMPERIUM — ${TAGLINE}. The flagship national MBA Management Fest of the ${INSTITUTION_FULL}.`,
   openGraph: {
     type: "website",
     locale: "en_IN",
-    title: "USHUS 2026",
-    description: `USHUS 2026 — ${TAGLINE}.`,
-    siteName: "USHUS 2026",
+    title: "USHUS '26 · IMPERIUM",
+    description: `USHUS '26 IMPERIUM — ${TAGLINE}.`,
+    siteName: "USHUS '26 IMPERIUM",
   },
   robots: {
     index: true,

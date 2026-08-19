@@ -15,15 +15,15 @@ export default function LandingPage() {
       <main className="flex-grow">
         {/* ── Hero ──────────────────────────────────────────────────────── */}
         <section id="top" className="pt-24 pb-16 md:pt-32 md:pb-24 px-4 text-center">
-          <div className="container mx-auto max-w-3xl space-y-5">
+          <div className="container mx-auto max-w-3xl space-y-4">
             <p
               className="text-sm md:text-base tracking-[0.25em] uppercase font-semibold text-amber-400"
               style={{ fontFamily: "var(--font-trajan), serif" }}
             >
-              USHUS 2026
+              USHUS &lsquo;26
             </p>
             <h1
-              className="text-4xl md:text-6xl font-black tracking-tight"
+              className="text-5xl md:text-7xl font-black tracking-tight"
               style={{
                 fontFamily: "var(--font-trajan), serif",
                 background: "linear-gradient(135deg, #FFFFFF 0%, #E8C875 40%, #C9A84C 100%)",
@@ -32,11 +32,19 @@ export default function LandingPage() {
                 backgroundClip: "text",
               }}
             >
-              One Battlefield, Endless Possibilities
+              IMPERIUM
             </h1>
-            <p className="text-sm text-neutral-300">
+            <p
+              className="text-lg md:text-xl italic text-amber-100/90"
+              style={{ fontFamily: "var(--font-trajan), serif" }}
+            >
+              The Evolution of Warfare
+            </p>
+            <p className="text-sm text-neutral-300 italic">&ldquo;Wars Evolve. So Do We.&rdquo;</p>
+            <p className="text-sm text-neutral-300 pt-2">
               School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University)
             </p>
+            <p className="text-sm font-semibold tracking-widest uppercase text-amber-400">November 4 &amp; 5, 2026</p>
           </div>
         </section>
 
@@ -105,12 +113,15 @@ export default function LandingPage() {
                       )}
                     </span>
                     <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">{event.codename}</p>
                       <h3 className="font-bold text-base leading-snug">{event.name}</h3>
                       <span className="text-[11px] text-neutral-400 flex items-center gap-1">
                         <Users className="w-3 h-3" /> {event.teamSize === 1 ? "Solo event" : `Team of ${event.teamSize}`}
                       </span>
                     </div>
                   </div>
+
+                  <p className="text-xs text-neutral-300 leading-relaxed">{event.description}</p>
 
                   <div className="flex items-center justify-between gap-3 pt-3 border-t border-white/10">
                     <div className="text-sm">

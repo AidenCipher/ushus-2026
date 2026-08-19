@@ -21,7 +21,7 @@ export function Navbar() {
             className="font-black text-lg tracking-wider leading-tight text-amber-400"
             style={{ fontFamily: "var(--font-trajan), serif" }}
           >
-            USHUS 2026
+            IMPERIUM
           </span>
         </a>
 

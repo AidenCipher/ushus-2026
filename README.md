@@ -1,6 +1,6 @@
-# USHUS 2026
+# USHUS '26 · IMPERIUM
 
-A single static landing page for USHUS 2026, the flagship MBA management fest of the School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
+A single static landing page for USHUS '26 IMPERIUM, the flagship MBA management fest of the School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
 
 Lists the 10 fest events with early-bird pricing and a full-contingent option. Every "Register" button links out to a Google Form, which also handles payment. There is no backend, database, or authentication — the whole site is one static page.
 

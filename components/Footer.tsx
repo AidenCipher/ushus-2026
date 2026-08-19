@@ -24,7 +24,7 @@ export function Footer() {
             />
             <div>
               <p className="text-lg font-black tracking-wide text-amber-400" style={{ fontFamily: "var(--font-trajan), serif" }}>
-                USHUS 2026
+                USHUS &lsquo;26 · IMPERIUM
               </p>
               <p className="text-xs text-neutral-400 max-w-sm">
                 School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
@@ -48,7 +48,7 @@ export function Footer() {
           className="pt-6 text-center text-[11px] text-neutral-400 border-t"
           style={{ borderColor: "rgba(201, 168, 76, 0.15)" }}
         >
-          © 2026 USHUS 2026 · School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
+          © 2026 USHUS &lsquo;26 IMPERIUM · School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
         </div>
       </div>
     </footer>
