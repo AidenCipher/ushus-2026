@@ -1,423 +1,139 @@
-"use client";
-
-import React from "react";
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import Link from "next/link";
-import { ArrowRight, Calendar, MapPin, Users, ChevronRight, Crosshair, Shield, Cpu } from "lucide-react";
-import { FEST_CONTENT } from "@/lib/content";
-import { EventShowcasePreview } from "@/components/EventCinematicShowcase";
-import { getLogoByCodename } from "@/lib/logos";
-import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Trophy, Users } from "lucide-react";
+import { EVENTS } from "@/lib/logos";
 
-// ── Brand pillars ─────────────────────────────────────────────────────────────
-const BRAND_PILLARS = [
-  {
-    name: "Strategy",
-    desc: "Ancient doctrine forged in the crucible of military history.",
-  },
-  {
-    name: "Command",
-    desc: "Executive decision-making tested under supreme tactical pressure.",
-  },
-  {
-    name: "Velocity",
-    desc: "Amplified by artificial intelligence and predictive telemetry.",
-  },
-];
+const REGISTER_FORM_URL = "https://forms.gle/hVrVWSvu6XnfKQur5";
 
 export default function LandingPage() {
-  const events = FEST_CONTENT.events;
-  const { registerCtaHref } = useAuth();
-
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ color: "#F5ECD7" }}
-    >
+    <div className="min-h-screen flex flex-col" style={{ color: "#F5ECD7" }}>
       <Navbar />
 
       <main className="flex-grow">
-        {/* ================================================================
-            HERO SECTION — Sci-Fi & Evolution of Warfare
-        ================================================================ */}
-        <section className="pt-36 pb-24 md:pt-52 md:pb-36 px-4 relative overflow-hidden">
-          {/* Subtle Sci-Fi Grid lines */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-20"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(201,168,76,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.1) 1px, transparent 1px)",
-              backgroundSize: "80px 80px",
-            }}
-          />
-
-          <div className="container mx-auto max-w-5xl text-center space-y-8 relative z-10">
-            {/* Eyebrow badge */}
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase border"
+        {/* ── Hero ──────────────────────────────────────────────────────── */}
+        <section id="top" className="pt-24 pb-16 md:pt-32 md:pb-24 px-4 text-center">
+          <div className="container mx-auto max-w-3xl space-y-5">
+            <p
+              className="text-sm md:text-base tracking-[0.25em] uppercase font-semibold text-amber-400"
+              style={{ fontFamily: "var(--font-trajan), serif" }}
+            >
+              USHUS 2026
+            </p>
+            <h1
+              className="text-4xl md:text-6xl font-black tracking-tight"
               style={{
-                background: "rgba(201, 168, 76, 0.1)",
-                borderColor: "rgba(201, 168, 76, 0.35)",
-                color: "#C9A84C",
                 fontFamily: "var(--font-trajan), serif",
+                background: "linear-gradient(135deg, #FFFFFF 0%, #E8C875 40%, #C9A84C 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
               }}
             >
-              <Crosshair className="w-3.5 h-3.5" />
-              Evolution of Warfare · Christ (Deemed to be University) SBM Bengaluru Central Campus
-            </div>
-
-            {/* Main heading */}
-            <div className="space-y-2">
-              <p
-                className="text-base md:text-lg tracking-[0.25em] uppercase font-semibold text-amber-400"
-                style={{ fontFamily: "var(--font-trajan), serif" }}
-              >
-                USHUS 2026
-              </p>
-              <h1
-                className="text-6xl md:text-8xl font-black tracking-tight leading-none"
-                style={{
-                  fontFamily: "var(--font-trajan), serif",
-                  background: "linear-gradient(135deg, #FFFFFF 0%, #E8C875 35%, #C9A84C 70%, #8B6914 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                IMPERIUM
-              </h1>
-              <p
-                className="text-lg md:text-xl tracking-widest uppercase font-medium text-neutral-300"
-                style={{ fontFamily: "var(--font-trajan), serif" }}
-              >
-                {FEST_CONTENT.tagline}
-              </p>
-            </div>
-
-            {/* Theme narrative */}
-            <p
-              className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed text-neutral-300"
-            >
-              Every business discipline is a theater of warfare. Ten arenas. Ten legendary commanders. From Sun Tzu to Alan Turing —{" "}
-              <em style={{ color: "#C9A84C" }}>master the doctrine, command the battleground.</em>
+              One Battlefield, Endless Possibilities
+            </h1>
+            <p className="text-sm text-neutral-300">
+              School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University)
             </p>
+          </div>
+        </section>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href={registerCtaHref} className="w-full sm:w-auto">
-                <button
-                  className="w-full sm:w-auto h-12 px-8 text-sm font-bold tracking-widest uppercase rounded-md transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+        {/* ── Contingent offer ──────────────────────────────────────────── */}
+        <section className="px-4 pb-12">
+          <div className="container mx-auto max-w-4xl">
+            <div
+              className="rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+              style={{ borderColor: "rgba(201, 168, 76, 0.4)", background: "rgba(201, 168, 76, 0.08)" }}
+            >
+              <div className="text-center md:text-left">
+                <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Full Contingent</p>
+                <h2 className="text-xl md:text-2xl font-bold" style={{ fontFamily: "var(--font-trajan), serif" }}>
+                  Register your college for all 10 events
+                </h2>
+                <p className="text-sm text-neutral-300 mt-1">
+                  <span className="line-through text-neutral-500 mr-2">₹15,000</span>
+                  <span className="text-amber-300 font-bold text-lg">₹7,500</span>
+                  <span className="text-amber-400 text-xs font-semibold ml-2">50% OFF</span>
+                </p>
+              </div>
+              <a href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer" className="shrink-0 w-full md:w-auto">
+                <Button
+                  className="w-full md:w-auto h-12 px-8 text-sm font-bold tracking-widest uppercase"
                   style={{
                     background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
                     color: "#050200",
                     fontFamily: "var(--font-trajan), serif",
-                    boxShadow: "0 0 30px rgba(201, 168, 76, 0.35)",
                   }}
                 >
-                  DEPLOY YOUR CREW <ArrowRight className="w-4 h-4" />
-                </button>
-              </Link>
-              <Link href="/events" className="w-full sm:w-auto">
-                <button
-                  className="w-full sm:w-auto h-12 px-8 text-sm font-semibold tracking-wider rounded-md transition-all duration-300 border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 cursor-pointer"
-                  style={{
-                    fontFamily: "var(--font-trajan), serif",
-                  }}
-                >
-                  ENTER 3D SHOWCASE
-                </button>
-              </Link>
+                  Register Contingent <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              </a>
             </div>
+          </div>
+        </section>
 
-            {/* Stats row */}
-            <div
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-16 mt-8 text-left border-t border-amber-500/20"
+        {/* ── Events ────────────────────────────────────────────────────── */}
+        <section id="events" className="px-4 pb-24">
+          <div className="container mx-auto max-w-5xl">
+            <h2
+              className="text-2xl md:text-3xl font-bold text-center mb-10"
+              style={{ fontFamily: "var(--font-trajan), serif" }}
             >
-              {[
-                {
-                  icon: <Calendar className="w-5 h-5 text-amber-400" />,
-                  label: "Operational Dates",
-                  value: "November 4–5, 2026",
-                },
-                {
-                  icon: <MapPin className="w-5 h-5 text-amber-400" />,
-                  label: "Venue",
-                  value: "CHRIST (Deemed to be University), Bangalore Central Campus",
-                },
-                {
-                  icon: <Users className="w-5 h-5 text-amber-400" />,
-                  label: "Elite Competitors",
-                  value: "600+ Expected",
-                },
-              ].map((stat) => (
-                <div key={stat.label} className="flex items-center gap-4">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 border border-amber-500/20 bg-amber-500/10"
-                  >
-                    {stat.icon}
+              The 10 Events
+            </h2>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {EVENTS.map((event) => (
+                <div
+                  key={event.name}
+                  className="glass rounded-xl p-5 flex flex-col gap-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-14 h-14 rounded-full overflow-hidden border border-amber-500/30 bg-black/30 shrink-0 flex items-center justify-center">
+                      {event.logo ? (
+                        <Image
+                          src={event.logo.src}
+                          alt={`${event.name} logo`}
+                          width={event.logo.width}
+                          height={event.logo.height}
+                          className="w-full h-full object-contain p-1"
+                        />
+                      ) : (
+                        <Trophy className="w-6 h-6 text-amber-400" />
+                      )}
+                    </span>
+                    <div>
+                      <h3 className="font-bold text-base leading-snug">{event.name}</h3>
+                      <span className="text-[11px] text-neutral-400 flex items-center gap-1">
+                        <Users className="w-3 h-3" /> {event.teamSize === 1 ? "Solo event" : `Team of ${event.teamSize}`}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h4
-                      className="font-mono text-xs text-neutral-400 tracking-wider"
-                    >
-                      {stat.label.toUpperCase()}
-                    </h4>
-                    <p className="text-sm font-semibold text-neutral-100">
-                      {stat.value}
-                    </p>
+
+                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-white/10">
+                    <div className="text-sm">
+                      <span className="line-through text-neutral-500 mr-1.5">₹1,500</span>
+                      <span className="text-amber-300 font-bold">₹900</span>
+                      <span className="text-amber-400 text-[10px] font-semibold ml-1.5">40% OFF</span>
+                    </div>
+                    <a href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer">
+                      <Button
+                        size="sm"
+                        className="text-xs font-bold uppercase tracking-wider"
+                        style={{
+                          background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
+                          color: "#050200",
+                          fontFamily: "var(--font-trajan), serif",
+                        }}
+                      >
+                        Register
+                      </Button>
+                    </a>
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================
-            BRAND PILLARS BAR
-        ================================================================ */}
-        <div
-          className="w-full py-8 border-y border-amber-500/15"
-          style={{
-            background: "rgba(16, 26, 54, 0.8)",
-            backdropFilter: "blur(12px)",
-          }}
-        >
-          <div className="container mx-auto px-4 flex items-start justify-center gap-6 md:gap-20 flex-wrap">
-            {BRAND_PILLARS.map((pillar, i) => (
-              <React.Fragment key={pillar.name}>
-                {i > 0 && (
-                  <span
-                    className="hidden md:block text-lg mt-1 text-amber-500/30"
-                  >
-                    ✦
-                  </span>
-                )}
-                <div className="text-center">
-                  <p
-                    className="text-sm font-bold tracking-widest uppercase mb-1 text-amber-400"
-                    style={{ fontFamily: "var(--font-trajan), serif" }}
-                  >
-                    {pillar.name}
-                  </p>
-                  <p className="text-xs max-w-[180px] text-neutral-300">
-                    {pillar.desc}
-                  </p>
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* ================================================================
-            TEN ARENAS — Crest Grid
-        ================================================================ */}
-        <section className="py-20 px-4 border-t border-amber-500/10">
-          <div className="container mx-auto max-w-5xl">
-            <div className="text-center max-w-2xl mx-auto space-y-3 mb-12">
-              <div className="text-xs font-mono tracking-widest uppercase text-amber-400">
-                {"// TEN ARENAS OF IMPERIUM"}
-              </div>
-              <h2
-                className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
-              >
-                Choose Your Theater
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-10">
-              {events.map((event) => {
-                const crest = getLogoByCodename(event.codename);
-                return (
-                  <Link
-                    key={event.codename}
-                    href={`/events/${event.name.toLowerCase().split(" ")[0].replace(/[^a-z0-9]/g, "")}`}
-                    className="flex flex-col items-center text-center gap-2 group"
-                  >
-                    <div
-                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center overflow-hidden border-2 transition-transform duration-300 group-hover:scale-105"
-                      style={{
-                        borderColor: "rgba(201, 168, 76, 0.4)",
-                        background: "rgba(16, 26, 54, 0.9)",
-                        boxShadow: "0 0 20px rgba(201, 168, 76, 0.1)",
-                      }}
-                    >
-                      {crest ? (
-                        <Image
-                          src={crest.src}
-                          alt={`${event.codename} crest`}
-                          width={crest.width}
-                          height={crest.height}
-                          className="w-full h-full object-contain p-2"
-                        />
-                      ) : (
-                        <span className="text-xs font-mono font-bold text-amber-300">{event.sealLetter}</span>
-                      )}
-                    </div>
-                    <span
-                      className="text-[11px] sm:text-xs font-bold tracking-wider uppercase text-neutral-300 group-hover:text-amber-400 transition-colors"
-                      style={{ fontFamily: "var(--font-trajan), serif" }}
-                    >
-                      {event.vertical}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================
-            FEATURED COMMANDERS — 3D Motion Preview Section
-        ================================================================ */}
-        <section className="py-28 px-4">
-          <div className="container mx-auto max-w-6xl space-y-12">
-            <div className="text-center max-w-2xl mx-auto space-y-3">
-              <div className="text-xs font-mono tracking-widest uppercase text-amber-400">
-                {"// COMMAND ARCHIVE PREVIEW"}
-              </div>
-              <h2
-                className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
-              >
-                Featured Theaters of War
-              </h2>
-              <p className="text-sm text-neutral-300">
-                Experience the 3D commander monument archives.
-              </p>
-            </div>
-
-            {/* 3D Preview Cards */}
-            <EventShowcasePreview />
-
-            <div className="text-center pt-4">
-              <Link href="/events">
-                <button
-                  className="h-12 px-8 text-sm font-semibold tracking-wider rounded-md transition-all duration-300 border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 cursor-pointer"
-                  style={{ fontFamily: "var(--font-trajan), serif" }}
-                >
-                  EXPLORE ALL 10 COMMANDERS IN 3D →
-                </button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================
-            ABOUT SECTION
-        ================================================================ */}
-        <section id="about" className="py-24 px-4 border-t border-amber-500/10 bg-[#0A1128]/60">
-          <div className="container mx-auto max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="space-y-6">
-                <div
-                  className="inline-block text-xs font-mono tracking-widest uppercase text-amber-400"
-                >
-                  {"// ABOUT IMPERIUM"}
-                </div>
-                <h2
-                  className="text-3xl md:text-4xl font-bold"
-                  style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
-                >
-                  The Evolution of Warfare &amp; Executive Command
-                </h2>
-                <div
-                  className="h-0.5 w-14 rounded"
-                  style={{ background: "linear-gradient(90deg, #C9A84C, transparent)" }}
-                />
-                <p className="text-sm md:text-base leading-relaxed text-neutral-300">
-                  USHUS is the flagship annual MBA Management Fest of the School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University). Born from the Sanskrit word meaning &ldquo;dawn,&rdquo; USHUS represents the inception of visionary leadership.
-                </p>
-                <p className="text-sm md:text-base leading-relaxed text-neutral-300">
-                  <strong className="text-amber-400">IMPERIUM</strong> draws from three millennia of strategic warfare. From the Phalanx of Alexander to the Enigma decryption of Alan Turing, we translate history&apos;s greatest battlefield breakthroughs into high-stakes modern management challenges.
-                </p>
-                <Link href="/events" className="inline-block pt-2">
-                  <button
-                    className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-amber-400 hover:text-amber-300 transition-colors"
-                    style={{ fontFamily: "var(--font-trajan), serif" }}
-                  >
-                    DEPLOY TO ARENAS
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </Link>
-              </div>
-
-              {/* Commander doctrines list */}
-              <div className="space-y-3">
-                {FEST_CONTENT.about.themeInspirations.map((insp) => (
-                  <div
-                    key={insp.vertical}
-                    className="rounded-xl p-4 flex items-start gap-4 border"
-                    style={{
-                      background: "rgba(16, 26, 54, 0.8)",
-                      borderColor: "rgba(201, 168, 76, 0.2)",
-                    }}
-                  >
-                    <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5 border border-amber-500/40 text-amber-300 bg-amber-500/10"
-                    >
-                      <Crosshair className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p
-                        className="text-xs font-bold tracking-widest uppercase mb-0.5 text-amber-400"
-                        style={{ fontFamily: "var(--font-trajan), serif" }}
-                      >
-                        {insp.metaphor}
-                      </p>
-                      <p className="text-xs leading-relaxed text-neutral-300">
-                        {insp.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================
-            CTA SECTION
-        ================================================================ */}
-        <section id="contact" className="py-28 px-4">
-          <div className="container mx-auto max-w-4xl text-center">
-            <div
-              className="rounded-2xl p-10 md:p-16 space-y-8 border"
-              style={{
-                background: "rgba(16, 26, 54, 0.85)",
-                borderColor: "rgba(201, 168, 76, 0.3)",
-                backdropFilter: "blur(16px)",
-              }}
-            >
-              <div
-                className="text-xs font-mono tracking-widest uppercase mb-2 text-amber-400"
-              >
-                NOVEMBER 4–5, 2026 // CHRIST (DEEMED TO BE UNIVERSITY) BENGALURU
-              </div>
-              <h2
-                className="text-3xl md:text-5xl font-bold"
-                style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
-              >
-                The command bridge awaits your orders.
-              </h2>
-              <p className="text-sm md:text-base max-w-xl mx-auto leading-relaxed text-neutral-300">
-                Registrations close {FEST_CONTENT.registrationDeadline}. Claim your place among India&apos;s most formidable management strategists. Lead. Prevail. Conquer.
-              </p>
-              <Link href={registerCtaHref} className="inline-block">
-                <button
-                  className="h-14 px-10 text-sm font-bold tracking-widest uppercase rounded-md transition-all duration-300 cursor-pointer"
-                  style={{
-                    background: "linear-gradient(135deg, #E8C875, #C9A84C 60%, #8B6914)",
-                    color: "#050200",
-                    fontFamily: "var(--font-trajan), serif",
-                    boxShadow: "0 0 40px rgba(201, 168, 76, 0.35)",
-                  }}
-                >
-                  REGISTER FOR USHUS 2026: IMPERIUM
-                </button>
-              </Link>
             </div>
           </div>
         </section>

@@ -42,11 +42,10 @@ export default function Error({
             className="text-2xl font-bold tracking-tight mb-3"
             style={{ fontFamily: "var(--font-trajan), serif", color: "#F5ECD7" }}
           >
-            The Archive is Momentarily Unavailable
+            Something Went Wrong
           </h1>
           <p className="text-sm leading-relaxed" style={{ color: "#A89070" }}>
-            An unexpected error occurred. The organising committee has been notified. Try again or contact us if
-            the issue persists.
+            An unexpected error occurred. Please try again.
           </p>
         </div>
 
