@@ -5,6 +5,7 @@ export interface LogoAsset {
 }
 
 export const CHRIST_CREST: LogoAsset = { src: "/logos/christ-crest.png", width: 1795, height: 608 };
+export const USHUS_EMBLEM: LogoAsset = { src: "/logos/ushus-emblem.png", width: 500, height: 500 };
 
 export interface FestEvent {
   name: string;

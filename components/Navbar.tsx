@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CHRIST_CREST } from "@/lib/logos";
+import { CHRIST_CREST, USHUS_EMBLEM } from "@/lib/logos";
 
 export function Navbar() {
   return (
@@ -17,11 +17,19 @@ export function Navbar() {
             className="h-9 w-auto"
             priority
           />
+          <Image
+            src={USHUS_EMBLEM.src}
+            alt="USHUS"
+            width={USHUS_EMBLEM.width}
+            height={USHUS_EMBLEM.height}
+            className="h-9 w-9"
+            priority
+          />
           <span
-            className="font-black text-lg tracking-wider leading-tight text-amber-400"
+            className="font-black text-base sm:text-lg tracking-wider leading-tight text-amber-400 whitespace-nowrap"
             style={{ fontFamily: "var(--font-trajan), serif" }}
           >
-            IMPERIUM
+            USHUS 2026
           </span>
         </a>
 

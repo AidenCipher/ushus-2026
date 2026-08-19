@@ -45,10 +45,11 @@ export function Footer() {
         </div>
 
         <div
-          className="pt-6 text-center text-[11px] text-neutral-400 border-t"
+          className="pt-6 text-center text-[11px] text-neutral-400 border-t space-y-1"
           style={{ borderColor: "rgba(201, 168, 76, 0.15)" }}
         >
-          © 2026 USHUS &lsquo;26 IMPERIUM · School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).
+          <p>© 2026 USHUS &lsquo;26 IMPERIUM · School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University).</p>
+          <p>Built by Abhinav Rotti</p>
         </div>
       </div>
     </footer>

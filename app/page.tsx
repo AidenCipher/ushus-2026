@@ -40,9 +40,13 @@ export default function LandingPage() {
             >
               The Evolution of Warfare
             </p>
-            <p className="text-sm text-neutral-300 italic">&ldquo;Wars Evolve. So Do We.&rdquo;</p>
-            <p className="text-sm text-neutral-300 pt-2">
-              School of Business and Management (MBA), Bangalore Central Campus, CHRIST (Deemed to be University)
+            <p className="text-sm text-neutral-300 italic">&ldquo;One Battlefield, Endless Possibilities&rdquo;</p>
+            <p className="text-sm text-neutral-300 pt-2 leading-relaxed">
+              CHRIST (Deemed to be University)
+              <br />
+              School of Business and Management (MBA)
+              <br />
+              Bengaluru Central Campus
             </p>
             <p className="text-sm font-semibold tracking-widest uppercase text-amber-400">November 4 &amp; 5, 2026</p>
           </div>
