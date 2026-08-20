@@ -1,0 +1,90 @@
+export interface CreditSection {
+  title: string;
+  names: string[];
+}
+
+// Names sourced from the USHUS 2026 org chart and events POC sheet.
+// Sections without confirmed names are left empty pending that information.
+export const CREDITS: CreditSection[] = [
+  { title: "Director, CUSBM", names: [] },
+  { title: "Dean", names: [] },
+  { title: "Associate Dean", names: [] },
+  { title: "HOD", names: [] },
+  { title: "Campus Coordinator", names: [] },
+  {
+    title: "Faculty Coordinators",
+    names: ["Sreedhara Sir", "Anil Gowda Sir", "Elizabeth Ma'am", "Shrutha Nadig Ma'am", "Vijay Sir"],
+  },
+  {
+    title: "Student Coordinators",
+    names: ["Aishwarya G. Prasad", "Abhinav Rotti"],
+  },
+  {
+    title: "Core Committee",
+    names: [
+      "Vignesh",
+      "Shivashankar G",
+      "Deepthi Mariam",
+      "Tharun Karthick",
+      "Elaine",
+      "Abhinav Rotti",
+      "Aishwarya G",
+      "Krishna Bhadran",
+      "Keerthi",
+      "Nikhilesh",
+    ],
+  },
+  {
+    title: "Managing Committee",
+    names: [
+      "Nagavenkata Saiveeramani",
+      "Ananya Reddy",
+      "Aswin Koshy Varughese",
+      "Mithul Thomas",
+      "Manasa B",
+      "Hrishikesh Kattishetti",
+      "Hiteishi A",
+      "Isha Sreenivasan",
+      "Sagar M",
+      "Surendar CA",
+      "Theertha Nambiar",
+      "Tarush Bhusri",
+      "Anamika Anil",
+      "Adithya Ranganath",
+      "Mitul Sajay",
+      "Celin Kezia",
+      "Esha Jaiswal",
+      "Sahaja Saijampana",
+      "Anagha Nair",
+      "Aaron Zachariah George",
+      "Albert Shajan",
+      "M. Rashmi Pai",
+      "Mithun Visal",
+      "Devananda T",
+      "Manisha G",
+    ],
+  },
+  {
+    title: "Events POCs",
+    names: [
+      "Rallabandi Sriharshini",
+      "Tejaswini.S",
+      "Ashwin Mathew",
+      "Harsha Arakkal Haris",
+      "Vishnu Prasad",
+      "P Praneeth Chandra",
+      "Jennifer G",
+      "Sthita Pragyan Khilar",
+      "Keerthana S",
+      "Jayaprakash.B",
+      "Kruthi L",
+      "Hari Hara Subramanian",
+      "Mekhala H Vasons",
+      "Anusha R",
+      "Sridhar Ganesh R",
+      "Vishal Ramachandran",
+      "Ritika Vashist",
+    ],
+  },
+  { title: "MDC", names: [] },
+];

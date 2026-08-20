@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Trophy, Users } from "lucide-react";
 import { EVENTS } from "@/lib/logos";
 
-const REGISTER_FORM_URL = "https://forms.gle/hVrVWSvu6XnfKQur5";
+const REGISTER_FORM_URL = "https://forms.gle/VFmgSRNao3N4ax2w6";
 
 export default function LandingPage() {
   return (
@@ -14,7 +14,7 @@ export default function LandingPage() {
 
       <main className="flex-grow">
         {/* ── Hero ──────────────────────────────────────────────────────── */}
-        <section id="top" className="pt-24 pb-16 md:pt-32 md:pb-24 px-4 text-center">
+        <section id="top" className="pt-20 pb-12 md:pt-28 md:pb-16 px-4 text-center">
           <div className="container mx-auto max-w-3xl space-y-4">
             <p
               className="text-sm md:text-base tracking-[0.25em] uppercase font-semibold text-amber-400"
@@ -40,34 +40,69 @@ export default function LandingPage() {
             >
               The Evolution of Warfare
             </p>
-            <p className="text-sm text-neutral-300 italic">&ldquo;One Battlefield, Endless Possibilities&rdquo;</p>
-            <p className="text-sm text-neutral-300 pt-2 leading-relaxed">
-              CHRIST (Deemed to be University)
-              <br />
-              School of Business and Management (MBA)
-              <br />
-              Bengaluru Central Campus
-            </p>
-            <p className="text-sm font-semibold tracking-widest uppercase text-amber-400">November 4 &amp; 5, 2026</p>
+            <p className="text-sm font-semibold tracking-widest uppercase text-amber-400 pt-2">November 4 &amp; 5, 2026</p>
           </div>
         </section>
 
-        {/* ── Contingent offer ──────────────────────────────────────────── */}
-        <section className="px-4 pb-12">
-          <div className="container mx-auto max-w-4xl">
+        {/* ── About ─────────────────────────────────────────────────────── */}
+        <section className="px-4 pb-16">
+          <div className="container mx-auto max-w-4xl grid md:grid-cols-3 gap-6">
+            <div className="glass rounded-xl p-6 text-center space-y-2">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-amber-400" style={{ fontFamily: "var(--font-trajan), serif" }}>
+                CHRIST (Deemed to be University)
+              </h2>
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                A leading multi-disciplinary institution recognised for academic excellence and holistic student
+                development, with campuses in Bengaluru, Delhi NCR, and Pune.
+              </p>
+            </div>
+            <div className="glass rounded-xl p-6 text-center space-y-2">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-amber-400" style={{ fontFamily: "var(--font-trajan), serif" }}>
+                School of Business and Management (MBA)
+              </h2>
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                Based at the Bengaluru Central Campus, the school trains future business leaders through a
+                rigorous, industry-aligned curriculum that pairs academic depth with real-world managerial practice.
+              </p>
+            </div>
+            <div className="glass rounded-xl p-6 text-center space-y-2">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-amber-400" style={{ fontFamily: "var(--font-trajan), serif" }}>
+                USHUS
+              </h2>
+              <p className="text-xs text-neutral-300 leading-relaxed">
+                The school&rsquo;s flagship national management fest, bringing together the country&rsquo;s brightest
+                management students to compete, network, and be inspired. This year&rsquo;s edition, IMPERIUM, traces
+                the evolution of warfare as a lens on modern business.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Registration ──────────────────────────────────────────────── */}
+        <section id="register" className="px-4 pb-12">
+          <div className="container mx-auto max-w-4xl space-y-4">
+            <h2
+              className="text-2xl md:text-3xl font-bold text-center"
+              style={{ fontFamily: "var(--font-trajan), serif" }}
+            >
+              Registration
+            </h2>
+            <p className="text-center text-xs text-neutral-400 uppercase tracking-widest">
+              Early bird pricing &middot; Fest on November 4 &amp; 5, 2026
+            </p>
             <div
               className="rounded-2xl border p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
               style={{ borderColor: "rgba(201, 168, 76, 0.4)", background: "rgba(201, 168, 76, 0.08)" }}
             >
               <div className="text-center md:text-left">
                 <p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-1">Full Contingent</p>
-                <h2 className="text-xl md:text-2xl font-bold" style={{ fontFamily: "var(--font-trajan), serif" }}>
-                  Register your college for all 10 events
-                </h2>
+                <h3 className="text-xl md:text-2xl font-bold" style={{ fontFamily: "var(--font-trajan), serif" }}>
+                  Register for all 10 events
+                </h3>
                 <p className="text-sm text-neutral-300 mt-1">
+                  <span className="text-amber-400 text-xs font-semibold mr-2">40% OFF</span>
                   <span className="line-through text-neutral-500 mr-2">₹15,000</span>
-                  <span className="text-amber-300 font-bold text-lg">₹7,500</span>
-                  <span className="text-amber-400 text-xs font-semibold ml-2">50% OFF</span>
+                  <span className="text-amber-300 font-bold text-lg">₹9,000</span>
                 </p>
               </div>
               <a href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer" className="shrink-0 w-full md:w-auto">
@@ -129,9 +164,9 @@ export default function LandingPage() {
 
                   <div className="flex items-center justify-between gap-3 pt-3 border-t border-white/10">
                     <div className="text-sm">
+                      <span className="text-amber-400 text-[10px] font-semibold mr-1.5">40% OFF</span>
                       <span className="line-through text-neutral-500 mr-1.5">₹1,500</span>
                       <span className="text-amber-300 font-bold">₹900</span>
-                      <span className="text-amber-400 text-[10px] font-semibold ml-1.5">40% OFF</span>
                     </div>
                     <a href={REGISTER_FORM_URL} target="_blank" rel="noopener noreferrer">
                       <Button
