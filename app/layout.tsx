@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "USHUS '26 · IMPERIUM",
   description: `USHUS '26 IMPERIUM — ${TAGLINE}. The flagship national MBA Management Fest of the ${INSTITUTION_FULL}.`,
+  icons: {
+    icon: "/logos/ushus-emblem.png",
+    shortcut: "/logos/ushus-emblem.png",
+    apple: "/logos/ushus-emblem.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
