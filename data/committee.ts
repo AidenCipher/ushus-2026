@@ -59,9 +59,9 @@ export const COMMITTEE: CommitteeCategory[] = [
     members: [
       { name: "Abhinav Rotti" },
       { name: "Aishwarya G." },
-      { name: "Deepthi Mariam John" },
+      { name: "Deepthi Mariam John M." },
       { name: "F. Elaine Esther" },
-      { name: "Keerthi Elizabath John M." },
+      { name: "Keerthi Elizabeth John M." },
       { name: "Krishna Bhadhran" },
       { name: "Nikilesh A.M." },
       { name: "Shiva Shankar" },
