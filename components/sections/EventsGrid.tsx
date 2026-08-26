@@ -126,6 +126,30 @@ function EventCard({ event, index }: { event: (typeof EVENTS)[number]; index: nu
           {event.description}
         </p>
 
+        {/* Prize Money */}
+        <div className="flex flex-col gap-1.5 pt-3 mt-1 border-t" style={{ borderColor: "rgba(201,168,76,0.15)" }}>
+          <span className="text-[9px] font-extrabold uppercase tracking-widest" style={{ color: "rgba(245,236,215,0.5)" }}>Prize Money</span>
+          <div className="flex items-center gap-4">
+            {event.prizeSecond ? (
+              <>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(201,168,76,0.8)" }}>1st</span>
+                  <span className="text-[15px] font-black" style={{ color: "#C9A84C" }}>{fmt(event.prizeFirst)}</span>
+                </div>
+                <div className="w-px h-3.5" style={{ background: "rgba(201,168,76,0.3)" }} />
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(201,168,76,0.8)" }}>2nd</span>
+                  <span className="text-[15px] font-black" style={{ color: "#C9A84C" }}>{fmt(event.prizeSecond)}</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[15px] font-black" style={{ color: "#C9A84C" }}>{fmt(event.prizeFirst)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Active pricing — Discount % → MRP strikethrough → Discounted price */}
         <div
           className="rounded-xl px-4 py-3 flex items-center justify-between gap-3"

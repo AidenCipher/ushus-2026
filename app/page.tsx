@@ -95,7 +95,7 @@ export default function LandingPage() {
             IMPER
           </span>
           {/* Sword in place of second I */}
-          <SwordIcon className="inline-block mx-1 sm:mx-2 drop-shadow-xl" style={{ height: "8em", width: "2.4em", transform: "translateY(-0.05em)" }} />
+          <SwordIcon className="inline-block mx-1 sm:mx-2 drop-shadow-xl h-[5.6em] sm:h-[8em] w-[1.68em] sm:w-[2.4em]" style={{ transform: "translateY(-0.05em)" }} />
           <span
             className="text-4xl sm:text-5xl md:text-6xl lg:text-[80px] font-black uppercase leading-none"
             style={{

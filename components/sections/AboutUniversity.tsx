@@ -38,7 +38,7 @@ export function AboutUniversity() {
 
         {/* Heading */}
         <h2
-          className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight mb-8 transition-all duration-700 delay-100 whitespace-nowrap"
+          className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight mb-8 transition-all duration-700 delay-100"
           style={{
             fontFamily: "var(--font-trajan), serif",
             color: "#F5ECD7",

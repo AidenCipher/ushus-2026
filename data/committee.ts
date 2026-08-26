@@ -28,10 +28,10 @@ export const COMMITTEE: CommitteeCategory[] = [
   {
     title: "University & School Leadership",
     members: [
-      { name: "Rev Fr Thomas T.V." },    // Director, SBM
+      { name: "Rev. Fr. Thomas T.V." },    // Director, SBM
       { name: "Dr Sathiya Seelan B." },    // Associate Dean
       { name: "Dr Mareena Mathew" },       // HOD
-      { name: "Dr Jacob Joseph K." },         // Campus Coordinator
+      { name: "Dr Jacob Joseph K." },      // Campus Coordinator
     ],
   },
   // ── Faculty Coordinators ────────────────────────────────────────────
@@ -42,7 +42,7 @@ export const COMMITTEE: CommitteeCategory[] = [
       { name: "Dr Sreedhara Raman" },
       { name: "Dr Elizabeth Chacko" },
       { name: "Dr Vijay Kumar N." },
-      { name: "Ms Shrutha Nadig" },
+      { name: "Ms. Shrutha Nadig" },
     ],
   },
   // ── Student Coordinators ─────────────────────────────────────────────
@@ -119,7 +119,7 @@ export interface LeadershipMember {
 }
 
 export const LEADERSHIP: LeadershipMember[] = [
-  { role: "Director", name: "Rev Fr Thomas T.V." },
+  { role: "Director", name: "Rev. Fr. Thomas T.V." },
   { role: "Associate Dean", name: "Dr Sathiya Seelan B." },
   { role: "HOD", name: "Dr Mareena Mathew" },
   { role: "Campus Coordinator", name: "Dr Jacob Joseph K." },
