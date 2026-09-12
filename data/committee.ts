@@ -66,6 +66,7 @@ export const COMMITTEE: CommitteeCategory[] = [
       { name: "Nikilesh A.M." },
       { name: "Shiva Shankar" },
       { name: "Tharun Karthic K." },
+      { name: "V. Mithun Visal" },
       { name: "Vighnesh V.R." },
     ],
   },
@@ -99,7 +100,6 @@ export const COMMITTEE: CommitteeCategory[] = [
       { name: "Surendar C.A." },
       { name: "Tarush Bhusri" },
       { name: "Theertha B. Nambair" },
-      { name: "V. Mithun Visal" },
     ],
   },
   // ── MDC ────────────────────────────────────────────────────────────
