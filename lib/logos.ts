@@ -105,7 +105,7 @@ export const EVENTS: FestEvent[] = [
       "A strategic simulation testing long-range thinking, competitive positioning, and the ability to anticipate and counter an opponent's next move.",
     teamSize: 3,
     logo: { src: "/logos/victorium.png", width: 1254, height: 1254 },
-    prizeFirst: 14000,
+    prizeFirst: 15000,
     prizeSecond: 9000,
   },
   {
@@ -115,7 +115,7 @@ export const EVENTS: FestEvent[] = [
       "An execution-and-logistics challenge — sequencing, resource movement, and process design — testing whether a plan can actually be run at scale, not just written.",
     teamSize: 3,
     logo: { src: "/logos/kaizenium.png", width: 202, height: 204 },
-    prizeFirst: 14000,
+    prizeFirst: 15000,
     prizeSecond: 9000,
   },
 ];
