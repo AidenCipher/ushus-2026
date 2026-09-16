@@ -94,7 +94,7 @@ export const COMMITTEE: CommitteeCategory[] = [
       { name: "Manisha G." },
       { name: "Manoj Ramesh" },
       { name: "Mithul Thomas" },
-      { name: "Mitul Sanjay" },
+      { name: "Mitul Sajay" },
       { name: "Sahaja Sai Jampana" },
       { name: "Sagar M." },
       { name: "Surendar C.A." },
