@@ -65,7 +65,7 @@ export const COMMITTEE: CommitteeCategory[] = [
       { name: "Krishna Bhadhran" },
       { name: "Nikilesh A.M." },
       { name: "Shiva Shankar" },
-      { name: "Tharun Karthic K." },
+      { name: "Tharun Karthick K." },
       { name: "V. Mithun Visal" },
       { name: "Vighnesh V.R." },
     ],
