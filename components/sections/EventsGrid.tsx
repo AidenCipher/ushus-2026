@@ -185,7 +185,9 @@ function EventCard({ event, index }: { event: (typeof EVENTS)[number]; index: nu
                 {fmt(ACTIVE.individual)}
               </span>
             </div>
-            <span className="text-xs font-semibold mt-0.5" style={{ color: "rgba(245,236,215,0.7)" }}>per team</span>
+            {event.teamSize > 1 && (
+              <span className="text-xs font-semibold mt-0.5" style={{ color: "rgba(245,236,215,0.7)" }}>per team</span>
+            )}
           </div>
         </div>
 
