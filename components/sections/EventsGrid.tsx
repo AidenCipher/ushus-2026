@@ -42,7 +42,7 @@ const SLABS = [
 ];
 
 /* Active slab = Early Bird (index 0) — change index when slabs advance */
-const ACTIVE_SLAB_INDEX = 0;
+const ACTIVE_SLAB_INDEX = 1;
 const ACTIVE = SLABS[ACTIVE_SLAB_INDEX];
 
 function fmt(n: number) {
@@ -185,9 +185,7 @@ function EventCard({ event, index }: { event: (typeof EVENTS)[number]; index: nu
                 {fmt(ACTIVE.individual)}
               </span>
             </div>
-            {event.teamSize > 1 && (
-              <span className="text-xs font-semibold mt-0.5" style={{ color: "rgba(245,236,215,0.7)" }}>per team</span>
-            )}
+            <span className="text-xs font-semibold mt-0.5" style={{ color: "rgba(245,236,215,0.7)" }}>per team</span>
           </div>
         </div>
 
@@ -363,9 +361,9 @@ export function EventsGrid() {
               </div>
 
               {/* Contingent: discount % → full strikethrough → discounted (Removed) */}
-              
+
               {/* Per-event: discount % → full strikethrough → discounted → per team (Removed) */}
-              
+
               {/* 3-slab pricing table */}
               <div className="mt-4">
                 <PricingSlabs />
